@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 
 function TranscriptionComponent() {
   const [transcript, setTranscript] = useState('');
+  const [interimTranscript, setInterimTranscript] = useState('');
   const videoRef = useRef(null);
 
   useEffect(() => {
@@ -15,10 +16,11 @@ function TranscriptionComponent() {
         console.error('Error accessing media devices.', error);
       }
     }
+    initMedia();
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      console.error('Browser does not support Speech Recognition');
+      console.error('Your browser does not support Speech Recognition.');
       return;
     }
     const recognition = new SpeechRecognition();
@@ -26,20 +28,20 @@ function TranscriptionComponent() {
     recognition.interimResults = true;
 
     recognition.onresult = (event) => {
-      let interimTranscript = '';
+      let interim = '';
       for (let i = event.resultIndex; i < event.results.length; i++) {
-        const speechResult = event.results[i][0].transcript;
-        if (event.results[i].isFinal) {
-          setTranscript(prev => prev + speechResult + ' ');
+        const result = event.results[i];
+        if (result.isFinal) {
+          setTranscript(prev => prev + result[0].transcript + ' ');
+          setInterimTranscript('');
         } else {
-          interimTranscript += speechResult;
+          interim += result[0].transcript;
         }
       }
-      console.log('Interim Transcript:', interimTranscript);
+      setInterimTranscript(interim);
     };
 
     recognition.start();
-    initMedia();
 
     return () => {
       recognition.stop();
@@ -55,7 +57,10 @@ function TranscriptionComponent() {
       <video ref={videoRef} autoPlay muted style={{ width: '100%', maxWidth: '600px' }} />
       <div style={{ marginTop: '1rem', padding: '1rem', border: '1px solid #ccc' }}>
         <strong>Transcript:</strong>
-        <p>{transcript}</p>
+        <p>
+          {transcript}
+          <span style={{ opacity: 0.6 }}>{interimTranscript}</span>
+        </p>
       </div>
     </div>
   );
