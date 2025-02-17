@@ -1,0 +1,1 @@
+// initializes MSW server for mock requests
