@@ -18,7 +18,7 @@ export default function Page() {
           <Section
             id="evaluate"
             title="Jump on in!"
-            className="bg-lightCoffee group cursor-pointer"
+            className="bg-lightCoffee dark:bg-darkCoffee group cursor-pointer"
           >
             <Link href={"/dashboard/evaluate"}>
               <div className="absolute z-20 flex flex-col gap-2">
@@ -38,7 +38,7 @@ export default function Page() {
                   className="w-[60%] max-w-[450px] absolute translate-x-12 translate-y-10 scale-x-[-1] z-10 group-hover:rotate-6 group-hover:scale-y-[1.05] ease-out duration-200"
                 />
                 <div className="flex flex-row justify-end ">
-                  <div className="bg-[#ac795d] dark:bg-darkLatte w-[35vw] h-[300px] z-0 rounded-lg group-hover:scale-105 duration-500"></div>
+                  <div className="bg-[#ac795d] dark:bg-[#9c6446] w-[35vw] h-[300px] z-0 rounded-lg group-hover:scale-105 duration-500"></div>
                 </div>
               </div>
             </Link>
