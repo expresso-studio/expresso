@@ -33,6 +33,7 @@ export default {
         darkCoffee: "#7A4A2A",
         darkCaramel: "#CA773F",
         darkBurnt: "#110C09",
+        darkGray: "hsl(24, 12.9%, 15%)",
       },
       borderRadius: {
         lg: "var(--radius)",

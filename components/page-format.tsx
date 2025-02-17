@@ -49,7 +49,9 @@ const PageFormat = React.memo<Props>(function Heading1({
           </Breadcrumb>
         </div>
       </header>
-      <main className="flex flex-col gap-4 px-10">{children}</main>
+      <main className="flex flex-col gap-4 px-10 overflow-hidden">
+        {children}
+      </main>
     </>
   );
 });

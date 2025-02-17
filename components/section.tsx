@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 interface Props {
   id: string;
   title: string;
-  className: string;
+  className?: string;
   children: React.ReactNode;
 }
 
@@ -21,7 +21,10 @@ const Section = React.memo<Props>(function Section({
         {title}
       </h2>
       <div
-        className={cn(`rounded-lg bg-lightGray overflow-hidden p-6`, className)}
+        className={cn(
+          `rounded-lg bg-lightGray dark:bg-darkGray overflow-hidden p-6`,
+          className
+        )}
       >
         {children}
       </div>
