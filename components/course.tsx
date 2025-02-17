@@ -15,7 +15,7 @@ const Course = React.memo<Props>(function Course({
   nLessons,
 }) {
   return (
-    <div className="flex gap-4 p-2 hover:bg-[#f1eae5] rounded-md w-full">
+    <div className="flex gap-4 p-4 hover:bg-[#f1eae5] dark:hover:bg-stone-900 rounded-md w-full">
       <div
         className={cn(
           color,
