@@ -8,13 +8,19 @@ import Image from "next/image";
 import Link from "next/link";
 import ProgressSection from "./progress";
 import PreviousPresentationsSection from "./previous-presentations";
-
+import { useAuth0 } from "@auth0/auth0-react";
+import LogoutButton from "@/components/logout-button";
 export default function Page() {
+  const { user, isAuthenticated, isLoading } = useAuth0();
+  if (isLoading) {
+    return <div>Loading ...</div>;
+  }
   return (
     <PageFormat breadCrumbs={[]}>
       <Heading1 id="greeting">
-        Hi <span className="text-lightCoffee dark:text-darkCoffee">Joanne</span>
+        Hi {user?.name}<span className="text-lightCoffee dark:text-darkCoffee"></span>
         !
+      <LogoutButton />
       </Heading1>
       <div className="mt-4 mb-16 flex flex-col md:flex-row gap-16">
         <div className="flex flex-col gap-16 w-full">
