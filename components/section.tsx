@@ -22,7 +22,7 @@ const Section = React.memo<Props>(function Section({
       </h2>
       <div
         className={cn(
-          `rounded-lg bg-lightGray dark:bg-darkGray overflow-hidden p-6`,
+          `rounded-lg bg-lightGray dark:bg-darkGray relative overflow-hidden p-6`,
           className
         )}
       >
