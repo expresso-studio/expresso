@@ -15,10 +15,11 @@ export default function Page() {
   if (isLoading) {
     return <div>Loading ...</div>;
   }
+  console.log(user);
   return (
     <PageFormat breadCrumbs={[]}>
       <Heading1 id="greeting">
-        Hi {user?.name}<span className="text-lightCoffee dark:text-darkCoffee"></span>
+        Hi {user?.nickname}<span className="text-lightCoffee dark:text-darkCoffee"></span>
         !
       <LogoutButton />
       </Heading1>
