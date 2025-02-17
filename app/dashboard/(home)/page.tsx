@@ -8,6 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import ProgressSection from "./progress";
 import PreviousPresentationsSection from "./previous-presentations";
+import CourseList from "../learning/course-list";
 
 export default function Page() {
   return (
@@ -47,7 +48,7 @@ export default function Page() {
             </Link>
           </Section>
           <Section id="learning" title="Learning">
-            <>aasdf</>
+            <CourseList short={true} />
           </Section>
         </div>
         <div className="flex flex-col gap-16 w-full">
