@@ -37,7 +37,7 @@ export function WPMChart() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig}>
+        <ChartContainer config={chartConfig} className="max-h-[200px] w-full">
           <AreaChart
             accessibilityLayer
             data={chartData}
