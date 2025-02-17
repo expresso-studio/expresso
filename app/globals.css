@@ -39,3 +39,7 @@ body {
     --chart-5: 80 60% 45%;
   }
 }
+
+.blur {
+  background: linear-gradient(transparent 150px, white);
+}

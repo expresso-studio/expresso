@@ -6,7 +6,7 @@ interface Props {
   id: string;
   title: string;
   className?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 const Section = React.memo<Props>(function Section({

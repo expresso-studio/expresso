@@ -1,11 +1,11 @@
 import React from "react";
-import { statistic } from "@/lib/types";
+import { StatisticType } from "@/lib/types";
 import { IoHandLeft, IoSpeedometer } from "react-icons/io5";
 import { BiCheckDouble, BiSolidSmile } from "react-icons/bi";
 import { cn } from "@/lib/utils";
 
 // TODO: remove dummy values
-const statistics: statistic[] = [
+const statistics: StatisticType[] = [
   {
     icon: <IoHandLeft />,
     text: "Hand gestures",

@@ -7,6 +7,7 @@ import Section from "@/components/section";
 import Image from "next/image";
 import Link from "next/link";
 import ProgressSection from "./progress";
+import PreviousPresentationsSection from "./previous-presentations";
 
 export default function Page() {
   return (
@@ -23,8 +24,8 @@ export default function Page() {
             className="sm:min-w-[300px] bg-lightCoffee dark:bg-darkCoffee group cursor-pointer"
           >
             <Link href={"/dashboard/evaluate"} className=" overflow-hidden">
-              <div className="absolute z-20 flex flex-col gap-2">
-                <span className="text-6xl lg:text-8xl font-black text-white uppercase group-hover:translate-x-1 duration-200">
+              <div className="absolute z-20 flex flex-col gap-2 w-full">
+                <span className="text-6xl md:text-[5vw] font-black text-white uppercase group-hover:translate-x-1 duration-200">
                   Evaluate
                 </span>
                 <span className="text-2xl lg:text-4xl italic text-white group-hover:translate-x-2 duration-500">
@@ -50,9 +51,7 @@ export default function Page() {
           </Section>
         </div>
         <div className="flex flex-col gap-16 w-full">
-          <Section id="previous" title="Previous presentations">
-            <>aasdf</>
-          </Section>
+          <PreviousPresentationsSection />
           <ProgressSection />
         </div>
       </div>
