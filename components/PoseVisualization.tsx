@@ -1,6 +1,7 @@
+// PoseVisualization.tsx
 "use client"
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 interface PoseLandmark {
@@ -26,11 +27,18 @@ interface MovementDataPoint {
   rightArmY: number;
 }
 
+const MOVEMENT_THRESHOLD = 0.005;
+const UPDATE_INTERVAL = 100; // ms
+
 const PoseVisualization: React.FC<PoseVisualizationProps> = ({ results }) => {
   const [movementData, setMovementData] = useState<MovementDataPoint[]>([]);
+  const lastUpdateTime = useRef<number>(0);
 
   useEffect(() => {
     if (!results.poseLandmarks) return;
+
+    const currentTime = Date.now();
+    if (currentTime - lastUpdateTime.current < UPDATE_INTERVAL) return;
 
     const leftWrist = results.poseLandmarks[15];  // Left wrist index
     const rightWrist = results.poseLandmarks[16]; // Right wrist index
@@ -38,19 +46,38 @@ const PoseVisualization: React.FC<PoseVisualizationProps> = ({ results }) => {
     if (!leftWrist?.visibility || !rightWrist?.visibility) return;
     if (leftWrist.visibility < 0.5 || rightWrist.visibility < 0.5) return;
 
+    // Check if movement is significant enough to record
+    const lastPoint = movementData[movementData.length - 1];
+    if (lastPoint) {
+      const leftMovement = Math.sqrt(
+        Math.pow(leftWrist.x - lastPoint.leftArmX, 2) +
+        Math.pow(leftWrist.y - lastPoint.leftArmY, 2)
+      );
+      const rightMovement = Math.sqrt(
+        Math.pow(rightWrist.x - lastPoint.rightArmX, 2) +
+        Math.pow(rightWrist.y - lastPoint.rightArmY, 2)
+      );
+
+      if (leftMovement < MOVEMENT_THRESHOLD && rightMovement < MOVEMENT_THRESHOLD) {
+        return;
+      }
+    }
+
     const newDataPoint: MovementDataPoint = {
-      timestamp: Date.now(),
+      timestamp: currentTime,
       leftArmX: leftWrist.x,
       leftArmY: leftWrist.y,
       rightArmX: rightWrist.x,
       rightArmY: rightWrist.y,
     };
 
+    lastUpdateTime.current = currentTime;
+
     setMovementData(prev => {
       const newData = [...prev, newDataPoint];
       return newData.slice(-50); // Keep last 50 points for better performance
     });
-  }, [results]);
+  }, [results, movementData]);
 
   return (
     <div className="absolute bottom-0 left-0 w-full bg-black/80 p-4" style={{ height: '200px' }}>
@@ -59,7 +86,7 @@ const PoseVisualization: React.FC<PoseVisualizationProps> = ({ results }) => {
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={movementData}>
             <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-            <XAxis 
+            <XAxis
               dataKey="timestamp"
               domain={['auto', 'auto']}
               tickFormatter={(value: number) => {
@@ -68,7 +95,7 @@ const PoseVisualization: React.FC<PoseVisualizationProps> = ({ results }) => {
               }}
               stroke="#fff"
             />
-            <YAxis 
+            <YAxis
               stroke="#fff"
               domain={[0, 1]}
               tickFormatter={(value: number) => value.toFixed(2)}
@@ -84,7 +111,7 @@ const PoseVisualization: React.FC<PoseVisualizationProps> = ({ results }) => {
               formatter={(value: number) => [value.toFixed(3), '']}
             />
             <Legend />
-            <Line 
+            <Line
               type="monotone"
               dataKey="leftArmX"
               stroke="#8884d8"
@@ -92,7 +119,7 @@ const PoseVisualization: React.FC<PoseVisualizationProps> = ({ results }) => {
               dot={false}
               isAnimationActive={false}
             />
-            <Line 
+            <Line
               type="monotone"
               dataKey="leftArmY"
               stroke="#82ca9d"
@@ -100,7 +127,7 @@ const PoseVisualization: React.FC<PoseVisualizationProps> = ({ results }) => {
               dot={false}
               isAnimationActive={false}
             />
-            <Line 
+            <Line
               type="monotone"
               dataKey="rightArmX"
               stroke="#ffc658"
@@ -108,7 +135,7 @@ const PoseVisualization: React.FC<PoseVisualizationProps> = ({ results }) => {
               dot={false}
               isAnimationActive={false}
             />
-            <Line 
+            <Line
               type="monotone"
               dataKey="rightArmY"
               stroke="#ff7300"

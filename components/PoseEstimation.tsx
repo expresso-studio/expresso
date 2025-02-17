@@ -1,6 +1,7 @@
+// PoseEstimation.tsx
 "use client"
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { PoseTracking } from './PoseTracking';
 import dynamic from 'next/dynamic';
 
@@ -40,30 +41,33 @@ declare global {
 const PoseEstimation = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const poseRef = useRef<MediaPipePose | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
+  const lastProcessedTimeRef = useRef<number>(0);
+
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [poseResults, setPoseResults] = useState<PoseResults | null>(null);
-  const [isClient, setIsClient] = useState(false);
+  const [showVisualization, setShowVisualization] = useState(true);
+  const [showNotifications, setShowNotifications] = useState(true);
 
-  useEffect(() => {
-    setIsClient(true);
+  const toggleVisualization = useCallback(() => {
+    setShowVisualization(prev => !prev);
   }, []);
 
-  useEffect(() => {
-    if (!isClient) return;
+  const toggleNotifications = useCallback(() => {
+    setShowNotifications(prev => !prev);
+  }, []);
 
+  // Initialize MediaPipe script
+  useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js';
     script.crossOrigin = 'anonymous';
     document.body.appendChild(script);
 
-    script.onload = () => {
-      console.log('MediaPipe script loaded');
-      setLoading(false);
-    };
-
+    script.onload = () => setLoading(false);
     script.onerror = () => {
-      console.error('Failed to load MediaPipe script');
       setError('Failed to load pose detection model');
       setLoading(false);
     };
@@ -71,117 +75,85 @@ const PoseEstimation = () => {
     return () => {
       document.body.removeChild(script);
     };
-  }, [isClient]);
+  }, []);
 
+  // Setup camera
   useEffect(() => {
-    if (!isClient) return;
-    
     const setupCamera = async () => {
       if (!videoRef.current) return;
 
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { width: 1200, height: 800 }
+          video: { 
+            width: 1200, 
+            height: 800,
+            frameRate: { ideal: 30 }
+          }
         });
         videoRef.current.srcObject = stream;
-        console.log('Camera setup successful');
       } catch (err) {
-        console.error('Camera setup failed:', err);
         setError(`Failed to access webcam: ${err instanceof Error ? err.message : String(err)}`);
       }
     };
 
     setupCamera();
-  }, [isClient]);
 
+    return () => {
+      if (videoRef.current?.srcObject) {
+        const stream = videoRef.current.srcObject as MediaStream;
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, []);
+
+  // Initialize pose detection
   useEffect(() => {
-    if (!isClient || loading || !videoRef.current || !canvasRef.current) return;
+    if (loading || !videoRef.current || !canvasRef.current) return;
 
     const ctx = canvasRef.current.getContext('2d');
     if (!ctx) return;
 
-    let pose: MediaPipePose | null = null;
-    let animationFrameId: number | null = null;
-
     const initializePose = async () => {
       try {
-        pose = new window.Pose({
+        poseRef.current = new window.Pose({
           locateFile: (file: string) => {
             return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
           }
         });
 
-        pose.setOptions({
+        poseRef.current.setOptions({
           modelComplexity: 1,
           smoothLandmarks: true,
           minDetectionConfidence: 0.5,
           minTrackingConfidence: 0.5
         });
 
-        pose.onResults((results: PoseResults) => {
-          console.log('Pose detection results:', results.poseLandmarks ? 'Landmarks detected' : 'No landmarks');
-          
+        poseRef.current.onResults((results: PoseResults) => {
+          const now = performance.now();
+          if (now - lastProcessedTimeRef.current < 33) return; // Limit to ~30fps
+          lastProcessedTimeRef.current = now;
+
           ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
           if (!videoRef.current) return;
+          
           ctx.drawImage(videoRef.current, 0, 0, ctx.canvas.width, ctx.canvas.height);
 
-          setPoseResults(results);
-
           if (results.poseLandmarks) {
-            results.poseLandmarks.forEach((landmark: PoseLandmark) => {
-              ctx.beginPath();
-              ctx.arc(
-                landmark.x * ctx.canvas.width,
-                landmark.y * ctx.canvas.height,
-                4,
-                0,
-                2 * Math.PI
-              );
-              ctx.fillStyle = '#00ff00';
-              ctx.fill();
-            });
-
-            // Draw connections
-            const connections = [
-              [0, 1], [1, 2], [2, 3], [3, 7],
-              [0, 4], [4, 5], [5, 6], [6, 8],
-              [9, 10], [11, 12], [11, 13], [13, 15],
-              [15, 17], [15, 19], [15, 21],
-              [12, 14], [14, 16], [16, 18], [16, 20], [16, 22],
-              [11, 23], [12, 24], [23, 24],
-              [23, 25], [25, 27], [27, 29], [27, 31],
-              [24, 26], [26, 28], [28, 30], [28, 32]
-            ] as const;
-
-            ctx.strokeStyle = '#00ff00';
-            ctx.lineWidth = 2;
-
-            connections.forEach(([i, j]) => {
-              const start = results.poseLandmarks?.[i];
-              const end = results.poseLandmarks?.[j];
-
-              if (start && end) {
-                ctx.beginPath();
-                ctx.moveTo(start.x * ctx.canvas.width, start.y * ctx.canvas.height);
-                ctx.lineTo(end.x * ctx.canvas.width, end.y * ctx.canvas.height);
-                ctx.stroke();
-              }
-            });
+            drawPoseLandmarks(ctx, results.poseLandmarks);
           }
+
+          setPoseResults(results);
         });
 
-        console.log('Pose detection initialized');
-
         const detectPose = async () => {
-          if (videoRef.current?.readyState === 4 && pose) {
-            await pose.send({ image: videoRef.current });
+          if (videoRef.current?.readyState === 4 && poseRef.current) {
+            await poseRef.current.send({ image: videoRef.current });
           }
-          animationFrameId = requestAnimationFrame(detectPose);
+          animationFrameRef.current = requestAnimationFrame(detectPose);
         };
 
         detectPose();
       } catch (err) {
-        console.error('Pose initialization failed:', err);
         setError(`Error initializing pose detection: ${err instanceof Error ? err.message : String(err)}`);
       }
     };
@@ -189,21 +161,63 @@ const PoseEstimation = () => {
     initializePose();
 
     return () => {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
       }
-      if (pose) {
-        pose.close();
+      if (poseRef.current) {
+        poseRef.current.close();
       }
     };
-  }, [loading, isClient]);
+  }, [loading]);
 
-  if (!isClient) {
-    return null;
-  }
+  const drawPoseLandmarks = useCallback((ctx: CanvasRenderingContext2D, landmarks: PoseLandmark[]) => {
+    // Draw points
+    landmarks.forEach((landmark: PoseLandmark) => {
+      if (landmark.visibility && landmark.visibility > 0.5) {
+        ctx.beginPath();
+        ctx.arc(
+          landmark.x * ctx.canvas.width,
+          landmark.y * ctx.canvas.height,
+          4,
+          0,
+          2 * Math.PI
+        );
+        ctx.fillStyle = '#00ff00';
+        ctx.fill();
+      }
+    });
+
+    // Draw connections
+    const connections = [
+      [0, 1], [1, 2], [2, 3], [3, 7],
+      [0, 4], [4, 5], [5, 6], [6, 8],
+      [9, 10], [11, 12], [11, 13], [13, 15],
+      [15, 17], [15, 19], [15, 21],
+      [12, 14], [14, 16], [16, 18], [16, 20], [16, 22],
+      [11, 23], [12, 24], [23, 24],
+      [23, 25], [25, 27], [27, 29], [27, 31],
+      [24, 26], [26, 28], [28, 30], [28, 32]
+    ] as const;
+
+    ctx.strokeStyle = '#00ff00';
+    ctx.lineWidth = 2;
+
+    connections.forEach(([i, j]) => {
+      const start = landmarks[i];
+      const end = landmarks[j];
+
+      if (start?.visibility && end?.visibility && 
+          start.visibility > 0.5 && end.visibility > 0.5) {
+        ctx.beginPath();
+        ctx.moveTo(start.x * ctx.canvas.width, start.y * ctx.canvas.height);
+        ctx.lineTo(end.x * ctx.canvas.width, end.y * ctx.canvas.height);
+        ctx.stroke();
+      }
+    });
+  }, []);
 
   return (
-    <div className="fixed inset-0 bg-black flex items-center justify-center">
+    <div className="fixed inset-0 bg-white flex items-center justify-center">
       <div className="relative w-[1200px] h-[800px] overflow-hidden">
         <video
           ref={videoRef}
@@ -227,10 +241,24 @@ const PoseEstimation = () => {
             {error}
           </div>
         )}
+        <div className="absolute top-5 right-5 flex gap-4 z-50">
+          <button
+            onClick={toggleNotifications}
+            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+          >
+            {showNotifications ? 'Hide' : 'Show'} Notifications
+          </button>
+          <button
+            onClick={toggleVisualization}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          >
+            {showVisualization ? 'Hide' : 'Show'} Visualization
+          </button>
+        </div>
         {poseResults && (
           <div className="absolute inset-0">
-            <PoseTracking results={poseResults} />
-            <PoseVisualization results={poseResults} />
+            <PoseTracking results={poseResults} showNotifications={showNotifications} />
+            {showVisualization && <PoseVisualization results={poseResults} />}
           </div>
         )}
       </div>

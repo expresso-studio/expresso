@@ -1,3 +1,4 @@
+// PoseTracking.tsx
 "use client"
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -25,10 +26,15 @@ interface Movement {
 
 interface PoseTrackingProps {
   results: PoseResults;
+  showNotifications: boolean;
 }
 
-export const PoseTracking: React.FC<PoseTrackingProps> = ({ results }) => {
+const MOVEMENT_THRESHOLD = 0.025; // Increased threshold for less frequent notifications
+const DEBOUNCE_TIME = 500; // Minimum time between notifications in milliseconds
+
+export const PoseTracking: React.FC<PoseTrackingProps> = ({ results, showNotifications }) => {
   const previousLandmarksRef = useRef<PoseLandmark[]>([]);
+  const lastNotificationTime = useRef<number>(0);
   const [notifications, setNotifications] = useState<Movement[]>([]);
 
   useEffect(() => {
@@ -40,7 +46,12 @@ export const PoseTracking: React.FC<PoseTrackingProps> = ({ results }) => {
       return;
     }
 
-    const checkMovement = (index: number, partName: string) => {
+    const currentTime = Date.now();
+    if (currentTime - lastNotificationTime.current < DEBOUNCE_TIME) {
+      return;
+    }
+
+    const checkSignificantMovement = (index: number, partName: string) => {
       const current = currentLandmarks[index];
       const previous = previousLandmarksRef.current[index];
 
@@ -49,11 +60,12 @@ export const PoseTracking: React.FC<PoseTrackingProps> = ({ results }) => {
         const movementY = current.y - previous.y;
         const magnitude = Math.sqrt(movementX ** 2 + movementY ** 2);
 
-        if (magnitude > 0.015) {
+        if (magnitude > MOVEMENT_THRESHOLD) {
+          lastNotificationTime.current = currentTime;
           return {
             part: partName,
             magnitude,
-            timestamp: Date.now(),
+            timestamp: currentTime,
             coordinates: {
               x: current.x,
               y: current.y
@@ -66,12 +78,12 @@ export const PoseTracking: React.FC<PoseTrackingProps> = ({ results }) => {
 
     const newMovements: Movement[] = [];
 
-    // Check left wrist (index 15 for MediaPipe pose landmarks)
-    const leftMovement = checkMovement(15, "Left Arm");
+    // Check left wrist (index 15)
+    const leftMovement = checkSignificantMovement(15, "Left Arm");
     if (leftMovement) newMovements.push(leftMovement);
 
-    // Check right wrist (index 16 for MediaPipe pose landmarks)
-    const rightMovement = checkMovement(16, "Right Arm");
+    // Check right wrist (index 16)
+    const rightMovement = checkSignificantMovement(16, "Right Arm");
     if (rightMovement) newMovements.push(rightMovement);
 
     if (newMovements.length > 0) {
@@ -81,19 +93,12 @@ export const PoseTracking: React.FC<PoseTrackingProps> = ({ results }) => {
     previousLandmarksRef.current = currentLandmarks;
 
     // Cleanup old notifications after 1.5 seconds
-    const now = Date.now();
-    setNotifications(prev => prev.filter(n => now - n.timestamp < 1500));
+    setNotifications(prev => prev.filter(n => currentTime - n.timestamp < 1500));
   }, [results]);
 
   return (
     <div className="absolute inset-0 pointer-events-none">
-      {/* Debug Info */}
-      <div className="absolute top-4 left-4 bg-black/80 text-white p-3 rounded text-sm z-50">
-        Pose Detection Active
-      </div>
-
-      {/* Movement Notifications */}
-      {notifications.map((notification) => (
+      {showNotifications && notifications.map((notification) => (
         <div
           key={`${notification.part}-${notification.timestamp}`}
           className="absolute transform -translate-x-1/2 -translate-y-1/2 bg-black/90 text-green-400 px-5 py-4 rounded-lg text-lg font-bold z-50 border-2 border-green-400 shadow-lg"
