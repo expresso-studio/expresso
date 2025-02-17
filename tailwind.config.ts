@@ -27,6 +27,7 @@ export default {
         lightCoffee: "#936648",
         lightCaramel: "#C06C35",
         lightBurnt: "#100B09",
+        lightGray: "#ECE5E1",
         darkCream: "#F6F1EF",
         darkLatte: "#B78A6C",
         darkCoffee: "#7A4A2A",
