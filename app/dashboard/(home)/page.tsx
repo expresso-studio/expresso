@@ -9,7 +9,8 @@ import Link from "next/link";
 import ProgressSection from "./progress";
 import PreviousPresentationsSection from "./previous-presentations";
 import CourseList from "../learning/course-list";
-
+import { useAuth0 } from "@auth0/auth0-react";
+import LogoutButton from "@/components/logout-button";
 export default function Page() {
   return (
     <PageFormat breadCrumbs={[]}>
@@ -48,7 +49,7 @@ export default function Page() {
             </Link>
           </Section>
           <Section id="learning" title="Learning">
-            <CourseList short={true} />
+            <>aasdf</>
           </Section>
         </div>
         <div className="flex flex-col gap-16 w-full">

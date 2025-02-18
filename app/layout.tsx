@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 import { atkins } from "./fonts";
+import AuthProvider from "./auth0-provider";
 
 export const metadata: Metadata = {
   title: "expresso",
@@ -49,6 +50,7 @@ export default function RootLayout({
           }}
         />
       </head>
+
       <body className={`${atkins.className} ${atkins.className} antialiased`}>
         <ThemeProvider
           attribute="class"
@@ -56,7 +58,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <AuthProvider>
           {children}
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
