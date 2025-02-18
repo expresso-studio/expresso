@@ -2,20 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+body {
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --radius: 0.5rem;
+    --sidebar-background: 24 30% 96.5%;
+    --sidebar-foreground: 24 20% 26.1%;
+    --sidebar-primary: 24 48.78% 67.84%;
+    --sidebar-primary-foreground: 24 20% 98%;
+    --sidebar-accent: 24 25% 94%;
+    --sidebar-accent-foreground: 24 20% 10%;
+    --sidebar-border: 24 20% 91%;
+    --sidebar-ring: 23.74 56.73% 48.04%;
+    --chart-1: 23.74 56.73% 48.04%;
+    --chart-2: 27 87% 67%;
+    --chart-3: 43 74% 66%;
+    --chart-4: 197 37% 24%;
+    --chart-5: 173 58% 39%;
+  }
+  .dark {
+    --sidebar-background: 24 12.9% 10%;
+    --sidebar-foreground: 24 4.8% 95.9%;
+    --sidebar-primary: 24 48.78% 32.16%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 24 20.7% 15.9%;
+    --sidebar-accent-foreground: 24 4.8% 95.9%;
+    --sidebar-border: 24 20.7% 18%;
+    --sidebar-ring: 24.17 56.73% 51.96%;
+    --chart-1: 24 48.78% 32.16%;
+    --chart-2: 24 48% 55%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 43 65% 60%;
+    --chart-5: 80 60% 45%;
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+.blur {
+  background: linear-gradient(transparent 150px, white);
 }
