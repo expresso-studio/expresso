@@ -4,6 +4,15 @@ export type StatisticType = {
   status: number;
 };
 
+export type CourseType = {
+  id: string;
+  icon: React.ReactNode;
+  color: string;
+  text: string;
+  status: number;
+  nLessons: number;
+};
+
 export type RecordingType = {
   id: string;
   title: string;
