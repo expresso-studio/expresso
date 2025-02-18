@@ -17,8 +17,6 @@ const setupDeepgram = (ws) => {
     model: "nova-3-general",
     filler_words: true,
     language: "en-US",
-    endpointing: false,
-    interim_results: true,
   });
 
   if (keepAlive) clearInterval(keepAlive);

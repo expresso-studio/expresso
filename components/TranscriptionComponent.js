@@ -7,7 +7,6 @@ function TranscriptionComponent() {
   const [transcript, setTranscript] = useState("");
   const [isRecording, setIsRecording] = useState(false);
 
-  // 1. Set up the video stream on mount
   useEffect(() => {
     async function initVideo() {
       try {
@@ -25,7 +24,6 @@ function TranscriptionComponent() {
     initVideo();
   }, []);
 
-  // 2. Set up WebSocket on mount
   useEffect(() => {
     const ws = new WebSocket("ws://localhost:3000");
 
@@ -44,15 +42,13 @@ function TranscriptionComponent() {
         return;
       }
 
-      // Adjust to your server’s JSON structure:
-      // Here, we assume: data.channel.alternatives[0].transcript
       if (
         data &&
         data.channel &&
         data.channel.alternatives &&
         data.channel.alternatives[0].transcript
       ) {
-        setTranscript(data.channel.alternatives[0].transcript);
+        setTranscript((prev) => prev + data.channel.alternatives[0].transcript + " ");
       }
     });
 
@@ -62,29 +58,24 @@ function TranscriptionComponent() {
 
     setSocket(ws);
 
-    // Cleanup WebSocket on unmount
     return () => {
       ws.close();
     };
   }, []);
 
-  // Functions for microphone control
   const getMicrophone = async () => {
-    // Pull audio tracks from the same stream you used for video
-    // This ensures you only open one getUserMedia call which includes audio.
     const videoElement = videoRef.current;
     if (!videoElement || !videoElement.srcObject) {
       throw new Error("No video/audio stream available");
     }
 
     const videoStream = videoElement.srcObject;
-    // Extract audio tracks separately
+
     const audioStream = new MediaStream();
     videoStream.getAudioTracks().forEach((track) => {
       audioStream.addTrack(track);
     });
 
-    // Create the MediaRecorder for audio data
     return new MediaRecorder(audioStream, { mimeType: "audio/webm" });
   };
 
@@ -104,12 +95,10 @@ function TranscriptionComponent() {
       mic.ondataavailable = (event) => {
         console.log("client: microphone data received");
         if (event.data.size > 0 && ws && ws.readyState === WebSocket.OPEN) {
-          // Send the audio blob over the WebSocket
           ws.send(event.data);
         }
       };
 
-      // Start recording; “1000” ms means we’ll get `ondataavailable` every 1 second
       mic.start(1000);
     });
   };
@@ -118,7 +107,6 @@ function TranscriptionComponent() {
     mic.stop();
   };
 
-  // 3. Click handler to toggle microphone recording
   const handleRecordButtonClick = async () => {
     if (!socket) {
       console.error("WebSocket not ready. Cannot record.");
@@ -126,7 +114,6 @@ function TranscriptionComponent() {
     }
 
     if (!microphone) {
-      // Start recording
       try {
         const mic = await getMicrophone();
         await openMicrophone(mic, socket);
@@ -136,7 +123,6 @@ function TranscriptionComponent() {
         console.error("error opening microphone:", error);
       }
     } else {
-      // Stop recording
       try {
         await closeMicrophone(microphone);
       } catch (error) {
@@ -151,7 +137,6 @@ function TranscriptionComponent() {
     <div style={{ maxWidth: "600px", margin: "0 auto" }}>
       <h1>Live Transcription</h1>
 
-      {/* 1. Show the video */}
       <video
         ref={videoRef}
         autoPlay
@@ -159,14 +144,12 @@ function TranscriptionComponent() {
         style={{ width: "100%", maxWidth: "600px" }}
       />
 
-      {/* 2. Button to toggle recording */}
       <div style={{ marginTop: "1rem" }}>
         <button id="record" onClick={handleRecordButtonClick}>
           {isRecording ? "Stop Recording" : "Start Recording"}
         </button>
       </div>
 
-      {/* 3. Show the transcripts returned from server */}
       <div
         id="captions"
         style={{
