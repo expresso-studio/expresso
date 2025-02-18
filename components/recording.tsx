@@ -10,7 +10,6 @@ interface Props extends RecordingType {
 }
 
 const Recording = React.memo<Props>(function Recording({
-  id,
   title,
   thumbnail,
   date,

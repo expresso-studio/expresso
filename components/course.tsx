@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 interface Props extends CourseType {}
 
 const Course = React.memo<Props>(function Course({
-  id,
   icon,
   color,
   text,
