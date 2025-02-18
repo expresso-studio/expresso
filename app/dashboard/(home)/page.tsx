@@ -11,7 +11,6 @@ import PreviousPresentationsSection from "./previous-presentations";
 import CourseList from "../learning/course-list";
 import { useAuth0 } from "@auth0/auth0-react";
 import LogoutButton from "@/components/logout-button";
-
 export default function Page() {
   const { user, isAuthenticated, isLoading } = useAuth0();
   if (isLoading) {
@@ -58,7 +57,7 @@ export default function Page() {
               </Link>
             </Section>
             <Section id="learning" title="Learning">
-              <>aasdf</>
+              <CourseList />
             </Section>
           </div>
           <div className="flex flex-col gap-16 w-full">
