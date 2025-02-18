@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+      "target": "ESNext",
+      "module": "NodeNext",
+      "moduleResolution": "NodeNext",
+      "outDir": "dist",
+      "rootDir": "./",
+      "strict": true,
+      "esModuleInterop": true
+    },
+    "include": ["server.ts", "db.ts"],
+    "exclude": ["node_modules"]
+  }
+  
