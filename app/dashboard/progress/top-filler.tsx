@@ -14,7 +14,7 @@ const TopFiller = React.memo<Props>(function TopFiller({ short }) {
     <div
       className={cn(
         "w-full rounded-lg relative overflow-hidden py-4 px-6",
-        "bg-lightLatte dark:bg-darkLatte"
+        "bg-lightLatte dark:bg-darkCoffee"
       )}
     >
       <div className="pb-4">Most frequent filler words</div>

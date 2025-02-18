@@ -8,7 +8,7 @@ export default function ProgressSection() {
     <Section
       id="progress"
       title="Progress"
-      className="bg-transparent p-0 flex flex-col gap-8"
+      className="bg-transparent dark:bg-transparent p-0 flex flex-col gap-8"
     >
       <WPMChart />
       <WPMChart />
