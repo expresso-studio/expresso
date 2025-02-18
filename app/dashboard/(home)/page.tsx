@@ -11,6 +11,7 @@ import PreviousPresentationsSection from "./previous-presentations";
 import CourseList from "../learning/course-list";
 import { useAuth0 } from "@auth0/auth0-react";
 import LogoutButton from "@/components/logout-button";
+
 export default function Page() {
   const { user, isAuthenticated, isLoading } = useAuth0();
   if (isLoading) {
