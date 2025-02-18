@@ -9,9 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@deepgram/sdk": "^3.11.1",
+    "axios": "^1.7.9",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
     "next": "^15.1.6",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "vosk-browser": "^0.0.8",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
