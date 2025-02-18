@@ -4,9 +4,9 @@
  * Uses refs to manage video and canvas elements, and provides pose detection results
  * to parent component.
  */
-"use client"
+"use client";
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from "react";
 
 interface PoseLandmark {
   x: number;
@@ -33,7 +33,9 @@ interface MediaPipePose {
 
 declare global {
   interface Window {
-    Pose: new (config: { locateFile: (file: string) => string }) => MediaPipePose;
+    Pose: new (config: {
+      locateFile: (file: string) => string;
+    }) => MediaPipePose;
   }
 }
 
@@ -46,7 +48,7 @@ interface EvaluateVideoProps {
 export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
   loading,
   onPoseResults,
-  onError
+  onError,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -69,15 +71,19 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
 
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { 
-            width: 1200, 
+          video: {
+            width: 1200,
             height: 800,
-            frameRate: { ideal: 30 }
-          }
+            frameRate: { ideal: 30 },
+          },
         });
         videoRef.current.srcObject = stream;
       } catch (err) {
-        onError(`Failed to access webcam: ${err instanceof Error ? err.message : String(err)}`);
+        onError(
+          `Failed to access webcam: ${
+            err instanceof Error ? err.message : String(err)
+          }`
+        );
       }
     };
 
@@ -85,8 +91,8 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
 
     return () => {
       if (videoRef.current?.srcObject) {
-        const stream = videoRef.current.srcObject as MediaStream;
-        stream.getTracks().forEach(track => track.stop());
+        const stream = videoRef.current.srcObject as MediaStream; // eslint-disable-line react-hooks/exhaustive-deps
+        stream.getTracks().forEach((track) => track.stop());
       }
     };
   }, [isClient, onError]);
@@ -95,11 +101,14 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
   useEffect(() => {
     if (!isClient || loading || !videoRef.current || !canvasRef.current) return;
 
-    const ctx = canvasRef.current.getContext('2d');
+    const ctx = canvasRef.current.getContext("2d");
     if (!ctx) return;
 
     // Function to draw pose landmarks on canvas
-    const drawPoseLandmarks = (ctx: CanvasRenderingContext2D, landmarks: PoseLandmark[]) => {
+    const drawPoseLandmarks = (
+      ctx: CanvasRenderingContext2D,
+      landmarks: PoseLandmark[]
+    ) => {
       // Draw points for each landmark
       landmarks.forEach((landmark: PoseLandmark) => {
         if (landmark.visibility && landmark.visibility > 0.5) {
@@ -111,32 +120,59 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
             0,
             2 * Math.PI
           );
-          ctx.fillStyle = '#00ff00';
+          ctx.fillStyle = "#00ff00";
           ctx.fill();
         }
       });
 
       // Define and draw connections between landmarks
       const connections = [
-        [0, 1], [1, 2], [2, 3], [3, 7],
-        [0, 4], [4, 5], [5, 6], [6, 8],
-        [9, 10], [11, 12], [11, 13], [13, 15],
-        [15, 17], [15, 19], [15, 21],
-        [12, 14], [14, 16], [16, 18], [16, 20], [16, 22],
-        [11, 23], [12, 24], [23, 24],
-        [23, 25], [25, 27], [27, 29], [27, 31],
-        [24, 26], [26, 28], [28, 30], [28, 32]
+        [0, 1],
+        [1, 2],
+        [2, 3],
+        [3, 7],
+        [0, 4],
+        [4, 5],
+        [5, 6],
+        [6, 8],
+        [9, 10],
+        [11, 12],
+        [11, 13],
+        [13, 15],
+        [15, 17],
+        [15, 19],
+        [15, 21],
+        [12, 14],
+        [14, 16],
+        [16, 18],
+        [16, 20],
+        [16, 22],
+        [11, 23],
+        [12, 24],
+        [23, 24],
+        [23, 25],
+        [25, 27],
+        [27, 29],
+        [27, 31],
+        [24, 26],
+        [26, 28],
+        [28, 30],
+        [28, 32],
       ] as const;
 
-      ctx.strokeStyle = '#00ff00';
+      ctx.strokeStyle = "#00ff00";
       ctx.lineWidth = 2;
 
       connections.forEach(([i, j]) => {
         const start = landmarks[i];
         const end = landmarks[j];
 
-        if (start?.visibility && end?.visibility && 
-            start.visibility > 0.5 && end.visibility > 0.5) {
+        if (
+          start?.visibility &&
+          end?.visibility &&
+          start.visibility > 0.5 &&
+          end.visibility > 0.5
+        ) {
           ctx.beginPath();
           ctx.moveTo(start.x * ctx.canvas.width, start.y * ctx.canvas.height);
           ctx.lineTo(end.x * ctx.canvas.width, end.y * ctx.canvas.height);
@@ -151,7 +187,7 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
         poseRef.current = new window.Pose({
           locateFile: (file: string) => {
             return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
-          }
+          },
         });
 
         // Configure pose detection settings
@@ -159,7 +195,7 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
           modelComplexity: 1,
           smoothLandmarks: true,
           minDetectionConfidence: 0.5,
-          minTrackingConfidence: 0.5
+          minTrackingConfidence: 0.5,
         });
 
         // Handle pose detection results
@@ -170,8 +206,14 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
 
           ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
           if (!videoRef.current) return;
-          
-          ctx.drawImage(videoRef.current, 0, 0, ctx.canvas.width, ctx.canvas.height);
+
+          ctx.drawImage(
+            videoRef.current,
+            0,
+            0,
+            ctx.canvas.width,
+            ctx.canvas.height
+          );
 
           if (results.poseLandmarks) {
             drawPoseLandmarks(ctx, results.poseLandmarks);
@@ -190,7 +232,11 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
 
         detectPose();
       } catch (err) {
-        onError(`Error initializing pose detection: ${err instanceof Error ? err.message : String(err)}`);
+        onError(
+          `Error initializing pose detection: ${
+            err instanceof Error ? err.message : String(err)
+          }`
+        );
       }
     };
 
