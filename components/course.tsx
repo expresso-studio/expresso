@@ -4,7 +4,7 @@ import { outfit } from "@/app/fonts";
 import { CourseType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-interface Props extends CourseType {}
+type Props = CourseType;
 
 const Course = React.memo<Props>(function Course({
   icon,
