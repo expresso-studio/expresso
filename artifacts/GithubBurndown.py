@@ -81,7 +81,7 @@ def create_burndown_chart(owner, repo, token, sprint_days=14):
 if __name__ == "__main__":
     OWNER = "expresso-studio"
     REPO = "expresso"
-    TOKEN = ""
+    TOKEN = "f565577393792cba61dfc9dd3e18e2b44b56e968"
     
     try:
         generated_file = create_burndown_chart(OWNER, REPO, TOKEN)
