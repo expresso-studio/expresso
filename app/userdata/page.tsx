@@ -8,6 +8,10 @@ type User = {
   created_at: string;
 };
 
+function LoadingUsers() {
+  return <div>Loading users...</div>;
+}
+
 async function getUsers() {
   try {
     const res = await fetch('http://localhost:3000/api/users', {

@@ -1,11 +1,13 @@
+// pages/api/ws.ts
 import { WebSocketServer } from 'ws';
-import { setupDeepgram } from '../../../lib/deepgram';
+import { setupDeepgram } from '../../lib/deepgram';
 import type { ListenLiveClient } from '@deepgram/sdk';
 
-// Use a different port than the Next.js server to avoid conflicts
+// Set the port for the WebSocket server.
+// Make sure this port does not conflict with Next.js (which runs on 3000).
 const WS_PORT = Number(process.env.WS_PORT) || 3001;
 
-// Declare the WebSocket server with proper typing
+// This variable holds the WebSocket server instance.
 let wsServer: WebSocketServer | null = null;
 
 if (typeof window === 'undefined' && !wsServer) {
@@ -15,40 +17,55 @@ if (typeof window === 'undefined' && !wsServer) {
   } catch (error) {
     console.error('Error starting WebSocket server:', error);
   }
-
-  wsServer?.on('connection', (socket) => {
+  
+  wsServer.on('connection', (socket) => {
     console.log("ws: client connected");
 
-    let deepgram: ListenLiveClient | null = setupDeepgram(socket);
+    let deepgram: ListenLiveClient | null = null;
+    // Set up Deepgram for this connection.
+    setupDeepgram(socket)
+      .then((client) => {
+        deepgram = client;
+      })
+      .catch((error) => {
+        console.error("Error setting up Deepgram:", error);
+      });
 
     socket.on('message', (message: Buffer) => {
       console.log("ws: client data received");
 
       if (deepgram && deepgram.getReadyState() === 1) {
-        console.log("ws: data sent to deepgram");
-        // Convert Buffer to Uint8Array then to a new ArrayBuffer
+        console.log("ws: sending data to Deepgram");
+        // Convert the Buffer to an ArrayBuffer.
         const uint8Array = new Uint8Array(message.buffer, message.byteOffset, message.byteLength);
-        const arrayBuffer = uint8Array.buffer.slice(uint8Array.byteOffset, uint8Array.byteOffset + uint8Array.byteLength);
+        const arrayBuffer = uint8Array.buffer.slice(
+          uint8Array.byteOffset,
+          uint8Array.byteOffset + uint8Array.byteLength
+        );
         deepgram.send(arrayBuffer);
       } else if (deepgram && deepgram.getReadyState() >= 2) {
-        console.log("ws: retrying connection to deepgram");
-        deepgram.finish();
-        deepgram.removeAllListeners();
-        deepgram = setupDeepgram(socket);
+        console.log("ws: reconnecting Deepgram");
+        deepgram.send(JSON.stringify({ type: 'CloseStream' }));
+        deepgram = null;
+        setupDeepgram(socket)
+          .then((client) => {
+            deepgram = client;
+          })
+          .catch((error) => {
+            console.error("Error reinitializing Deepgram:", error);
+          });
       }
     });
 
     socket.on('close', () => {
       console.log("ws: client disconnected");
-      if (deepgram) {
-        deepgram.finish();
-        deepgram.removeAllListeners();
-        deepgram = null;
-      }
+      deepgram.send(JSON.stringify({ type: 'CloseStream' }));
+      deepgram = null;
     });
   });
 }
 
+// We expose a simple GET endpoint to check if the WebSocket server is running.
 export async function GET(request: Request) {
   if (!wsServer) {
     return new Response(JSON.stringify({ message: 'WebSocket server is not running' }), {
@@ -63,8 +80,4 @@ export async function GET(request: Request) {
   });
 }
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+

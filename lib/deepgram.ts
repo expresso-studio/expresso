@@ -1,10 +1,20 @@
-import { createClient, LiveTranscriptionEvents, ListenLiveClient } from '@deepgram/sdk';
+// src/lib/deepgram.ts
+'use server';
+
 import type { WebSocket } from 'ws';
 import { config } from './config';
+import type { ListenLiveClient} from '@deepgram/sdk';
+const { LiveTranscriptionEvents } = require("@deepgram/sdk");
 
-const deepgramClient = createClient(config.deepgramApiKey);
-
-export const setupDeepgram = (ws: WebSocket): ListenLiveClient => {
+/**
+ * Sets up a Deepgram live transcription client that sends transcription
+ * events over the provided WebSocket.
+ */
+export const setupDeepgram = async (ws: WebSocket): Promise<ListenLiveClient> => {
+  // Dynamically import the Deepgram SDK so that this code only runs on the server.
+  const { createClient } = await import('@deepgram/sdk');
+  const deepgramClient = createClient(config.deepgramApiKey);
+  
   const deepgram = deepgramClient.listen.live({
     model: "nova-3-general",
     filler_words: true,
@@ -33,7 +43,9 @@ export const setupDeepgram = (ws: WebSocket): ListenLiveClient => {
   deepgram.addListener(LiveTranscriptionEvents.Close, () => {
     console.log("deepgram: disconnected");
     clearInterval(keepAlive);
-    deepgram.finish();
+    deepgram.send(JSON.stringify({ type: 'CloseStream' }));
+
+    
   });
 
   deepgram.addListener(LiveTranscriptionEvents.Error, (error) => {
@@ -42,5 +54,3 @@ export const setupDeepgram = (ws: WebSocket): ListenLiveClient => {
 
   return deepgram;
 };
-
-
