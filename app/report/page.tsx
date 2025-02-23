@@ -59,43 +59,43 @@ if (isLoading || loadingReports) {
   if (!isAuthenticated) {
     return <div>Please log in to view your report.</div>;
   }
-
-  return (
-<div className="max-w-3xl mx-auto p-4">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-4">Presentation Reports for {user.nickname}</h1>
-        <button 
-          onClick={() => window.location.href = "/"}
-          className="text-blue-600 hover:underline"
-        >
-          Back to Home
-        </button>
-      </div>
-
-      {reports.length === 0 ? (
-        <p>No presentations evaluated yet.</p>
-      ) : (
-        <div className="space-y-4">
-          {reports.map(report => (
-            <div key={report.presentation_id} className="border p-4 rounded-lg">
-              <h2 className="font-bold">{report.title}</h2>
-              <p className="text-sm text-gray-600 mb-2">
-                Created: {new Date(report.created_at).toLocaleDateString()}
-              </p>
-              
-              <div className="mt-2">
-                {report.metrics.map(metric => (
-                  <div key={metric.metric_id} className="flex justify-between py-1">
-                    <span>{metric.name}:</span>
-                    <span className="font-medium">{metric.score}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
+  if(user){
+    return (
+    <div className="max-w-3xl mx-auto p-4">
+        <div className="mb-6">
+            <h1 className="text-2xl font-bold mb-4">Presentation Reports for {user.nickname}</h1>
+            <button 
+            onClick={() => window.location.href = "/"}
+            className="text-blue-600 hover:underline"
+            >
+            Back to Home
+            </button>
         </div>
-      )}
-    </div>
-  );
-};
 
+        {reports.length === 0 ? (
+            <p>No presentations evaluated yet.</p>
+        ) : (
+            <div className="space-y-4">
+            {reports.map(report => (
+                <div key={report.presentation_id} className="border p-4 rounded-lg">
+                <h2 className="font-bold">{report.title}</h2>
+                <p className="text-sm text-gray-600 mb-2">
+                    Created: {new Date(report.created_at).toLocaleDateString()}
+                </p>
+                
+                <div className="mt-2">
+                    {report.metrics.map(metric => (
+                    <div key={metric.metric_id} className="flex justify-between py-1">
+                        <span>{metric.name}:</span>
+                        <span className="font-medium">{metric.score}</span>
+                    </div>
+                    ))}
+                </div>
+                </div>
+            ))}
+            </div>
+        )}
+        </div>
+    );
+    }
+}
