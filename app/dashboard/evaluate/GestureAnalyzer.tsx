@@ -57,45 +57,42 @@ const GestureAnalyzer = () => {
   if (!isClient) return null;
 
   return (
-    <div className="fixed inset-0 bg-white flex items-center justify-center">
-      <div className="relative w-[1200px] h-[800px] overflow-hidden">
-        <EvaluateVideo
-          loading={loading}
-          onPoseResults={setPoseResults}
-          onError={setError}
-        />
-        
-        {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/70 text-white text-xl">
-            Loading pose detection...
-          </div>
-        )}
-        {error && (
-          <div className="absolute top-5 left-5 p-4 bg-red-100 border border-red-500 rounded text-red-600">
-            {error}
-          </div>
-        )}
-        <div className="absolute top-5 right-5 flex gap-4 z-50">
-          <button
-            onClick={toggleNotifications}
-            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
-          >
-            {showNotifications ? 'Hide' : 'Show'} Notifications
-          </button>
-          <button
-            onClick={toggleVisualization}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-          >
-            {showVisualization ? 'Hide' : 'Show'} Visualization
-          </button>
+    <div className="w-[900px] h-[600px] relative mx-auto my-4 overflow-hidden border">
+      <EvaluateVideo
+        loading={loading}
+        onPoseResults={setPoseResults}
+        onError={setError}
+      />
+      {loading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/70 text-white text-xl">
+          Loading pose detection...
         </div>
-        {poseResults && (
-          <div className="absolute inset-0">
-            <PoseTracking results={poseResults} showNotifications={showNotifications} />
-            {showVisualization && <PoseVisualization results={poseResults} />}
-          </div>
-        )}
+      )}
+      {error && (
+        <div className="absolute top-5 left-5 p-4 bg-red-100 border border-red-500 rounded text-red-600">
+          {error}
+        </div>
+      )}
+      <div className="absolute top-5 right-5 flex gap-4 z-50">
+        <button
+          onClick={toggleNotifications}
+          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+        >
+          {showNotifications ? 'Hide' : 'Show'} Notifications
+        </button>
+        <button
+          onClick={toggleVisualization}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+        >
+          {showVisualization ? 'Hide' : 'Show'} Visualization
+        </button>
       </div>
+      {poseResults && (
+        <div className="absolute inset-0">
+          <PoseTracking results={poseResults} showNotifications={showNotifications} />
+          {showVisualization && <PoseVisualization results={poseResults} />}
+        </div>
+      )}
     </div>
   );
 };
