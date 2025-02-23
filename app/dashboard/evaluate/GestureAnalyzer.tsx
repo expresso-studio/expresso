@@ -57,7 +57,7 @@ const GestureAnalyzer = () => {
   if (!isClient) return null;
 
   return (
-    <div className="w-[1200px] h-[800px] relative mx-auto my-4 overflow-hidden border">
+    <div className="w-[900px] h-[600px] relative mx-auto my-4 overflow-hidden border">
       <EvaluateVideo
         loading={loading}
         onPoseResults={setPoseResults}
