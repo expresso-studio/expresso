@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 
 function TranscriptionComponent() {
   const [socket, setSocket] = useState<WebSocket | null>(null);
