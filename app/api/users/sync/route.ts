@@ -7,7 +7,7 @@ export async function POST(request: Request) {
     const { sub, email, name } = await request.json();
     console.log(sub);
     // Check if the user already exists
-    const existingUser = await query("SELECT * FROM users WHERE id = $1", [sub]);
+    const existingUser = await query("SELECT * FROM expresso_users WHERE id = $1", [sub]);
     if (existingUser.rows.length === 0) {
       // Create new user record
 

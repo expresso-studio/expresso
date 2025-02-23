@@ -27,103 +27,75 @@ export default function ReportPage() {
   const [loadingReports, setLoadingReports] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
-//   React.useEffect(() => {
-//     async function fetchReports() {
-//       try {
-//         // Assumes your API returns report data for the user based on their email or Auth0 id.
-//         const res = await fetch(
-//           `/api/report?user=${encodeURIComponent(user?.sub || "")}`,
-//           { cache: "no-store" }
-//         );
-//         if (!res.ok) {
-//           throw new Error("Failed to fetch report data");
-//         }
-//         const data = await res.json();
-//         setReports(data);
-//     } catch (err: any) {
-//         console.error("Error fetching report data:", err);
-//         setError(err.message || "An error occurred");
-//     } finally {
-//         setLoadingReports(false);
-//     }
-// }
-// if (isAuthenticated && !isLoading) {
-//     fetchReports();
-// }
-// }, [isAuthenticated, isLoading, user]);
+  React.useEffect(() => {
+    async function fetchReports() {
+      try {
+        // Assumes your API returns report data for the user based on their email or Auth0 id.
+        const res = await fetch(
+          `/api/report?user=${encodeURIComponent(user?.sub || "")}`,
+          { cache: "no-store" }
+        );
+        if (!res.ok) {
+          throw new Error("Failed to fetch report data");
+        }
+        const data = await res.json();
+        setReports(data);
+    } catch (err: any) {
+        console.error("Error fetching report data:", err);
+        setError(err.message || "An error occurred");
+    } finally {
+        setLoadingReports(false);
+    }
+}
+if (isAuthenticated && !isLoading) {
+    fetchReports();
+}
+}, [isAuthenticated, isLoading, user]);
 
 if (isLoading || loadingReports) {
     return <div>Loading ...</div>;
-}
+  }
 
-if (!isAuthenticated) {
+  if (!isAuthenticated) {
     return <div>Please log in to view your report.</div>;
-}else{
-    console.log(user);
-}
+  }
 
   return (
-    <PageFormat breadCrumbs={[]}>
-      <div className="flex justify-between items-center">
-        <Heading1 id="report-greeting">
-          Hi {user.nickname}! Here is your Presentation Report
-        </Heading1>
-        <LogoutButton />
-      </div>
-      <Section id="report" title="Your Presentation Data">
-        {error && <p className="text-red-500">{error}</p>}
-        {reports.length === 0 ? (
-          <p>No report data available. Please evaluate a presentation.</p>
-        ) : (
-          <div className="flex flex-col gap-8">
-            {reports.map((report) => (
-              <div
-                key={report.presentation_id}
-                className="p-4 border rounded-lg shadow bg-lightCoffee dark:bg-darkCoffee"
-              >
-                <div className="flex justify-between items-center">
-                  <h2 className="text-xl font-bold">{report.title}</h2>
-                  <p className="text-sm text-gray-500">
-                    {new Date(report.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-                <div className="mt-2">
-                  <p className="font-semibold">Metrics:</p>
-                  {report.metrics.length === 0 ? (
-                    <p>No metrics available.</p>
-                  ) : (
-                    <ul className="list-disc list-inside">
-                      {report.metrics.map((metric) => (
-                        <li key={metric.metric_id} className="mt-1">
-                          <span className="font-medium">{metric.name}:</span>{" "}
-                          {metric.score} (
-                          {new Date(metric.evaluated_at).toLocaleDateString()})
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-                <div className="mt-4">
-                  <Link
-                    href={`/presentation/${report.presentation_id}`}
-                    className="text-blue-500 hover:underline"
-                  >
-                    View Details
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </Section>
-      <div className="mt-8 flex justify-end">
-        <Link
-          href="/dashboard"
-          className="text-lg font-medium text-blue-500 hover:underline"
+<div className="max-w-3xl mx-auto p-4">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold mb-4">Presentation Reports for {user.nickname}</h1>
+        <button 
+          onClick={() => window.location.href = "/"}
+          className="text-blue-600 hover:underline"
         >
-          Back to Dashboard
-        </Link>
+          Back to Home
+        </button>
       </div>
-    </PageFormat>
+
+      {reports.length === 0 ? (
+        <p>No presentations evaluated yet.</p>
+      ) : (
+        <div className="space-y-4">
+          {reports.map(report => (
+            <div key={report.presentation_id} className="border p-4 rounded-lg">
+              <h2 className="font-bold">{report.title}</h2>
+              <p className="text-sm text-gray-600 mb-2">
+                Created: {new Date(report.created_at).toLocaleDateString()}
+              </p>
+              
+              <div className="mt-2">
+                {report.metrics.map(metric => (
+                  <div key={metric.metric_id} className="flex justify-between py-1">
+                    <span>{metric.name}:</span>
+                    <span className="font-medium">{metric.score}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
-}
+};
+
