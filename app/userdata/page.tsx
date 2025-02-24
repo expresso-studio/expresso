@@ -1,11 +1,5 @@
 import { Suspense } from "react";
-
-type User = {
-  id: string;
-  email: string;
-  name: string;
-  created_at: string;
-};
+import { UserType } from "@/lib/types";
 
 function LoadingUsers() {
   return <div>Loading users...</div>;
@@ -29,7 +23,7 @@ async function getUsers() {
 }
 // Main component using React Server Components
 export default async function UsersPage() {
-  const users: User[] = await getUsers();
+  const users: UserType[] = await getUsers();
 
   return (
     <div className="p-4">

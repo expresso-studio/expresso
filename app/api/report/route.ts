@@ -1,6 +1,6 @@
-// app/api/report/route.ts
 import { NextResponse } from "next/server";
 import { query } from "../../../lib/db";
+import { PresentationType } from "@/lib/types";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -20,7 +20,7 @@ export async function GET(request: Request) {
 
     // For each presentation, get its metrics by joining the presentation_metrics and metrics tables
     const reports = await Promise.all(
-      presentations.map(async (presentation: any) => {
+      presentations.map(async (presentation: PresentationType) => {
         const metricsResult = await query(
           `SELECT pm.metric_id, m.name, pm.score, pm.evaluated_at 
            FROM presentation_metrics pm
@@ -43,8 +43,11 @@ export async function GET(request: Request) {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error fetching report data:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

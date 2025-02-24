@@ -1,4 +1,3 @@
-// app/api/users/sync/route.ts
 import { NextResponse } from "next/server";
 import { query } from "../../../../lib/db";
 
@@ -7,7 +6,10 @@ export async function POST(request: Request) {
     const { sub, email, name } = await request.json();
     console.log(sub);
     // Check if the user already exists
-    const existingUser = await query("SELECT * FROM expresso_users WHERE id = $1", [sub]);
+    const existingUser = await query(
+      "SELECT * FROM expresso_users WHERE id = $1",
+      [sub]
+    );
     if (existingUser.rows.length === 0) {
       // Create new user record
 
@@ -16,10 +18,13 @@ export async function POST(request: Request) {
         [sub, email, name]
       );
     }
-    
+
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

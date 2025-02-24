@@ -1,4 +1,3 @@
-// app/auth0-provider.tsx
 "use client";
 
 import { Auth0Provider, User } from "@auth0/auth0-react";
@@ -27,7 +26,7 @@ export default function AuthProvider({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            sub: user.sub,       // Use Auth0's unique user id as the primary key.
+            sub: user.sub, // Use Auth0's unique user id as the primary key.
             email: user.email,
             name: user.nickname,
           }),
@@ -44,7 +43,8 @@ export default function AuthProvider({
       domain={domain}
       clientId={clientId}
       authorizationParams={{
-        redirect_uri: typeof window !== "undefined" ? window.location.origin : "",
+        redirect_uri:
+          typeof window !== "undefined" ? window.location.origin : "",
       }}
       onRedirectCallback={onRedirectCallback}
     >
