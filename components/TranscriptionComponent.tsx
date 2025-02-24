@@ -2,12 +2,17 @@
 
 import React, { useState, useEffect } from "react";
 
-function TranscriptionComponent() {
-  const [socket, setSocket] = useState<WebSocket | null>(null);
-  const [microphone, setMicrophone] = useState<MediaRecorder | null>(null);
-  const [transcript, setTranscript] = useState("");
-  const [isRecording, setIsRecording] = useState(false);
-  const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
+interface TranscriptionComponentProps {
+  onRecordingStateChange: (recording: boolean) => void;
+}
+
+
+function TranscriptionComponent({ onRecordingStateChange }: TranscriptionComponentProps) {
+  const [socket, setSocket] = React.useState<WebSocket | null>(null);
+  const [microphone, setMicrophone] = React.useState<MediaRecorder | null>(null);
+  const [transcript, setTranscript] = React.useState("");
+  const [isRecording, setIsRecording] = React.useState(false);
+  const [audioStream, setAudioStream] = React.useState<MediaStream | null>(null);
 
   useEffect(() => {
     async function initAudio() {
@@ -100,6 +105,7 @@ function TranscriptionComponent() {
         await openMicrophone(mic, socket);
         setMicrophone(mic);
         setIsRecording(true);
+        onRecordingStateChange(true); // Add this
       } catch (error) {
         console.error("Error opening microphone:", error);
       }
@@ -111,6 +117,7 @@ function TranscriptionComponent() {
       }
       setMicrophone(null);
       setIsRecording(false);
+      onRecordingStateChange(false); // Add this
     }
   };
 

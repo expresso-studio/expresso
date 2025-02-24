@@ -10,6 +10,7 @@ import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import EvaluateVideo, { PoseResults } from './EvaluateVideo';
 import { PoseTracking } from './PoseTracking';
+import GestureAnalysis from './GestureAnalysis';
 
 // Dynamically import PoseVisualization to prevent SSR issues
 const PoseVisualization = dynamic(() => import('./PoseVisualization'), {
@@ -17,13 +18,20 @@ const PoseVisualization = dynamic(() => import('./PoseVisualization'), {
 });
 
 
-const GestureAnalyzer = () => {
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [poseResults, setPoseResults] = useState<PoseResults | null>(null);
-  const [showVisualization, setShowVisualization] = useState(true);
-  const [showNotifications, setShowNotifications] = useState(true);
-  const [isClient, setIsClient] = useState(false);
+interface GestureAnalyzerProps {
+  isRecording: boolean;
+}
+
+
+const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({ isRecording }) => {
+  const [error, setError] = React.useState<string | null>(null);
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const [poseResults, setPoseResults] = React.useState<PoseResults | null>(null);
+  const [showVisualization, setShowVisualization] = React.useState(true);
+  const [showNotifications, setShowNotifications] = React.useState(true);
+  const [isClient, setIsClient] = React.useState(false);
+
+
 
   // Set isClient to true once component mounts to prevent hydration mismatch
   useEffect(() => {
@@ -73,7 +81,7 @@ const GestureAnalyzer = () => {
           {error}
         </div>
       )}
-      <div className="absolute top-5 right-5 flex gap-4 z-50">
+      {/* <div className="absolute top-5 right-5 flex gap-4 z-50">
         <button
           onClick={toggleNotifications}
           className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
@@ -86,13 +94,17 @@ const GestureAnalyzer = () => {
         >
           {showVisualization ? 'Hide' : 'Show'} Visualization
         </button>
-      </div>
-      {poseResults && (
-        <div className="absolute inset-0">
-          <PoseTracking results={poseResults} showNotifications={showNotifications} />
-          {showVisualization && <PoseVisualization results={poseResults} />}
-        </div>
-      )}
+      </div> */}
+              {poseResults && (
+          <div className="absolute inset-0">
+            {/* <PoseTracking results={poseResults} showNotifications={showNotifications} /> */}
+            {/* {showVisualization && <PoseVisualization results={poseResults} />} */}
+            <GestureAnalysis 
+              poseLandmarks={poseResults.poseLandmarks}
+              isRecording={isRecording}
+            />
+          </div>
+        )}
     </div>
   );
 };
