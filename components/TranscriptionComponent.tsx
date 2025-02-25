@@ -1,6 +1,18 @@
 "use client"
 
+import { fill } from "@tensorflow/tfjs";
 import React, { useState, useEffect } from "react";
+
+const FILLER_WORDS = new Set([
+  "uh",
+  "um",
+  "mhmm",
+  "mm-mm",
+  "uh-uh",
+  "uh-huh",
+  "nuh-uh",
+  "like",
+]);
 
 function TranscriptionComponent() {
   const [socket, setSocket] = useState<WebSocket | null>(null);
@@ -8,9 +20,11 @@ function TranscriptionComponent() {
   const [transcript, setTranscript] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
+  const [fillerWordCount, setFillerWordCount] = useState(0);
+  const [fillerWordsStats, setFillerWordsStats] = useState<{ [word: string]: number }>({});
 
   useEffect(() => {
-    async function initAudio() {
+    async function initAudio() {  
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         setAudioStream(stream);
@@ -42,9 +56,29 @@ function TranscriptionComponent() {
         data.channel.alternatives &&
         data.channel.alternatives[0].transcript
       ) {
-        setTranscript(
-          (prev) => prev + data.channel.alternatives[0].transcript + " "
-        );
+        const newText = data.channel.alternatives[0].transcript;
+        setTranscript((prev) => prev + newText + " ");
+
+        const words = newText
+        .toLowerCase()
+        .replace(/[.,?!]/g, "")
+        .split(/\s+/);
+        let countInChunk = 0;
+
+        setFillerWordsStats((prevStats) => {
+          const newStats = { ...prevStats };
+          words.forEach((word: string) => {
+            if (FILLER_WORDS.has(word)) {
+              countInChunk += 1;
+              newStats[word] = (newStats[word] || 0) + 1;
+            }
+          });
+          return newStats;
+        });
+
+        setFillerWordCount((prevCount) => prevCount + countInChunk);
+        console.log(fillerWordsStats)
+        console.log(fillerWordCount)
       }
     });
     ws.addEventListener("close", () => {
