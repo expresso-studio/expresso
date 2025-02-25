@@ -5,13 +5,17 @@
  */
 import { Suspense } from 'react';
 import GestureAnalyzer from './GestureAnalyzer';
+import TranscriptionComponent from '@/components/TranscriptionComponent';
 
 export default function Page() {
   return (
-    <div className="relative">
+    <div className="relative flex flex-col items-center">
       <Suspense fallback={<div>Loading...</div>}>
         <GestureAnalyzer />
       </Suspense>
+      <div className="w-full max-w-[1200px] mt-8">
+        <TranscriptionComponent />
+      </div>
     </div>
   );
 }

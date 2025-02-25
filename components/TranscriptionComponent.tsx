@@ -1,27 +1,24 @@
-import React, { useState, useEffect, useRef } from "react";
+"use client"
+
+import React, { useState, useEffect } from "react";
 
 function TranscriptionComponent() {
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [microphone, setMicrophone] = useState<MediaRecorder | null>(null);
   const [transcript, setTranscript] = useState("");
   const [isRecording, setIsRecording] = useState(false);
+  const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
 
   useEffect(() => {
-    async function initVideo() {
+    async function initAudio() {
       try {
-        const videoStream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: true,
-        });
-        if (videoRef.current) {
-          videoRef.current.srcObject = videoStream;
-        }
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        setAudioStream(stream);
       } catch (error) {
-        console.error("Error accessing camera/microphone:", error);
+        console.error("Error accessing microphone:", error);
       }
     }
-    initVideo();
+    initAudio();
   }, []);
 
   useEffect(() => {
@@ -59,16 +56,11 @@ function TranscriptionComponent() {
     };
   }, []);
 
+
   const getMicrophone = async (): Promise<MediaRecorder> => {
-    const videoElement = videoRef.current;
-    if (!videoElement || !videoElement.srcObject) {
-      throw new Error("No video/audio stream available");
+    if (!audioStream) {
+      throw new Error("No audio stream available");
     }
-    const videoStream = videoElement.srcObject as MediaStream;
-    const audioStream = new MediaStream();
-    videoStream.getAudioTracks().forEach((track) => {
-      audioStream.addTrack(track);
-    });
     return new MediaRecorder(audioStream, { mimeType: "audio/webm" });
   };
 
@@ -124,13 +116,6 @@ function TranscriptionComponent() {
 
   return (
     <div style={{ maxWidth: "600px", margin: "0 auto" }}>
-      <h1>Live Transcription</h1>
-      <video
-        ref={videoRef}
-        autoPlay
-        muted
-        style={{ width: "100%", maxWidth: "600px" }}
-      />
       <div style={{ marginTop: "1rem" }}>
         <button id="record" onClick={handleRecordButtonClick}>
           {isRecording ? "Stop Recording" : "Start Recording"}

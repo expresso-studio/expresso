@@ -17,7 +17,7 @@ export const setupDeepgram = async (
   const deepgramClient = createClient(config.deepgramApiKey);
 
   const deepgram = deepgramClient.listen.live({
-    model: "nova-3-general",
+    model: "nova-general",
     filler_words: true,
     language: "en-US",
   });
