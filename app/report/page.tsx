@@ -1,12 +1,7 @@
 "use client";
 
 import * as React from "react";
-import Heading1 from "@/components/heading-1";
-import PageFormat from "@/components/page-format";
-import Section from "@/components/section";
-import Link from "next/link";
 import { useAuth0 } from "@auth0/auth0-react";
-import LogoutButton from "@/components/logout-button";
 
 type ReportItem = {
   presentation_id: string;
