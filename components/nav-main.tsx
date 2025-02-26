@@ -4,7 +4,7 @@ import { ChevronRight } from "lucide-react";
 
 import { usePathname } from "next/navigation";
 
-import { BiCoffee, BiSolidCoffee, BiUser, BiSolidUser } from "react-icons/bi";
+import { BiCoffee, BiSolidCoffee } from "react-icons/bi";
 import { PiPresentation, PiPresentationFill } from "react-icons/pi";
 import { AiOutlineLineChart, AiOutlineAreaChart } from "react-icons/ai";
 import { IoBook, IoBookOutline } from "react-icons/io5";
@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/collapsible";
 import {
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
