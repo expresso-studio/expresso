@@ -19,7 +19,7 @@ export default function AuthProvider({
 
   const onRedirectCallback = (appState?: AppState, user?: User) => {
     console.log(user);
-    router.push(appState?.returnTo || "/dashboard");
+    router.push("/dashboard");
   };
 
   return (
