@@ -13,9 +13,7 @@ export default async function Layout({
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
       <AppSidebar />
-      <SidebarInset className="relative overflow-hidden">
-        {children}
-      </SidebarInset>
+      <SidebarInset className="relative">{children}</SidebarInset>
     </SidebarProvider>
   );
 }

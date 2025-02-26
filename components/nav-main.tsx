@@ -1,12 +1,19 @@
-"use client"
+"use client";
 
-import { ChevronRight, type LucideIcon } from "lucide-react"
+import { ChevronRight } from "lucide-react";
+
+import { usePathname } from "next/navigation";
+
+import { BiCoffee, BiSolidCoffee, BiUser, BiSolidUser } from "react-icons/bi";
+import { PiPresentation, PiPresentationFill } from "react-icons/pi";
+import { AiOutlineLineChart, AiOutlineAreaChart } from "react-icons/ai";
+import { IoBook, IoBookOutline } from "react-icons/io5";
 
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+} from "@/components/ui/collapsible";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -16,25 +23,99 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import React from "react";
+import Link from "next/link";
+import { NavItemType } from "@/lib/types";
 
-export function NavMain({
-  items,
-}: {
-  items: {
-    title: string
-    url: string
-    icon?: LucideIcon
-    isActive?: boolean
-    items?: {
-      title: string
-      url: string
-    }[]
-  }[]
-}) {
+const navMain: NavItemType[] = [
+  {
+    title: "Dashboard",
+    url: "/dashboard",
+    icon: <BiCoffee />,
+    activeIcon: <BiSolidCoffee />,
+    isActive: false,
+  },
+  {
+    title: "Evaluate",
+    url: "/dashboard/evaluate",
+    icon: <PiPresentation />,
+    activeIcon: <PiPresentationFill />,
+    isActive: false,
+  },
+  {
+    title: "Progress",
+    url: "/dashboard/progress",
+    icon: <AiOutlineLineChart />,
+    activeIcon: <AiOutlineAreaChart />,
+    items: [
+      {
+        title: "statistics",
+        url: "/dashboard/progress/statistics",
+      },
+      {
+        title: "learning suggestions",
+        url: "/dashboard/progress/suggestions",
+      },
+      {
+        title: "previous sessions",
+        url: "/dashboard/progress/previous",
+      },
+    ],
+  },
+  {
+    title: "Learning",
+    url: "/dashboard/learning",
+    icon: <IoBookOutline />,
+    activeIcon: <IoBook />,
+  },
+  {
+    title: "User",
+    url: "/dashboard/user",
+    icon: <BiUser />,
+    activeIcon: <BiSolidUser />,
+    items: [
+      {
+        title: "profile",
+        url: "/dashboard/user/profile",
+      },
+      {
+        title: "settings",
+        url: "/dashboard/user/settings",
+      },
+      {
+        title: "account",
+        url: "/dashboard/user/account",
+      },
+    ],
+  },
+];
+
+export function NavMain() {
+  const pathname = usePathname();
+
+  const [items, setItems] = React.useState<NavItemType[]>(navMain);
+  const [path, setPath] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    const pathTitle =
+      pathname.split("/").length < 3 ? "dashboard" : pathname.split("/")[2];
+    setPath(pathTitle);
+  }, [pathname]);
+
+  React.useEffect(() => {
+    setItems(
+      navMain.map((navItem) => {
+        return {
+          ...navItem,
+          isActive: path == navItem.title.toLowerCase(),
+        };
+      })
+    );
+  }, [path]);
+
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <Collapsible
@@ -46,28 +127,41 @@ export function NavMain({
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
                 <SidebarMenuButton tooltip={item.title}>
-                  {item.icon && <item.icon />}
-                  <span>{item.title}</span>
-                  <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  {!item.isActive && (
+                    <a href={item.url} className="text-lg">
+                      {item.icon}
+                    </a>
+                  )}
+                  {item.isActive && item.activeIcon}
+                  {item.items ? (
+                    <span>{item.title}</span>
+                  ) : (
+                    <Link href={item.url}>{item.title}</Link>
+                  )}
+                  {item.items && (
+                    <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  )}
                 </SidebarMenuButton>
               </CollapsibleTrigger>
-              <CollapsibleContent>
-                <SidebarMenuSub>
-                  {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild>
-                        <a href={subItem.url}>
-                          <span>{subItem.title}</span>
-                        </a>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
-                </SidebarMenuSub>
-              </CollapsibleContent>
+              {item.items && (
+                <CollapsibleContent>
+                  <SidebarMenuSub>
+                    {item.items?.map((subItem) => (
+                      <SidebarMenuSubItem key={subItem.title}>
+                        <SidebarMenuSubButton asChild>
+                          <a href={subItem.url}>
+                            <span>{subItem.title}</span>
+                          </a>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    ))}
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+              )}
             </SidebarMenuItem>
           </Collapsible>
         ))}
       </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }

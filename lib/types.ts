@@ -20,3 +20,15 @@ export type RecordingType = {
   date: Date;
   overallScore: number;
 };
+
+export type NavItemType = {
+  title: string;
+  url: string;
+  icon?: React.ReactNode;
+  activeIcon?: React.ReactNode;
+  isActive?: boolean;
+  items?: {
+    title: string;
+    url: string;
+  }[];
+};

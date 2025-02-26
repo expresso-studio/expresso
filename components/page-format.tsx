@@ -33,14 +33,14 @@ const PageFormat = React.memo<Props>(function Heading1({
             <BreadcrumbList>
               {breadCrumbs.map((breadCrumb, i) =>
                 breadCrumb.url ? (
-                  <>
-                    <BreadcrumbItem className="hidden md:block" key={i}>
+                  <div className="flex items-center gap-4" key={i}>
+                    <BreadcrumbItem className="hidden md:block">
                       <BreadcrumbLink href={breadCrumb.url}>
                         {breadCrumb.name}
                       </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator className="hidden md:block" />
-                  </>
+                  </div>
                 ) : (
                   <BreadcrumbPage key={i}>{breadCrumb.name}</BreadcrumbPage>
                 )
