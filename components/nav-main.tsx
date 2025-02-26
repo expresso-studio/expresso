@@ -71,7 +71,7 @@ const navMain: NavItemType[] = [
 ];
 
 export function NavMain() {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? "";
 
   const [items, setItems] = React.useState<NavItemType[]>(navMain);
   const [path, setPath] = React.useState<string | null>(null);
