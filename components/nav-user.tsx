@@ -6,7 +6,10 @@ import {
   ChevronsUpDown,
   CreditCard,
   LogOut,
+  Settings2,
   Sparkles,
+  Speech,
+  User,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -27,6 +30,8 @@ import {
 } from "@/components/ui/sidebar";
 import { useAuth0 } from "@auth0/auth0-react";
 import { PiSpinner } from "react-icons/pi";
+import LogoutButton from "@/components/logout-button";
+import Link from "next/link";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
@@ -85,29 +90,25 @@ export function NavUser() {
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
                 <DropdownMenuItem>
-                  <Sparkles />
-                  Upgrade to Pro
+                  <Speech />
+                  <Link href={"/dashboard/user/profile"}>Speaker profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Settings2 />
+                  <Link href={"/dashboard/user/settings"}>Settings</Link>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
                 <DropdownMenuItem>
-                  <BadgeCheck />
-                  Account
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <CreditCard />
-                  Billing
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Bell />
-                  Notifications
+                  <User />
+                  <Link href={"/dashboard/user/account"}>Account</Link>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
                 <LogOut />
-                Log out
+                <LogoutButton />
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

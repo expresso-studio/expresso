@@ -69,26 +69,6 @@ const navMain: NavItemType[] = [
     icon: <IoBookOutline />,
     activeIcon: <IoBook />,
   },
-  {
-    title: "User",
-    url: "/dashboard/user",
-    icon: <BiUser />,
-    activeIcon: <BiSolidUser />,
-    items: [
-      {
-        title: "profile",
-        url: "/dashboard/user/profile",
-      },
-      {
-        title: "settings",
-        url: "/dashboard/user/settings",
-      },
-      {
-        title: "account",
-        url: "/dashboard/user/account",
-      },
-    ],
-  },
 ];
 
 export function NavMain() {
