@@ -17,9 +17,25 @@ export default function AuthProvider({
 }) {
   const router = useRouter();
 
-  const onRedirectCallback = (appState?: AppState, user?: User) => {
-    console.log(user);
-    router.push("/dashboard");
+  // After redirect, sync user with our database.
+  const onRedirectCallback = async (appState?: AppState, user?: User) => {
+    if (user) {
+      console.log(user.sub);
+      try {
+        await fetch("/api/users/sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sub: user.sub, // Use Auth0's unique user id as the primary key.
+            email: user.email,
+            name: user.nickname,
+          }),
+        });
+      } catch (error) {
+        console.error("Error syncing user", error);
+      }
+    }
+    router.push(appState?.returnTo || "/dashboard");
   };
 
   return (

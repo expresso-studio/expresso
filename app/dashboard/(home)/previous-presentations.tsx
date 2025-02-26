@@ -1,5 +1,6 @@
 import Recording from "@/components/recording";
 import Section from "@/components/section";
+import Link from "next/link";
 
 export default function PreviousPresentationsSection() {
   return (
@@ -7,13 +8,15 @@ export default function PreviousPresentationsSection() {
       <div className="flex justify-end">
         <div className="overflow-x-scroll">
           <div className="flex items-center gap-4">
+          <Link href={"/report"} className=" overflow-hidden">
             <Recording
               id={""}
-              title={"CSCE 482 Demo"}
+              title={"PUSH ME"}
               thumbnail={"/example-thumbnail.png"}
               date={new Date()}
               overallScore={0}
             />
+            </Link>
             <Recording
               id={""}
               title={"CSCE 482 Demo"}

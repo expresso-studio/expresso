@@ -21,6 +21,39 @@ export type RecordingType = {
   overallScore: number;
 };
 
+export type PresentationType = {
+  id: string;
+  title: string;
+  video_url: string;
+  created_at: string;
+  metrics: {
+    metric_id: number;
+    name: string;
+    score: number;
+    evaluated_at: string;
+  }[];
+};
+
+export type ReportItemType = {
+  presentation_id: string;
+  title: string;
+  video_url: string;
+  created_at: string;
+  metrics: {
+    metric_id: number;
+    name: string;
+    score: number;
+    evaluated_at: string;
+  }[];
+};
+
+export type UserType = {
+  id: string;
+  email: string;
+  name: string;
+  created_at: string;
+};
+
 export type NavItemType = {
   title: string;
   url: string;
