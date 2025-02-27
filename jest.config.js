@@ -1,4 +1,4 @@
 module.exports = {
     testEnvironment: "jsdom",
-    setupFilesAfterEnv: ["Expresso/jest.setup.js"],
+    setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
 };
