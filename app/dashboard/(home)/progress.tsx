@@ -8,6 +8,7 @@ export default function ProgressSection() {
     <Section
       id="progress"
       title="Progress"
+      link={"/dashboard/progress"}
       className="bg-transparent dark:bg-transparent p-0 flex flex-col gap-8"
     >
       <WPMChart />

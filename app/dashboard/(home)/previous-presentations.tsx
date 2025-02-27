@@ -4,18 +4,23 @@ import Link from "next/link";
 
 export default function PreviousPresentationsSection() {
   return (
-    <Section id="previous" title="Previous presentations" className="pr-0">
+    <Section
+      id="previous"
+      link={"/dashboard/progress/previous"}
+      title="Previous presentations"
+      className="pr-0"
+    >
       <div className="flex justify-end">
         <div className="overflow-x-scroll">
           <div className="flex items-center gap-4">
-          <Link href={"/report"} className=" overflow-hidden">
-            <Recording
-              id={""}
-              title={"PUSH ME"}
-              thumbnail={"/example-thumbnail.png"}
-              date={new Date()}
-              overallScore={0}
-            />
+            <Link href={"/report"} className=" overflow-hidden">
+              <Recording
+                id={""}
+                title={"PUSH ME"}
+                thumbnail={"/example-thumbnail.png"}
+                date={new Date()}
+                overallScore={0}
+              />
             </Link>
             <Recording
               id={""}
