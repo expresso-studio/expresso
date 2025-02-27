@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 
 interface TranscriptionComponentProps {
   onRecordingStateChange: (recording: boolean) => void;

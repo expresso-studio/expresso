@@ -6,16 +6,16 @@
  */
 "use client"
 
-import React, { useEffect, useState } from 'react';
-import dynamic from 'next/dynamic';
+import React, { useEffect } from 'react';
+//import dynamic from 'next/dynamic';
 import EvaluateVideo, { PoseResults } from './EvaluateVideo';
-import { PoseTracking } from './PoseTracking';
+//import { PoseTracking } from './PoseTracking';
 import GestureAnalysis from './GestureAnalysis';
 
 // Dynamically import PoseVisualization to prevent SSR issues
-const PoseVisualization = dynamic(() => import('./PoseVisualization'), {
-  ssr: false
-});
+// const PoseVisualization = dynamic(() => import('./PoseVisualization'), {
+//   ssr: false
+// });
 
 
 interface GestureAnalyzerProps {
@@ -27,8 +27,8 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({ isRecording }) => {
   const [error, setError] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [poseResults, setPoseResults] = React.useState<PoseResults | null>(null);
-  const [showVisualization, setShowVisualization] = React.useState(true);
-  const [showNotifications, setShowNotifications] = React.useState(true);
+  // const [showVisualization, setShowVisualization] = React.useState(true);
+  // const [showNotifications, setShowNotifications] = React.useState(true);
   const [isClient, setIsClient] = React.useState(false);
 
 
@@ -38,8 +38,8 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({ isRecording }) => {
     setIsClient(true);
   }, []);
 
-  const toggleVisualization = () => setShowVisualization(prev => !prev);
-  const toggleNotifications = () => setShowNotifications(prev => !prev);
+  // const toggleVisualization = () => setShowVisualization(prev => !prev);
+  // const toggleNotifications = () => setShowNotifications(prev => !prev);
 
   // Initialize MediaPipe script
   useEffect(() => {
