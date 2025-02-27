@@ -63,22 +63,25 @@ function TranscriptionComponent() {
         .toLowerCase()
         .replace(/[.,?!]/g, "")
         .split(/\s+/);
-        let countInChunk = 0;
-
+        
         setFillerWordsStats((prevStats) => {
           const newStats = { ...prevStats };
           words.forEach((word: string) => {
             if (FILLER_WORDS.has(word)) {
-              countInChunk += 1;
               newStats[word] = (newStats[word] || 0) + 1;
             }
           });
           return newStats;
         });
+        
+        let countInChunk = 0;
+        words.forEach((word: string) => {
+          if (FILLER_WORDS.has(word)){
+            countInChunk += 1;
+          }
+        });
 
         setFillerWordCount((prevCount) => prevCount + countInChunk);
-        console.log(fillerWordsStats)
-        console.log(fillerWordCount)
       }
     });
     ws.addEventListener("close", () => {
@@ -120,6 +123,8 @@ function TranscriptionComponent() {
   };
 
   const closeMicrophone = async (mic: MediaRecorder) => {
+    console.log(fillerWordCount)
+    console.log(fillerWordsStats)
     mic.stop();
   };
 
