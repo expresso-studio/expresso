@@ -1,9 +1,9 @@
 name: Run Jest Tests
 on:
   push:
-    branches: [ main ]
+    branches: [ main, testing ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, testing ]
 
 jobs:
   test:
