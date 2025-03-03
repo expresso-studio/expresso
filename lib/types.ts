@@ -53,3 +53,15 @@ export type UserType = {
   name: string;
   created_at: string;
 };
+
+export type NavItemType = {
+  title: string;
+  url: string;
+  icon?: React.ReactNode;
+  activeIcon?: React.ReactNode;
+  isActive?: boolean;
+  items?: {
+    title: string;
+    url: string;
+  }[];
+};
