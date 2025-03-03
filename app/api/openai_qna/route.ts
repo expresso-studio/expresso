@@ -13,6 +13,7 @@ export async function GET() {
     // console.log("questions:", questions);
     return NextResponse.json({ questions });
   } catch (error) {
+    console.error("Error fetching QnA:", error);
     return NextResponse.json({ error: "Failed to fetch QnA." }, { status: 500 });
   }
 }
