@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 
 export default function Page() {
 
-    const[questions, setQuestion] = useState([]);
+    const[questions, setQuestions] = useState([]);
     const[currentIndex, setCurrentIndex] = useState(0);
 
     useEffect(() => {
@@ -17,28 +17,38 @@ export default function Page() {
                 const response = await fetch("/api/openai_qna");
                 const data = await response.json();
                 if(response.ok) {
-                    setQuestion(data.questions || "no question generated.");
+                    // setQuestions(data.questions || []);
+                    setQuestions(Array.isArray(data.questions) ? data.questions : []);
                 } else {
-                    setQuestion("Failed to fetch question.");
+                    setQuestions([]);
                 }
             } catch (error) {
                 console.error("Error fetching question: ", error);
-                setQuestion("Error fetching question.");
+                setQuestions([]);
             }
         }
 
         fetchQuestions();
     }, []);
 
+    const prevQuestion = () => {
+        setCurrentIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : prevIndex));
+    };
+
     const nextQuestion = () => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % questions.length);
+        setCurrentIndex((prevIndex) => (prevIndex < questions.length - 1 ? prevIndex + 1 : prevIndex));
     };
 
     return (
     <PageFormat breadCrumbs={[{ name: "qna" }]}>
         <Heading1 id="qna">qna</Heading1>
         <p>Question: {questions[currentIndex]}</p>
-        <Button onClick={nextQuestion}>Next Question</Button>
+        <Button onClick={prevQuestion} disabled = {currentIndex <= 0}>
+            Last Question
+        </Button>
+        <Button onClick={nextQuestion} disabled = {currentIndex >= questions.length - 1}>
+            Next Question
+        </Button>
     </PageFormat>
     );
 }
