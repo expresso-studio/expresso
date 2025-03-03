@@ -126,7 +126,7 @@ function TranscriptionComponent() {
     mic.stop();
 
      try {
-      const response = await fetch("/api/storereport", {
+      const response = await fetch("/api/fillerwords", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
