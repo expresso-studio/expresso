@@ -123,9 +123,23 @@ function TranscriptionComponent() {
   };
 
   const closeMicrophone = async (mic: MediaRecorder) => {
-    console.log(fillerWordCount)
-    console.log(fillerWordsStats)
     mic.stop();
+
+     try {
+      const response = await fetch("/api/storereport", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user: "example_user_id", // TODO: Fix with actual user id
+          fillerWordCount: fillerWordCount,
+          fillerWordsStats: fillerWordsStats,
+        }),
+      });
+      const data = await response.json();
+      console.log("Filler stats posted successfully:", data);
+    } catch (error) {
+      console.error("Error posting filler stats:", error);
+    }
   };
 
   const handleRecordButtonClick = async () => {
