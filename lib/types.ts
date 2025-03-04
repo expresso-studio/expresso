@@ -44,7 +44,7 @@ export type ReportItemType = {
     name: string;
     score: number;
     evaluated_at: string;
-  }[];
+  };
 };
 
 export type UserType = {
