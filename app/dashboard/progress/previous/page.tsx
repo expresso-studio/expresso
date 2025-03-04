@@ -27,9 +27,8 @@ export default function Page() {
   const [dateRange, setDateRange] = React.useState("all");
   const [scoreRange, setScoreRange] = React.useState({ min: "", max: "" });
   const [sortBy, setSortBy] = React.useState("date-desc");
-  const [filteredReports, setFilteredReports] = React.useState<
-    ReportItemType[]
-  >([]);
+  const [filteredReports, setFilteredReports] =
+    React.useState<ReportItemType[]>(reports);
 
   // Add filter logic
   const applyFilters = () => {
@@ -98,13 +97,6 @@ export default function Page() {
     setFilteredReports(filtered);
   };
 
-  // Update filtered reports when initial reports load
-  React.useEffect(() => {
-    if (reports.length > 0) {
-      applyFilters();
-    }
-  }, [reports, applyFilters]);
-
   const loadingDelays = [0, 75, 100, 200, 400];
 
   React.useEffect(() => {
@@ -120,6 +112,7 @@ export default function Page() {
         }
         const data = await res.json();
         setReports(data);
+        setFilteredReports(data);
       } catch (err) {
         console.error("Error fetching report data:", err);
       } finally {
