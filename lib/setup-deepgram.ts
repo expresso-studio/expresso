@@ -1,5 +1,3 @@
-"use server";
-
 import type { WebSocket } from "ws";
 import { config } from "./config";
 import type { ListenLiveClient } from "@deepgram/sdk";
@@ -20,35 +18,53 @@ export const setupDeepgram = async (
     model: "nova-general",
     filler_words: true,
     language: "en-US",
+    smart_format: true,
+    punctuate: true,
   });
 
-  const keepAlive = setInterval(() => {
-    console.log("deepgram: keepalive");
-    deepgram.keepAlive();
-  }, 10 * 1000);
+  // Set up all event listeners BEFORE connection happens
+  deepgram.addListener(LiveTranscriptionEvents.Transcript, (data) => {
+    console.log("deepgram: transcript received", data.channel?.alternatives?.[0]?.transcript || "");
+    if (ws.readyState === 1) { // WebSocket.OPEN = 1
+      ws.send(JSON.stringify(data));
+    }
+  });
+
+  deepgram.addListener(LiveTranscriptionEvents.Metadata, (data) => {
+    console.log("deepgram: metadata received");
+    if (ws.readyState === 1) {
+      ws.send(JSON.stringify({ metadata: data }));
+    }
+  });
 
   deepgram.addListener(LiveTranscriptionEvents.Open, () => {
     console.log("deepgram: connected");
-
-    deepgram.addListener(LiveTranscriptionEvents.Transcript, (data) => {
-      console.log("deepgram: transcript received");
-      ws.send(JSON.stringify(data));
-    });
-
-    deepgram.addListener(LiveTranscriptionEvents.Metadata, (data) => {
-      console.log("deepgram: metadata received");
-      ws.send(JSON.stringify({ metadata: data }));
-    });
   });
 
   deepgram.addListener(LiveTranscriptionEvents.Close, () => {
     console.log("deepgram: disconnected");
     clearInterval(keepAlive);
-    deepgram.send(JSON.stringify({ type: "CloseStream" }));
   });
 
   deepgram.addListener(LiveTranscriptionEvents.Error, (error) => {
     console.error("deepgram: error received", error);
+    // Send error to client
+    if (ws.readyState === 1) {
+      ws.send(JSON.stringify({ error: error.message }));
+    }
+  });
+  
+  // Set up keepalive after all listeners are established
+  const keepAlive = setInterval(() => {
+    console.log("deepgram: keepalive");
+    deepgram.keepAlive();
+  }, 10 * 1000);
+
+  // Handle client WebSocket closure
+  ws.on("close", () => {
+    console.log("Client WebSocket closed, cleaning up Deepgram connection");
+    clearInterval(keepAlive);
+    deepgram.send(JSON.stringify({ type: "CloseStream" }));
   });
 
   return deepgram;

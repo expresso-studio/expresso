@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from "react";
 
@@ -22,11 +22,13 @@ function TranscriptionComponent() {
   }, []);
 
   useEffect(() => {
-    // Connect to our WebSocket server on port 3001.
-    const ws = new WebSocket("ws://localhost:3001");
+    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+    const ws = new WebSocket(`${protocol}://${window.location.host}/api/websocket`);
+
     ws.addEventListener("open", () => {
       console.log("client: connected to server");
     });
+
     ws.addEventListener("message", (event) => {
       if (!event.data) return;
       let data;
@@ -47,15 +49,16 @@ function TranscriptionComponent() {
         );
       }
     });
+
     ws.addEventListener("close", () => {
       console.log("client: disconnected from server");
     });
+
     setSocket(ws);
     return () => {
       ws.close();
     };
   }, []);
-
 
   const getMicrophone = async (): Promise<MediaRecorder> => {
     if (!audioStream) {
