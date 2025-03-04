@@ -17,7 +17,7 @@ export type RecordingType = {
   id: string;
   title: string;
   thumbnail: string;
-  date: Date;
+  created_at: string;
   overallScore: number;
 };
 
