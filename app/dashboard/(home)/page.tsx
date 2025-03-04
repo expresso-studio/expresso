@@ -22,8 +22,11 @@ export default function Page() {
       <PageFormat breadCrumbs={[]}>
         <div className="flex justify-between">
           <Heading1 id="greeting">
-            Hi {user.nickname}
-            <span className="text-lightCoffee dark:text-darkCoffee"></span>!
+            Hi{" "}
+            <span className="text-lightCoffee dark:text-darkCoffee">
+              {user.nickname}
+            </span>
+            !
           </Heading1>
           <LogoutButton />
         </div>
@@ -32,6 +35,7 @@ export default function Page() {
             <Section
               id="evaluate"
               title="Jump on in!"
+              link={"/dashboard/evaluate"}
               className="sm:min-w-[300px] bg-lightCoffee dark:bg-darkCoffee group cursor-pointer"
             >
               <Link href={"/dashboard/evaluate"} className=" overflow-hidden">
@@ -57,7 +61,11 @@ export default function Page() {
                 </div>
               </Link>
             </Section>
-            <Section id="learning" title="Learning">
+            <Section
+              id="learning"
+              link={"/dashboard/learning"}
+              title="Learning"
+            >
               <CourseList />
             </Section>
           </div>
