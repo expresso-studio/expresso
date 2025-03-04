@@ -23,6 +23,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "components/TranscriptionComponent.js", "server.ts", "jest.setup.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "components/TranscriptionComponent.js", "server.ts", "jest.setup.ts", "__tests__/components/nav-main.test.jsx", "jest.config.js"],
   "exclude": ["node_modules"]
 }
