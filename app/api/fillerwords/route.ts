@@ -9,7 +9,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "User id is required" }, { status: 400 });
     }
 
-    // TODO: KEVIN MODIFY QUERY HERE
     const result = await query(
       `INSERT INTO filler_stats (user_id, filler_word_count, filler_words_stats)
        VALUES ($1, $2, $3) RETURNING *`,

@@ -129,7 +129,7 @@ function TranscriptionComponent() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          user: "example_user_id", // TODO: Fix with actual user id
+          user: "auth0|67baac4182c20de0c41b0395", // TODO: Fix with actual user id
           fillerWordCount: fillerWordCount,
           fillerWordsStats: fillerWordsStats,
         }),
