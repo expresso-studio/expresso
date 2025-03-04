@@ -2,6 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 
+interface TranscriptionComponentProps {
+  onRecordingStateChange: (recording: boolean) => void;
+  onTranscriptUpdate?: (transcript: string) => void; // Add this prop
+}
+
 const FILLER_WORDS = new Set([
   "uh",
   "um",
@@ -13,7 +18,10 @@ const FILLER_WORDS = new Set([
   "like",
 ]);
 
-function TranscriptionComponent() {
+function TranscriptionComponent({ 
+  onRecordingStateChange, 
+  onTranscriptUpdate 
+}: TranscriptionComponentProps) {
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [microphone, setMicrophone] = useState<MediaRecorder | null>(null);
   const [transcript, setTranscript] = useState("");
@@ -33,6 +41,13 @@ function TranscriptionComponent() {
     }
     initAudio();
   }, []);
+
+  // Update the parent component with the transcript when it changes
+  useEffect(() => {
+    if (onTranscriptUpdate) {
+      onTranscriptUpdate(transcript);
+    }
+  }, [transcript, onTranscriptUpdate]);
 
   useEffect(() => {
     // Connect to our WebSocket server on port 3001.
@@ -91,7 +106,6 @@ function TranscriptionComponent() {
       ws.close();
     };
   }, []);
-
 
   const getMicrophone = async (): Promise<MediaRecorder> => {
     if (!audioStream) {
@@ -152,6 +166,7 @@ function TranscriptionComponent() {
         await openMicrophone(mic, socket);
         setMicrophone(mic);
         setIsRecording(true);
+        onRecordingStateChange(true);
       } catch (error) {
         console.error("Error opening microphone:", error);
       }
@@ -163,27 +178,34 @@ function TranscriptionComponent() {
       }
       setMicrophone(null);
       setIsRecording(false);
+      onRecordingStateChange(false);
     }
   };
 
+  // const handleClearTranscript = () => {
+  //   setTranscript("");
+  // };
+
   return (
-    <div style={{ maxWidth: "600px", margin: "0 auto" }}>
-      <div style={{ marginTop: "1rem" }}>
-        <button id="record" onClick={handleRecordButtonClick}>
+    <div className="w-full max-w-[600px] mx-auto">
+      <div className="mt-4 flex justify-between items-center">
+        <button 
+          onClick={handleRecordButtonClick}
+          className={`px-4 py-2 rounded ${
+            isRecording ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'
+          } text-white transition-colors`}
+        >
           {isRecording ? "Stop Recording" : "Start Recording"}
         </button>
+        
+       
       </div>
-      <div
-        id="captions"
-        style={{
-          marginTop: "1rem",
-          padding: "1rem",
-          border: "1px solid #ccc",
-          minHeight: "3rem",
-        }}
-      >
-        <strong>Transcript:</strong>
-        <p>{transcript}</p>
+      
+      <div className="mt-4 p-4 border border-gray-300 rounded-lg min-h-[100px] bg-white dark:bg-gray-800 dark:border-gray-700">
+        <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Transcript:</h3>
+        <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+          {transcript || "Speech will appear here..."}
+        </p>
       </div>
     </div>
   );
