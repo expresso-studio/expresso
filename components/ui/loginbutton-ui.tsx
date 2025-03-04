@@ -17,7 +17,7 @@ export default function LoginButtonUI({
         <button
         onClick={onClick}
         disabled={disabled}
-        className={`px-8 py-4 rounded-lg text-xl transition 
+        className={`px-6 py-4 rounded-lg text-xl transition 
             ${disabled ? "bg-gray-400 cursor-not-allowed" : "bg-[#DFCBBF] hover:bg-[#C4A99E]"} 
             text-black ${className}`}
         >
