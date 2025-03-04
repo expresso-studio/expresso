@@ -1,15 +1,37 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { outfit } from "@/app/fonts";
-
-// TODO: remove dummy values
-const fillerWords: string[] = ["um", "like", "but"];
+import { useEffect, useState } from "react";
 
 interface Props {
   short?: boolean;
 }
 
 const TopFiller = React.memo<Props>(function TopFiller({ short }) {
+  const [fillerWords, setFillerWords] = useState<string[]>(["um", "like", "but"]);
+
+  useEffect(() => {
+    const fetchTopFillerWords = async () => {
+      try {
+        const response = await fetch("/api/fillerwords/top");
+        if (!response.ok) {
+          throw new Error("Failed to fetch filler words");
+        }
+        // Assume the API returns JSON in the format: { fillerWords: string[] }
+        const data = await response.json();
+        const words = data.fillerWords.map(
+          (item: { filler_word: string; total_count: string }) => item.filler_word
+        );
+        console.log(words);
+        setFillerWords(words.slice(0, 3));
+      } catch (error) {
+        console.error("Error fetching filler words:", error);
+      }
+    };
+
+    fetchTopFillerWords();
+  }, []);
+
   return (
     <div
       className={cn(
