@@ -1,24 +1,37 @@
 "use client"
 
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 interface TranscriptionComponentProps {
   onRecordingStateChange: (recording: boolean) => void;
   onTranscriptUpdate?: (transcript: string) => void; // Add this prop
 }
 
+const FILLER_WORDS = new Set([
+  "uh",
+  "um",
+  "mhmm",
+  "mm-mm",
+  "uh-uh",
+  "uh-huh",
+  "nuh-uh",
+  "like",
+]);
+
 function TranscriptionComponent({ 
   onRecordingStateChange, 
   onTranscriptUpdate 
 }: TranscriptionComponentProps) {
-  const [socket, setSocket] = React.useState<WebSocket | null>(null);
-  const [microphone, setMicrophone] = React.useState<MediaRecorder | null>(null);
-  const [transcript, setTranscript] = React.useState("");
-  const [isRecording, setIsRecording] = React.useState(false);
-  const [audioStream, setAudioStream] = React.useState<MediaStream | null>(null);
+  const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [microphone, setMicrophone] = useState<MediaRecorder | null>(null);
+  const [transcript, setTranscript] = useState("");
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
+  const [fillerWordCount, setFillerWordCount] = useState(0);
+  const [fillerWordsStats, setFillerWordsStats] = useState<{ [word: string]: number }>({});
 
   useEffect(() => {
-    async function initAudio() {
+    async function initAudio() {  
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         setAudioStream(stream);
@@ -57,9 +70,32 @@ function TranscriptionComponent({
         data.channel.alternatives &&
         data.channel.alternatives[0].transcript
       ) {
-        setTranscript(
-          (prev) => prev + data.channel.alternatives[0].transcript + " "
-        );
+        const newText = data.channel.alternatives[0].transcript;
+        setTranscript((prev) => prev + newText + " ");
+
+        const words = newText
+        .toLowerCase()
+        .replace(/[.,?!]/g, "")
+        .split(/\s+/);
+        
+        setFillerWordsStats((prevStats) => {
+          const newStats = { ...prevStats };
+          words.forEach((word: string) => {
+            if (FILLER_WORDS.has(word)) {
+              newStats[word] = (newStats[word] || 0) + 1;
+            }
+          });
+          return newStats;
+        });
+        
+        let countInChunk = 0;
+        words.forEach((word: string) => {
+          if (FILLER_WORDS.has(word)){
+            countInChunk += 1;
+          }
+        });
+
+        setFillerWordCount((prevCount) => prevCount + countInChunk);
       }
     });
     ws.addEventListener("close", () => {
@@ -101,6 +137,22 @@ function TranscriptionComponent({
 
   const closeMicrophone = async (mic: MediaRecorder) => {
     mic.stop();
+
+     try {
+      const response = await fetch("/api/fillerwords", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user: "auth0|67baac4182c20de0c41b0395", // TODO: Fix with actual user id
+          fillerWordCount: fillerWordCount,
+          fillerWordsStats: fillerWordsStats,
+        }),
+      });
+      const data = await response.json();
+      console.log("Filler stats posted successfully:", data);
+    } catch (error) {
+      console.error("Error posting filler stats:", error);
+    }
   };
 
   const handleRecordButtonClick = async () => {
