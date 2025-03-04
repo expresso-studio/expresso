@@ -3,7 +3,6 @@
 import * as React from "react";
 import Recording from "@/components/recording";
 import Section from "@/components/section";
-import Link from "next/link";
 import { useAuth0 } from "@auth0/auth0-react";
 import { ReportItemType } from "@/lib/types";
 import { cn } from "@/lib/utils";

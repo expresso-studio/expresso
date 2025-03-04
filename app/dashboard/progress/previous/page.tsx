@@ -103,7 +103,7 @@ export default function Page() {
     if (reports.length > 0) {
       applyFilters();
     }
-  }, [reports]);
+  }, [reports, applyFilters]);
 
   const loadingDelays = [0, 75, 100, 200, 400];
 
@@ -224,8 +224,9 @@ export default function Page() {
         <div className="w-full">
           {isLoading || loadingReports ? (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {loadingDelays.map((delay) => (
+              {loadingDelays.map((delay, i) => (
                 <Recording
+                  key={i}
                   id={""}
                   title={"blank"}
                   thumbnail={"/example-thumbnail.png"}
