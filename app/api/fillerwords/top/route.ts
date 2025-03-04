@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { query } from "../../../../lib/db";
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     // Aggregate filler word counts by iterating over the JSONB object.
     // The query uses jsonb_each to decompose the JSON object into key/value pairs,
