@@ -7,15 +7,48 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { ReportItemType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
+// A simple modal component that renders its children as an overlay.
+const Modal: React.FC<{ onClose: () => void; children: React.ReactNode }> = ({ onClose, children }) => {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="relative bg-white p-4 rounded shadow-lg max-w-full w-[90%]">
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+        >
+          X
+        </button>
+        {children}
+      </div>
+    </div>
+  );
+};
+
+const VideoPlayer: React.FC<{ videoUrl: string; title: string }> = ({
+  videoUrl,
+  title,
+}) => {
+  return (
+    <div>
+      <h2 className="text-xl font-bold mb-2">{title}</h2>
+      <video className="w-full" controls>
+        <source src={videoUrl} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  );
+};
+
 export default function PreviousPresentationsSection() {
   const { user, isAuthenticated, isLoading } = useAuth0();
   const [reports, setReports] = React.useState<ReportItemType[]>([]);
   const [loadingReports, setLoadingReports] = React.useState(true);
+  const [selectedReport, setSelectedReport] =
+    React.useState<ReportItemType | null>(null);
 
   React.useEffect(() => {
     async function fetchReports() {
       try {
-        // Assumes your API returns report data for the user based on their email or Auth0 id.
         const res = await fetch(
           `/api/report?user=${encodeURIComponent(user?.sub || "")}`,
           { cache: "no-store" }
@@ -36,12 +69,20 @@ export default function PreviousPresentationsSection() {
     }
   }, [isAuthenticated, isLoading, user]);
 
+  const handleCardClick = (report: ReportItemType) => {
+    setSelectedReport(report);
+  };
+
+  const closeModal = () => {
+    setSelectedReport(null);
+  };
+
   return (
     <Section
       id="previous"
       link={"/dashboard/progress/previous"}
       title="Previous presentations"
-      className="pr-0 min-w-[740px] duration-500 "
+      className="pr-0 min-w-[740px] duration-500"
     >
       <div
         className={cn(
@@ -52,34 +93,9 @@ export default function PreviousPresentationsSection() {
         <div className="overflow-x-scroll">
           <div className="flex items-center gap-4">
             {isLoading || loadingReports ? (
-              <>
-                <Recording
-                  id={""}
-                  title={"PUSH ME"}
-                  thumbnail={"/example-thumbnail.png"}
-                  created_at={""}
-                  overallScore={0}
-                  loading={true}
-                />
-                <Recording
-                  id={""}
-                  title={"CSCE 482 Demo"}
-                  thumbnail={"/example-thumbnail.png"}
-                  created_at={""}
-                  overallScore={0}
-                  loading={true}
-                  className="delay-75"
-                />
-                <Recording
-                  id={""}
-                  title={"PUSH ME"}
-                  thumbnail={"/example-thumbnail.png"}
-                  created_at={""}
-                  overallScore={0}
-                  loading={true}
-                  className="delay-100"
-                />
-              </>
+              <div className="text-center text-gray-500">
+                Loading presentations...
+              </div>
             ) : !isAuthenticated ? (
               <div>Must be authenticated.</div>
             ) : user && reports.length === 0 ? (
@@ -88,18 +104,22 @@ export default function PreviousPresentationsSection() {
               </div>
             ) : (
               user &&
-              reports.map(
-                (report, i) =>
-                  i < 3 && (
-                    <Recording
-                      key={report.presentation_id}
-                      id={""}
-                      thumbnail={"/example-thumbnail.png"}
-                      overallScore={0}
-                      {...report}
-                    />
-                  )
-              )
+              reports.map((report) => (
+                <div
+                  key={report.presentation_id}
+                  onClick={() => handleCardClick(report)}
+                  className="cursor-pointer block"
+                >
+                  <Recording
+                    id={report.presentation_id}
+                    title={report.title} // Display the presentation title
+                    thumbnail={"/example-thumbnail.png"}
+                    created_at={report.created_at}
+                    overallScore={report.metrics?.score || 0}
+                    loading={false}
+                  />
+                </div>
+              ))
             )}
             <div aria-hidden={true} className={"max-w-[1rem] opacity-0"}>
               x
@@ -113,6 +133,14 @@ export default function PreviousPresentationsSection() {
           )}
         ></div>
       </div>
+      {selectedReport && (
+        <Modal onClose={closeModal}>
+          <VideoPlayer
+            videoUrl={selectedReport.video_url}
+            title={selectedReport.title}
+          />
+        </Modal>
+      )}
     </Section>
   );
 }
