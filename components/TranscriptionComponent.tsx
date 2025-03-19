@@ -51,7 +51,7 @@ function TranscriptionComponent({
 
   useEffect(() => {
     // Connect to our WebSocket server on port 3001.
-    const ws = new WebSocket("ws://localhost:3001");
+    const ws = new WebSocket("wss://transcriptionwebsocket-production.up.railway.app");
     ws.addEventListener("open", () => {
       console.log("client: connected to server");
     });

@@ -1,4 +1,3 @@
-import { startWebSocketServer } from './lib/start-deepgram-websocket';
 import next from 'next';
 import http from 'http';
 import { IncomingMessage, ServerResponse } from 'http';
@@ -9,9 +8,6 @@ const handle = app.getRequestHandler();
 
 // Define the HTTP server port
 const HTTP_PORT = Number(process.env.HTTP_PORT) || 3000;
-
-// Start the WebSocket server
-startWebSocketServer();
 
 // Prepare the Next.js app and start the HTTP server
 app.prepare()
