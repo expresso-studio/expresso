@@ -17,7 +17,7 @@ export type RecordingType = {
   id: string;
   title: string;
   thumbnail: string;
-  date: Date;
+  created_at: string;
   overallScore: number;
 };
 
@@ -44,7 +44,7 @@ export type ReportItemType = {
     name: string;
     score: number;
     evaluated_at: string;
-  }[];
+  };
 };
 
 export type UserType = {

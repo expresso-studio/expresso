@@ -7,19 +7,44 @@ import Image from "next/image";
 
 interface Props extends RecordingType {
   className?: string;
+  loading?: boolean;
 }
 
 const Recording = React.memo<Props>(function Recording({
   title,
   thumbnail,
-  date,
+  created_at,
   overallScore,
   className,
+  loading,
 }) {
+  if (loading) {
+    return (
+      <div
+        className={cn(
+          "animate-pulse w-[220px] h-[180px] flex flex-col gap-2 relative bg-[#fffbf9] dark:bg-stone-900 hover:shadow-sm p-2 rounded-md",
+          className
+        )}
+      >
+        <div
+          className={cn(
+            "absolute bg-lightCream dark:bg-darkBurnt w-min rounded-xl px-2 translate-x-2 translate-y-2",
+            "h-[1em] w-[2em]"
+          )}
+        ></div>
+        <div className="bg-[#e0cabf] dark:bg-[#463f3c] w-full h-[144px] rounded-md" />
+        <div className="flex items-center justify-between truncate gap-4 pt-2 pb-3">
+          <span className="bg-stone-200 h-[1em] dark:bg-stone-800 rounded-full w-full"></span>
+          <span className="bg-stone-200 h-[1em] dark:bg-stone-800 rounded-full w-1/2"></span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className={cn(
-        "flex flex-col gap-2 relative bg-[#fcf5f0] hover:bg-[#fffbf8] hover:shadow-sm p-2 rounded-md",
+        "w-[220px] h-[180px] flex flex-col gap-2 relative bg-[#fffbf9] hover:bg-[#fffbf8] dark:bg-stone-900 hover:dark:bg-[#3e322e] hover:shadow-sm p-2 rounded-md cursor-pointer",
         className
       )}
     >
@@ -40,11 +65,13 @@ const Recording = React.memo<Props>(function Recording({
         className="rounded-md"
       />
       <div className="flex items-center justify-between truncate gap-4">
-        <span className={cn("font-bold truncate", outfit.className)}>
+        <span
+          className={cn("font-bold truncate dark:text-white", outfit.className)}
+        >
           {title}
         </span>
         <span className="italics text-sm text-stone-500">
-          {date.toLocaleDateString()}
+          {new Date(created_at).toLocaleDateString()}
         </span>
       </div>
     </div>
