@@ -1,9 +1,10 @@
+//app/dashboard/previous-presentations
 "use client";
 
 import * as React from "react";
 import Recording from "@/components/recording";
 import Section from "@/components/section";
-import { useAuth0 } from "@auth0/auth0-react";
+import { useAuthUtils } from "@/hooks/useAuthUtils";
 import { ReportItemType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -73,7 +74,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoKey, title, userId }) =>
 
 
 export default function PreviousPresentationsSection() {
-  const { user, isAuthenticated, isLoading } = useAuth0();
+  const { user, isAuthenticated, isLoading, refreshToken } = useAuthUtils();
   const [reports, setReports] = React.useState<ReportItemType[]>([]);
   const [loadingReports, setLoadingReports] = React.useState(true);
   const [selectedReport, setSelectedReport] =

@@ -3,12 +3,13 @@
 import * as React from "react";
 import Heading1 from "@/components/heading-1";
 import PageFormat from "@/components/page-format";
-import { useAuth0 } from "@auth0/auth0-react";
 import { ReportItemType } from "@/lib/types";
 import Recording from "@/components/recording";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import ProtectedRoute from "@/components/protected-route";
+import { useAuthUtils } from "@/hooks/useAuthUtils";
 import {
   Select,
   SelectContent,
@@ -17,12 +18,85 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+// Inline Modal component; if you have one already, you can import it instead.
+const Modal: React.FC<{ onClose: () => void; children: React.ReactNode }> = ({
+  onClose,
+  children,
+}) => {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="relative bg-white p-4 rounded shadow-lg max-w-full w-[90%]">
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+        >
+          X
+        </button>
+        {children}
+      </div>
+    </div>
+  );
+};
+
+// VideoPlayer component expects a S3 object key instead of a full URL.
+const VideoPlayer: React.FC<{
+  videoKey: string;
+  title: string;
+  userId: string;
+}> = ({ videoKey, title, userId }) => {
+  const [signedUrl, setSignedUrl] = React.useState<string>("");
+
+  React.useEffect(() => {
+    if (!videoKey || !userId) return;
+    const fetchSignedUrl = async () => {
+      try {
+        const res = await fetch(
+          `/api/get-signed-url?videoKey=${encodeURIComponent(
+            videoKey
+          )}&user=${encodeURIComponent(userId)}`
+        );
+        if (!res.ok) {
+          console.error("Failed to fetch signed URL, status:", res.status);
+          return;
+        }
+        const data = await res.json();
+        setSignedUrl(data.url);
+      } catch (error) {
+        console.error("Error fetching signed URL", error);
+      }
+    };
+    fetchSignedUrl();
+  }, [videoKey, userId]);
+
+  if (!signedUrl) {
+    return <div>Loading video...</div>;
+  }
+
+  return (
+    <div>
+      <h2 className="text-xl font-bold mb-2">{title}</h2>
+      <video className="w-full" controls>
+        <source src={signedUrl} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  );
+};
+
 export default function Page() {
-  const { user, isAuthenticated, isLoading } = useAuth0();
+  const { user, isAuthenticated, isLoading, error, refreshToken } = useAuthUtils();
+    
+  // If there's an auth error, try to refresh the token
+  React.useEffect(() => {
+    if (error) {
+      console.error("Auth error in dashboard:", error);
+      refreshToken();
+    }
+  }, [error, refreshToken]);
   const [reports, setReports] = React.useState<ReportItemType[]>([]);
   const [loadingReports, setLoadingReports] = React.useState(true);
 
-  // Add new state for filters
+  // New state for filters
   const [searchQuery, setSearchQuery] = React.useState("");
   const [dateRange, setDateRange] = React.useState("all");
   const [scoreRange, setScoreRange] = React.useState({ min: "", max: "" });
@@ -30,7 +104,11 @@ export default function Page() {
   const [filteredReports, setFilteredReports] =
     React.useState<ReportItemType[]>(reports);
 
-  // Add filter logic
+  // New state for selected presentation to show in modal
+  const [selectedReport, setSelectedReport] =
+    React.useState<ReportItemType | null>(null);
+
+  // Filter logic
   const applyFilters = () => {
     let filtered = [...reports];
 
@@ -125,6 +203,7 @@ export default function Page() {
   }, [isAuthenticated, isLoading, user]);
 
   return (
+    <ProtectedRoute>
     <PageFormat
       breadCrumbs={[
         { url: "/dashboard/progress", name: "progress" },
@@ -245,25 +324,43 @@ export default function Page() {
                 height={100}
                 alt=""
                 className="opacity-75"
-              ></Image>
+              />
             </div>
           ) : (
             user && (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {filteredReports.map((report) => (
-                  <Recording
+                  // Wrap each Recording card in a clickable container
+                  <div
                     key={report.presentation_id}
-                    id={""}
-                    thumbnail={"/example-thumbnail.png"}
-                    overallScore={report.metrics.score ?? 0}
-                    {...report}
-                  />
+                    onClick={() => setSelectedReport(report)}
+                    className="cursor-pointer"
+                  >
+                    <Recording
+                      id={report.presentation_id}
+                      thumbnail={"/example-thumbnail.png"}
+                      overallScore={report.metrics.score ?? 0}
+                      {...report}
+                    />
+                  </div>
                 ))}
               </div>
             )
           )}
         </div>
       </div>
+
+      {/* Modal to show the selected presentation video */}
+      {selectedReport && user && (
+        <Modal onClose={() => setSelectedReport(null)}>
+          <VideoPlayer
+            videoKey={selectedReport.video_url} // using the S3 object key from the report
+            title={selectedReport.title}
+            userId={user.sub!}
+          />
+        </Modal>
+      )}
     </PageFormat>
+    </ProtectedRoute>
   );
 }
