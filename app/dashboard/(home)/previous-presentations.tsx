@@ -8,7 +8,10 @@ import { ReportItemType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 // A simple modal component that renders its children as an overlay.
-const Modal: React.FC<{ onClose: () => void; children: React.ReactNode }> = ({ onClose, children }) => {
+const Modal: React.FC<{ onClose: () => void; children: React.ReactNode }> = ({
+  onClose,
+  children,
+}) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="relative bg-white p-4 rounded shadow-lg max-w-full w-[90%]">
@@ -24,20 +27,50 @@ const Modal: React.FC<{ onClose: () => void; children: React.ReactNode }> = ({ o
   );
 };
 
-const VideoPlayer: React.FC<{ videoUrl: string; title: string }> = ({
-  videoUrl,
-  title,
-}) => {
+interface VideoPlayerProps {
+  videoKey: string; // This is now the S3 object key
+  title: string;
+  userId: string;
+}
+
+const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoKey, title, userId }) => {
+  const [signedUrl, setSignedUrl] = React.useState<string>("");
+
+  React.useEffect(() => {
+    if (!videoKey || !userId) return;
+    const fetchSignedUrl = async () => {
+      try {
+        const res = await fetch(
+          `/api/get-signed-url?videoKey=${encodeURIComponent(videoKey)}&user=${encodeURIComponent(userId)}`
+        );
+        if (!res.ok) {
+          console.error("Failed to fetch signed URL, status:", res.status);
+          return;
+        }
+        const data = await res.json();
+        setSignedUrl(data.url);
+      } catch (error) {
+        console.error("Error fetching signed URL", error);
+      }
+    };
+    fetchSignedUrl();
+  }, [videoKey, userId]);
+
+  if (!signedUrl) {
+    return <div>Loading video...</div>;
+  }
+
   return (
     <div>
       <h2 className="text-xl font-bold mb-2">{title}</h2>
       <video className="w-full" controls>
-        <source src={videoUrl} type="video/mp4" />
+        <source src={signedUrl} type="video/mp4" />
         Your browser does not support the video tag.
       </video>
     </div>
   );
 };
+
 
 export default function PreviousPresentationsSection() {
   const { user, isAuthenticated, isLoading } = useAuth0();
@@ -133,11 +166,12 @@ export default function PreviousPresentationsSection() {
           )}
         ></div>
       </div>
-      {selectedReport && (
+      {selectedReport && user && (
         <Modal onClose={closeModal}>
           <VideoPlayer
-            videoUrl={selectedReport.video_url}
+            videoKey={selectedReport.video_url}
             title={selectedReport.title}
+            userId={user.sub!}
           />
         </Modal>
       )}

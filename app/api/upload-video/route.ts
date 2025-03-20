@@ -1,9 +1,7 @@
 // app/api/upload-video/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { uploadToS3 } from '@/lib/s3';
+import { uploadToS3 } from '@/lib/aws/s3';
 import { query } from '@/lib/db';
-import { writeFile } from 'fs/promises';
-import { join } from 'path';
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,19 +26,20 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(await videoFile.arrayBuffer());
     
     // Generate a unique filename
-    const fileName = `${userId}-${Date.now()}-presentation-recording.mp4`;
+    const videoKey = `${userId}-${Date.now()}-presentation-recording.mp4`;
     
     // Upload to S3
-    const videoUrl = await uploadToS3(buffer, fileName, videoFile.type || 'video/mp4');
-    // save to db
+    await uploadToS3(buffer, videoKey, videoFile.type || 'video/mp4');
+    
+    // Save to db
     const result = await query(
       'INSERT INTO presentations (user_id, title, video_url, created_at) VALUES ($1, $2, $3, NOW()) RETURNING id',
-      [userId, title, videoUrl]
+      [userId, title, videoKey]
     );
     
     const presentationId = result.rows[0].id;
     
-    return NextResponse.json({ videoUrl, presentationId });
+    return NextResponse.json({ videoKey, presentationId });
   } catch (error) {
     console.error('Upload failed:', error);
     return NextResponse.json({ error: 'Failed to upload video' }, { status: 500 });
