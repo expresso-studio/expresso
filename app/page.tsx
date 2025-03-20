@@ -22,12 +22,6 @@ export default function Page() {
             </p>
             <h1>[insert slogan]</h1>
             <LoginButton />
-            <LoginButtonUI className = "flex items-center gap-2"> 
-              <span className = "text-2xl">
-                Start Here
-              </span>
-              <img src="/right-arrow.svg" alt = "Right Arrow" className = "w-6 h-6" />
-            </LoginButtonUI>
           </div>
         </div>
       </main>
