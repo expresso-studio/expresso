@@ -134,7 +134,7 @@ export default function Page() {
       <Heading1 id="previous">Previous Sessions</Heading1>
 
       <div className="pt-8 flex flex-col sm:flex-row gap-8">
-        <div className="bg-lightLatte rounded-md p-4 h-[60vh] w-full sm:w-[20vw] flex flex-col gap-4">
+        <div className="bg-lightLatte dark:bg-darkCoffee rounded-md p-4 h-[60vh] w-full sm:w-[20vw] flex flex-col gap-4">
           <div className="space-y-4">
             <input
               type="text"
