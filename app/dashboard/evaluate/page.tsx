@@ -1,6 +1,6 @@
 "use client"
 
-import React, { Suspense, useState, useEffect } from 'react';
+import React, { Suspense, useState } from 'react';
 import GestureAnalyzer from './GestureAnalyzer';
 import TranscriptionComponent from '@/components/TranscriptionComponent';
 
@@ -26,10 +26,10 @@ export default function Page() {
     }
   };
   
-  // Handle stop recording request from the GestureAnalyzer
-  const handleStopRecording = () => {
-    setIsRecording(false);
-  };
+  // // Handle stop recording request from the GestureAnalyzer
+  // const handleStopRecording = () => {
+  //   setIsRecording(false);
+  // };
   
   // Toggle developer mode
   const toggleDeveloperMode = () => {
@@ -70,7 +70,7 @@ export default function Page() {
       <Suspense fallback={<div className="text-center p-8">Loading pose detection...</div>}>
         <GestureAnalyzer 
           isRecording={isRecording}
-          onStopRecording={handleStopRecording}
+          // onStopRecording={handleStopRecording}
           transcript={transcript}
           developerMode={isDeveloperMode}
         />

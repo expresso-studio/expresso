@@ -9,14 +9,14 @@ import { Eye, EyeOff, BarChart2 } from 'lucide-react';
 
 interface GestureAnalyzerProps {
   isRecording: boolean;
-  onStopRecording: () => void;
+  // onStopRecording: () => void;
   transcript: string;
   developerMode?: boolean;
 }
 
 const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({ 
   isRecording, 
-  onStopRecording,
+  // onStopRecording,
   transcript,
   developerMode = true
 }) => {
