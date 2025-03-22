@@ -12,7 +12,6 @@ export default function ProgressSection() {
       className="bg-transparent dark:bg-transparent p-0 flex flex-col gap-8"
     >
       <WPMChart />
-      <WPMChart />
       <div className="flex flex-col sm:flex-row gap-8">
         <Summary short={true} />
         <TopFiller short={false} />
