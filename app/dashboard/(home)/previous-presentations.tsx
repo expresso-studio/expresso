@@ -8,77 +8,10 @@ import { useAuthUtils } from "@/hooks/useAuthUtils";
 import { ReportItemType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-// A simple modal component that renders its children as an overlay.
-const Modal: React.FC<{ onClose: () => void; children: React.ReactNode }> = ({
-  onClose,
-  children,
-}) => {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="relative bg-white p-4 rounded shadow-lg max-w-full w-[90%]">
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-        >
-          X
-        </button>
-        {children}
-      </div>
-    </div>
-  );
-};
-
-interface VideoPlayerProps {
-  videoKey: string; // This is now the S3 object key
-  title: string;
-  userId: string;
-}
-
-const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoKey, title, userId }) => {
-  const [signedUrl, setSignedUrl] = React.useState<string>("");
-
-  React.useEffect(() => {
-    if (!videoKey || !userId) return;
-    const fetchSignedUrl = async () => {
-      try {
-        const res = await fetch(
-          `/api/get-signed-url?videoKey=${encodeURIComponent(videoKey)}&user=${encodeURIComponent(userId)}`
-        );
-        if (!res.ok) {
-          console.error("Failed to fetch signed URL, status:", res.status);
-          return;
-        }
-        const data = await res.json();
-        setSignedUrl(data.url);
-      } catch (error) {
-        console.error("Error fetching signed URL", error);
-      }
-    };
-    fetchSignedUrl();
-  }, [videoKey, userId]);
-
-  if (!signedUrl) {
-    return <div>Loading video...</div>;
-  }
-
-  return (
-    <div>
-      <h2 className="text-xl font-bold mb-2">{title}</h2>
-      <video className="w-full" controls>
-        <source src={signedUrl} type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-    </div>
-  );
-};
-
-
 export default function PreviousPresentationsSection() {
-  const { user, isAuthenticated, isLoading, refreshToken } = useAuthUtils();
+  const { user, isAuthenticated, isLoading } = useAuthUtils();
   const [reports, setReports] = React.useState<ReportItemType[]>([]);
   const [loadingReports, setLoadingReports] = React.useState(true);
-  const [selectedReport, setSelectedReport] =
-    React.useState<ReportItemType | null>(null);
 
   React.useEffect(() => {
     async function fetchReports() {
@@ -102,14 +35,6 @@ export default function PreviousPresentationsSection() {
       fetchReports();
     }
   }, [isAuthenticated, isLoading, user]);
-
-  const handleCardClick = (report: ReportItemType) => {
-    setSelectedReport(report);
-  };
-
-  const closeModal = () => {
-    setSelectedReport(null);
-  };
 
   return (
     <Section
@@ -139,20 +64,15 @@ export default function PreviousPresentationsSection() {
             ) : (
               user &&
               reports.map((report) => (
-                <div
+                <Recording
                   key={report.presentation_id}
-                  onClick={() => handleCardClick(report)}
-                  className="cursor-pointer block"
-                >
-                  <Recording
-                    id={report.presentation_id}
-                    title={report.title} // Display the presentation title
-                    thumbnail={"/example-thumbnail.png"}
-                    created_at={report.created_at}
-                    overallScore={report.metrics?.score || 0}
-                    loading={false}
-                  />
-                </div>
+                  id={report.presentation_id}
+                  title={report.title}
+                  thumbnail={"/example-thumbnail.png"}
+                  created_at={report.created_at}
+                  overallScore={report.metrics?.score || 0}
+                  loading={false}
+                />
               ))
             )}
             <div aria-hidden={true} className={"max-w-[1rem] opacity-0"}>
@@ -167,15 +87,6 @@ export default function PreviousPresentationsSection() {
           )}
         ></div>
       </div>
-      {selectedReport && user && (
-        <Modal onClose={closeModal}>
-          <VideoPlayer
-            videoKey={selectedReport.video_url}
-            title={selectedReport.title}
-            userId={user.sub!}
-          />
-        </Modal>
-      )}
     </Section>
   );
 }

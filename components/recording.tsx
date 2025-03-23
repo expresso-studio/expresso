@@ -4,6 +4,8 @@ import { cn } from "@/lib/utils";
 import { RecordingType } from "@/lib/types";
 import { LuSpeech } from "react-icons/lu";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useAuthUtils } from "@/hooks/useAuthUtils";
 
 interface Props extends RecordingType {
   className?: string;
@@ -11,6 +13,7 @@ interface Props extends RecordingType {
 }
 
 const Recording = React.memo<Props>(function Recording({
+  id,
   title,
   thumbnail,
   created_at,
@@ -18,6 +21,15 @@ const Recording = React.memo<Props>(function Recording({
   className,
   loading,
 }) {
+  const router = useRouter();
+  const { user } = useAuthUtils();
+
+  const handleClick = () => {
+    if (user?.sub && id) {
+      router.push(`/dashboard/progress/previous/presentation/${id}`);
+    }
+  };
+
   if (loading) {
     return (
       <div
@@ -43,6 +55,7 @@ const Recording = React.memo<Props>(function Recording({
 
   return (
     <div
+      onClick={handleClick}
       className={cn(
         "w-[220px] h-[180px] flex flex-col gap-2 relative bg-[#fffbf9] hover:bg-[#fffbf8] dark:bg-stone-900 hover:dark:bg-[#3e322e] hover:shadow-sm p-2 rounded-md cursor-pointer",
         className
@@ -55,7 +68,7 @@ const Recording = React.memo<Props>(function Recording({
         )}
       >
         <LuSpeech />
-        {overallScore}
+        {overallScore}%
       </div>
       <Image
         src={thumbnail}
