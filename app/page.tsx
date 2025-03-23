@@ -20,7 +20,7 @@ export default function Page() {
             <p className = "text-4xl">
               Welcome to <span className="font-bold">Expresso</span>!
             </p>
-            <h1>[insert slogan]</h1>
+            <h1>Brewing confidence, one gesture at a time.</h1>
             <LoginButton />
           </div>
         </div>
