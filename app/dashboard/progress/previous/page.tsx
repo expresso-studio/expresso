@@ -84,8 +84,9 @@ const VideoPlayer: React.FC<{
 };
 
 export default function Page() {
-  const { user, isAuthenticated, isLoading, error, refreshToken } = useAuthUtils();
-    
+  const { user, isAuthenticated, isLoading, error, refreshToken } =
+    useAuthUtils();
+
   // If there's an auth error, try to refresh the token
   React.useEffect(() => {
     if (error) {
@@ -204,163 +205,171 @@ export default function Page() {
 
   return (
     <ProtectedRoute>
-    <PageFormat
-      breadCrumbs={[
-        { url: "/dashboard/progress", name: "progress" },
-        { name: "previous" },
-      ]}
-    >
-      <Heading1 id="previous">Previous Sessions</Heading1>
+      <PageFormat
+        breadCrumbs={[
+          { url: "/dashboard/progress", name: "progress" },
+          { name: "previous" },
+        ]}
+      >
+        <Heading1 id="previous">Previous Sessions</Heading1>
 
-      <div className="pt-8 flex flex-col sm:flex-row gap-8">
-        <div className="bg-lightLatte rounded-md p-4 h-[60vh] w-full sm:w-[20vw] flex flex-col gap-4">
-          <div className="space-y-4">
-            <input
-              type="text"
-              placeholder="Search by title..."
-              className="w-full px-3 py-2 border rounded-md"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Date Range
-              </label>
-              <Select value={dateRange} onValueChange={setDateRange}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select date range" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Time</SelectItem>
-                  <SelectItem value="week">Past Week</SelectItem>
-                  <SelectItem value="month">Past Month</SelectItem>
-                  <SelectItem value="3months">Past 3 Months</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Score Range
-              </label>
-              <div className="flex gap-2">
-                <input
-                  type="number"
-                  placeholder="Min"
-                  className="w-1/2 px-3 py-2 border rounded-md"
-                  min="0"
-                  max="100"
-                  value={scoreRange.min}
-                  onChange={(e) =>
-                    setScoreRange((prev) => ({ ...prev, min: e.target.value }))
-                  }
-                />
-                <input
-                  type="number"
-                  placeholder="Max"
-                  className="w-1/2 px-3 py-2 border rounded-md"
-                  min="0"
-                  max="100"
-                  value={scoreRange.max}
-                  onChange={(e) =>
-                    setScoreRange((prev) => ({ ...prev, max: e.target.value }))
-                  }
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Sort By</label>
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select sorting" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="date-desc">Newest First</SelectItem>
-                  <SelectItem value="date-asc">Oldest First</SelectItem>
-                  <SelectItem value="score-desc">Highest Score</SelectItem>
-                  <SelectItem value="score-asc">Lowest Score</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <Button
-              className="w-full bg-lightCoffee text-white py-2 rounded-md hover:bg-[#805946]"
-              onClick={applyFilters}
-            >
-              Apply Filters
-            </Button>
-          </div>
-        </div>
-        <div className="w-full">
-          {isLoading || loadingReports ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {loadingDelays.map((delay, i) => (
-                <Recording
-                  key={i}
-                  id={""}
-                  title={"blank"}
-                  thumbnail={"/example-thumbnail.png"}
-                  created_at={""}
-                  overallScore={0}
-                  loading={true}
-                  className={cn(`delay-${delay}`)}
-                />
-              ))}
-            </div>
-          ) : !isAuthenticated ? (
-            <div>Must be authenticated.</div>
-          ) : user && filteredReports.length === 0 ? (
-            <div className="w-full h-full flex flex-col gap-4 items-center justify-center">
-              <span className="text-stone-500 text-lg italic">
-                {reports.length === 0
-                  ? "No presentations evaluated yet."
-                  : "No presentations with selected filters found."}
-              </span>
-              <Image
-                src="/cup.svg"
-                width={100}
-                height={100}
-                alt=""
-                className="opacity-75"
+        <div className="pt-8 flex flex-col sm:flex-row gap-8">
+          <div className="bg-lightLatte dark:bg-darkCoffee rounded-md p-4 h-[60vh] w-full sm:w-[20vw] flex flex-col gap-4">
+            <div className="space-y-4">
+              <input
+                type="text"
+                placeholder="Search by title..."
+                className="w-full px-3 py-2 border rounded-md"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
+
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Date Range
+                </label>
+                <Select value={dateRange} onValueChange={setDateRange}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select date range" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Time</SelectItem>
+                    <SelectItem value="week">Past Week</SelectItem>
+                    <SelectItem value="month">Past Month</SelectItem>
+                    <SelectItem value="3months">Past 3 Months</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Score Range
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    placeholder="Min"
+                    className="w-1/2 px-3 py-2 border rounded-md"
+                    min="0"
+                    max="100"
+                    value={scoreRange.min}
+                    onChange={(e) =>
+                      setScoreRange((prev) => ({
+                        ...prev,
+                        min: e.target.value,
+                      }))
+                    }
+                  />
+                  <input
+                    type="number"
+                    placeholder="Max"
+                    className="w-1/2 px-3 py-2 border rounded-md"
+                    min="0"
+                    max="100"
+                    value={scoreRange.max}
+                    onChange={(e) =>
+                      setScoreRange((prev) => ({
+                        ...prev,
+                        max: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Sort By
+                </label>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select sorting" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="date-desc">Newest First</SelectItem>
+                    <SelectItem value="date-asc">Oldest First</SelectItem>
+                    <SelectItem value="score-desc">Highest Score</SelectItem>
+                    <SelectItem value="score-asc">Lowest Score</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <Button
+                className="w-full bg-lightCoffee text-white py-2 rounded-md hover:bg-[#805946]"
+                onClick={applyFilters}
+              >
+                Apply Filters
+              </Button>
             </div>
-          ) : (
-            user && (
+          </div>
+          <div className="w-full">
+            {isLoading || loadingReports ? (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {filteredReports.map((report) => (
-                  // Wrap each Recording card in a clickable container
-                  <div
-                    key={report.presentation_id}
-                    onClick={() => setSelectedReport(report)}
-                    className="cursor-pointer"
-                  >
-                    <Recording
-                      id={report.presentation_id}
-                      thumbnail={"/example-thumbnail.png"}
-                      overallScore={report.metrics.score ?? 0}
-                      {...report}
-                    />
-                  </div>
+                {loadingDelays.map((delay, i) => (
+                  <Recording
+                    key={i}
+                    id={""}
+                    title={"blank"}
+                    thumbnail={"/example-thumbnail.png"}
+                    created_at={""}
+                    overallScore={0}
+                    loading={true}
+                    className={cn(`delay-${delay}`)}
+                  />
                 ))}
               </div>
-            )
-          )}
+            ) : !isAuthenticated ? (
+              <div>Must be authenticated.</div>
+            ) : user && filteredReports.length === 0 ? (
+              <div className="w-full h-full flex flex-col gap-4 items-center justify-center">
+                <span className="text-stone-500 text-lg italic">
+                  {reports.length === 0
+                    ? "No presentations evaluated yet."
+                    : "No presentations with selected filters found."}
+                </span>
+                <Image
+                  src="/cup.svg"
+                  width={100}
+                  height={100}
+                  alt=""
+                  className="opacity-75"
+                />
+              </div>
+            ) : (
+              user && (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {filteredReports.map((report) => (
+                    // Wrap each Recording card in a clickable container
+                    <div
+                      key={report.presentation_id}
+                      onClick={() => setSelectedReport(report)}
+                      className="cursor-pointer"
+                    >
+                      <Recording
+                        id={report.presentation_id}
+                        thumbnail={"/example-thumbnail.png"}
+                        overallScore={report.metrics.score ?? 0}
+                        {...report}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* Modal to show the selected presentation video */}
-      {selectedReport && user && (
-        <Modal onClose={() => setSelectedReport(null)}>
-          <VideoPlayer
-            videoKey={selectedReport.video_url} // using the S3 object key from the report
-            title={selectedReport.title}
-            userId={user.sub!}
-          />
-        </Modal>
-      )}
-    </PageFormat>
+        {/* Modal to show the selected presentation video */}
+        {selectedReport && user && (
+          <Modal onClose={() => setSelectedReport(null)}>
+            <VideoPlayer
+              videoKey={selectedReport.video_url} // using the S3 object key from the report
+              title={selectedReport.title}
+              userId={user.sub!}
+            />
+          </Modal>
+        )}
+      </PageFormat>
     </ProtectedRoute>
   );
 }

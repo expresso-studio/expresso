@@ -22,7 +22,7 @@ const Recording = React.memo<Props>(function Recording({
     return (
       <div
         className={cn(
-          "animate-pulse w-[220px] h-[180px] flex flex-col gap-2 relative bg-[#fffbf9] hover:shadow-sm p-2 rounded-md",
+          "animate-pulse w-[220px] h-[180px] flex flex-col gap-2 relative bg-[#fffbf9] dark:bg-stone-900 hover:shadow-sm p-2 rounded-md",
           className
         )}
       >
@@ -44,7 +44,7 @@ const Recording = React.memo<Props>(function Recording({
   return (
     <div
       className={cn(
-        "w-[220px] h-[180px] flex flex-col gap-2 relative bg-[#fffbf9] hover:bg-[#fffbf8] hover:shadow-sm p-2 rounded-md",
+        "w-[220px] h-[180px] flex flex-col gap-2 relative bg-[#fffbf9] hover:bg-[#fffbf8] dark:bg-stone-900 hover:dark:bg-[#3e322e] hover:shadow-sm p-2 rounded-md cursor-pointer",
         className
       )}
     >
