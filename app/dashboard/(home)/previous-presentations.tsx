@@ -1,4 +1,3 @@
-//app/dashboard/previous-presentations
 "use client";
 
 import * as React from "react";
@@ -52,9 +51,32 @@ export default function PreviousPresentationsSection() {
         <div className="overflow-x-scroll">
           <div className="flex items-center gap-4">
             {isLoading || loadingReports ? (
-              <div className="text-center text-gray-500">
-                Loading presentations...
-              </div>
+              <>
+                <Recording
+                  loading={true}
+                  id={""}
+                  title={""}
+                  thumbnail={""}
+                  created_at={""}
+                  overallScore={0}
+                />
+                <Recording
+                  loading={true}
+                  id={""}
+                  title={""}
+                  thumbnail={""}
+                  created_at={""}
+                  overallScore={0}
+                />
+                <Recording
+                  loading={true}
+                  id={""}
+                  title={""}
+                  thumbnail={""}
+                  created_at={""}
+                  overallScore={0}
+                />
+              </>
             ) : !isAuthenticated ? (
               <div>Must be authenticated.</div>
             ) : user && reports.length === 0 ? (

@@ -4,6 +4,8 @@ import { useEffect, useState, use } from "react";
 import { useAuthUtils } from "@/hooks/useAuthUtils";
 import { outfit } from "@/app/fonts";
 import { cn } from "@/lib/utils";
+import { LoaderCircle } from "lucide-react";
+import Loading from "@/components/loading";
 
 interface Metric {
   metric_id: number;
@@ -96,7 +98,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   }, [videoKey, userId]);
 
   if (!signedUrl) {
-    return <div>Loading video...</div>;
+    return (
+      <div>
+        <div className="text-xl font-bold mb-2">{title}</div>
+        <div className="animate-pulse w-full h-[342px] flex items-center justify-center rounded-lg shadow-lg bg-stone-300 dark:bg-stone-800">
+          <LoaderCircle className="animate-spin" />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -151,7 +160,7 @@ export default function PresentationPage({
   }, [params.id, isAuthenticated, isLoading, user]);
 
   if (loading || isLoading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   if (!isAuthenticated || !user?.sub) {
