@@ -16,12 +16,14 @@ export default function Page() {
               height="300" 
             />
           </div>
-          <div className = "p-6 rounded-lg flex flex-col items-center space-y-4">
-            <p className = "text-4xl">
+          <div className = "p-6 rounded-lg flex flex-col items-center">
+            <p className = "text-4xl mb-4">
               Welcome to <span className="font-bold">Expresso</span>!
             </p>
-            <h1>Brewing confidence, one gesture at a time.</h1>
-            <LoginButton />
+            <h1 className ="mb-2">Brewing confidence, one gesture at a time.</h1>
+            <div className="mt-8">
+              <LoginButton/>
+            </div>
           </div>
         </div>
       </main>
