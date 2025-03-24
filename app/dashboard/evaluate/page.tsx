@@ -4,7 +4,7 @@ import React, { Suspense, useState } from 'react';
 import GestureAnalyzer from './GestureAnalyzer';
 import TranscriptionComponent from '@/components/TranscriptionComponent';
 import ProtectedRoute from "@/components/protected-route";
-import { useAuthUtils } from "@/hooks/useAuthUtils";
+// import { useAuthUtils } from "@/hooks/useAuthUtils";
 
 export default function Page() {
   const [isRecording, setIsRecording] = useState(false);
