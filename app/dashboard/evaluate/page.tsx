@@ -8,7 +8,7 @@ import ProtectedRoute from "@/components/protected-route";
 export default function Page() {
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState("");
-  const [isDeveloperMode, setIsDeveloperMode] = useState(true);
+  const [isDeveloperMode, setIsDeveloperMode] = useState(false);
   const [showTranscript, setShowTranscript] = useState(true);
   
   // Handle recording state changes from the TranscriptionComponent
@@ -52,7 +52,7 @@ export default function Page() {
             {showTranscript ? 'Captions: ON' : 'Captions: OFF'}
           </button>
           
-          <button
+          {/* <button
             onClick={toggleDeveloperMode}
             className={`px-2 py-1 text-xs rounded ${
               isDeveloperMode 
@@ -61,7 +61,7 @@ export default function Page() {
             } transition-colors`}
           >
             {isDeveloperMode ? 'Developer Mode: ON' : 'Developer Mode: OFF'}
-          </button>
+          </button> */}
         </div>
         
         <Suspense fallback={<div className="text-center p-8">Loading pose detection...</div>}>
