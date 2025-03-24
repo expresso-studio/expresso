@@ -80,7 +80,15 @@ const Recording = React.memo<Props>(function Recording({
             "h-[1em] w-[2em]"
           )}
         ></div>
-        <div className="bg-[#e0cabf] dark:bg-[#463f3c] w-full h-[144px] rounded-md" />
+        <div className="bg-darkCoffee/50 w-full h-[144px] rounded-md flex items-start justify-end relative overflow-hidden">
+          <img
+            src={"/coffee_bean.svg"}
+            alt={""}
+            width={100}
+            height={100}
+            className="absolute translate-y-4 translate-x-2 opacity-40"
+          />
+        </div>
         <div className="flex items-center justify-between truncate gap-4 pt-2 pb-3">
           <span className="bg-stone-200 h-[1em] dark:bg-stone-800 rounded-full w-full"></span>
           <span className="bg-stone-200 h-[1em] dark:bg-stone-800 rounded-full w-1/2"></span>
@@ -120,12 +128,20 @@ const Recording = React.memo<Props>(function Recording({
           <source src={signedUrl} type="video/mp4" />
         </video>
       ) : (
-        <div className="bg-[#e0cabf] dark:bg-[#463f3c] w-full h-[144px] rounded-md" />
+        <div className="animate-pulse bg-darkCoffee/50 w-full h-[144px] rounded-md flex items-start justify-end relative overflow-hidden">
+          <img
+            src={"/coffee_bean.svg"}
+            alt={""}
+            width={100}
+            height={100}
+            className="absolute translate-y-4 translate-x-2 opacity-40"
+          />
+        </div>
       )}
       {!isLoaded && signedUrl && (
         <div className="animate-pulse bg-darkCoffee/50 w-full h-[144px] rounded-md flex items-start justify-end relative overflow-hidden">
-          <Image
-            src={"./coffee_bean.svg"}
+          <img
+            src={"/coffee_bean.svg"}
             alt={""}
             width={100}
             height={100}
