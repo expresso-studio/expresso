@@ -1,15 +1,15 @@
 "use client"
 import PageFormat from "@/components/page-format";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, ChangeEvent } from "react";
 import { useRouter } from 'next/navigation';
 import FooterWave from "@/components/ui/footer-wave";
-import { ImageUp, Camera } from "lucide-react";
+import { ImageUp, Camera, ArrowRight, CircleAlert } from "lucide-react";
  
 type FormData = {
     topic: string
+    duration: string
     attendees: string
     location: string
     handMovement: boolean
@@ -27,6 +27,7 @@ export default function Page() {
     const [formData, setFormData] = useState<FormData>({
         topic: '',
         attendees: '',
+        duration: '',
         location: '',
         handMovement: false,
         headMovement: false,
@@ -39,10 +40,14 @@ export default function Page() {
 
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
+    const [selectedPersona, setSelectedPersona] = useState<string | null>(null)
+
     const handlePersonaSelect = (persona: string) => {
+        setSelectedPersona(persona)
         if (persona === 'class-presentation') {
             setFormData(prev => ({
                 ...prev,
+                location:"classroom",
                 handMovement: true,
                 headMovement: true,
                 bodyMovement: false,
@@ -63,23 +68,63 @@ export default function Page() {
                 gestureVariety: false,
                 eyeContact: false,
             }));
-        }
+        } else if (persona === 'online') {
+            // Clear all selections for custom mode
+            setFormData(prev => ({
+                ...prev,
+                location: "online",
+                handMovement: false,
+                headMovement: true,
+                bodyMovement: false,
+                posture: false,
+                handSymmetry: false,
+                gestureVariety: false,
+                eyeContact: true,
+            }));
+        } else if (persona === 'meeting') {
+            // Clear all selections for custom mode
+            setFormData(prev => ({
+                ...prev,
+                location: "meeting",
+                handMovement: false,
+                headMovement: false,
+                bodyMovement: false,
+                posture: false,
+                handSymmetry: false,
+                gestureVariety: false,
+                eyeContact: false,
+            }));
+        } else if (persona === 'lecture') {
+            setFormData(prev => ({
+                ...prev,
+                location:"Classroom",
+                handMovement: true,
+                headMovement: true,
+                bodyMovement: false,
+                posture: true,
+                handSymmetry: false,
+                gestureVariety: true,
+                eyeContact: true,
+            }));
+        } 
     };
     
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { name, type, value, checked } = e.target
-        setFormData(prev => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked : value,
-        }))
-    }
+    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        
+        if (e.target instanceof HTMLInputElement) {
+            const { name, value, type, checked } = e.target;
 
-    const handleTextareaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-          ...prev,
-          [name]: value,
-        }));
+            setFormData(prev => ({
+                ...prev,
+                [name]: e.target.type === 'checkbox' ? checked : value,
+            }));
+        } else {
+            const { name, value } = e.target;
+            setFormData(prev => ({
+                ...prev,
+                [name]: value,
+            }));
+        }
     };
 
     const handleOptionSelect = (option: string) => {
@@ -111,28 +156,72 @@ export default function Page() {
         <PageFormat breadCrumbs={[{ name: "Evaluation Settings" }]}>
             <div className = "flex flex-col min-h-screen px-4 items-center">                    
                 <div className="w-full max-w-[800px]">
-                    <p className="text-lg font-medium">Select pre‑set persona:</p>
+                    <p className="text-lg font-medium">Select preset persona:</p>
                 </div>
-                <div className = "w-full max-w-[800px] grid grid-cols-2 gap-4 mb-2">
+                <div className = "w-full max-w-[800px] grid grid-cols-2 gap-x-8 gap-y-6 mb-2">
                     <button
                         type="button"
                         onClick={() => handlePersonaSelect('class-presentation')}
-                        className ="p-3 rounded-lg text-lg font-medium border-2 ${
+                        className ={`px-3 py-6 rounded-lg text-lg font-medium ${
                             selectedPersona === 'class-presentation'
-                                ? 'bg-blue-500 text-white'
+                                ? 'bg-[#dfcbbf] text-black' 
                                 : 'bg-gray-200 text-black'
-                            } hover:bg-blue-600 transition"
+                            } hover:bg-[#c4a99e]`}
                         >
                         Class Presentation
                     </button>
                     <button
                         type="button"
-                        onClick={() => handlePersonaSelect('none')}
-                        className ="p-3 rounded-lg text-lg font-medium border-2 ${
-                            selectedPersona === 'none'
-                                ? 'bg-blue-500 text-white'
+                        onClick={() => handlePersonaSelect('meeting')}
+                        className ={`px-3 py-6 rounded-lg text-lg font-medium ${
+                            selectedPersona === 'meeting'
+                                ? 'bg-[#dfcbbf] text-black' 
                                 : 'bg-gray-200 text-black'
-                            } hover:bg-blue-600 transition"
+                            } hover:bg-[#c4a99e]`}
+                        >
+                        In-person Meeting
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => handlePersonaSelect('online')}
+                        className ={`px-3 py-6 rounded-lg text-lg font-medium ${
+                            selectedPersona === 'online'
+                                ? 'bg-[#dfcbbf] text-black' 
+                                : 'bg-gray-200 text-black'
+                            } hover:bg-[#c4a99e]`}
+                        >
+                        Online Presentation
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => handlePersonaSelect('lecture')}
+                        className ={`p-3 rounded-lg text-lg font-medium ${
+                            selectedPersona === 'lecture'
+                                ? 'bg-[#dfcbbf] text-black' 
+                                : 'bg-gray-200 text-black'
+                            } hover:bg-[#c4a99e]`}
+                        >
+                        Lecture
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => handlePersonaSelect('custom')}
+                        className ={`px-3 py-6 rounded-lg text-lg font-medium ${
+                            selectedPersona === 'custom'
+                                ? 'bg-[#dfcbbf] text-black' 
+                                : 'bg-gray-200 text-black'
+                            } hover:bg-[#c4a99e]`}
+                        >
+                        Custom (from profile)
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => handlePersonaSelect('none')}
+                        className ={`p-3 rounded-lg text-lg font-medium border-2 ${
+                            selectedPersona === 'none'
+                                ? 'bg-[#dfcbbf] text-black' 
+                                : 'bg-gray-200 text-black'
+                            } hover:bg-[#c4a99e]`}
                         >
                         None
                     </button>
@@ -145,7 +234,7 @@ export default function Page() {
                             <Textarea
                                 name ="topic" 
                                 value = {formData.topic} 
-                                onChange={handleTextareaChange} 
+                                onChange={handleChange} 
                                 required 
                             />
                         </label>
@@ -164,10 +253,35 @@ export default function Page() {
                         </label>
                     </div>
 
-                    <div className = "mb-4" >
+                    <div className="mb-4">
                         <label>
+                            Duration (in minutes):
+                            <Input
+                                type="number"
+                                name="duration"
+                                value={formData.duration}
+                                onChange={handleChange}
+                                required
+                            />
+                        </label>
+                    </div>
+
+                    <div className = "mb-4" >
+                        <label className="block text-lg font-medium">
                             Location:
-                            <Input name="location" value={formData.location} onChange={handleChange} required />
+                            <select
+                                name="location"
+                                value={formData.location}
+                                onChange={handleChange}
+                                required
+                                className="mt-2 block w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="" disabled>Select location</option>
+                                <option value="classroom">Classroom</option>
+                                <option value="online">Online</option>
+                                <option value="meeting">In-person Meeting Room</option>
+                                <option value="other">Other</option>
+                            </select>
                         </label>
                     </div>
 
@@ -198,6 +312,15 @@ export default function Page() {
                             ))}
                         </fieldset>
                     </div>
+
+                    <div className = "mb-4">
+                        Upload Optional Material:
+                        <div className ="p-1 flex flex-row bg-[#84d3fa] dark:bg-[#1e3a8a] text-black dark:text-white rounded-lg">
+                            <CircleAlert className = "w-5 h-5 mx-2 mt-0.5"/>
+                            tip: upload script and presentation materials
+                        </div>
+                    </div>
+
                     
                     <div style = {{display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1.5rem'}}>
                         Select
@@ -208,7 +331,7 @@ export default function Page() {
                                 transition ${
                                 selectedOption === 'practice' 
                                     ? 'bg-[#dfcbbf] text-black' 
-                                    : 'bg-gray-200 text-black'
+                                    : 'bg-[#ffffff] text-black'
                             } hover:bg-[#c4a99e]`}
                         > 
                             <ImageUp className = "mr-4 ml-2"/>
@@ -228,12 +351,19 @@ export default function Page() {
                             Upload Video
                         </button>
                     </div>
+
                     
                     <div style={{ marginTop: '1.5rem' }}>
                         <div className = "p-2 rounded-lg space-y-4 justify-self-end">
-                            <Button type = "button" onClick = {handleStart} disabled = {!selectedOption}>
+                            <button type = "button" onClick = {handleStart} disabled = {!selectedOption}
+                                className ={`px-4 py-2 rounded-lg flex row bg-gray-200 text-black 
+                                    hover:bg-[#c4a99e]
+                                    disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-gray-200
+                                `}
+                            >
                                 Start
-                            </Button>
+                                <ArrowRight className = "ml-1"/>
+                            </button>
                         </div>
                     </div>
                 </form>
