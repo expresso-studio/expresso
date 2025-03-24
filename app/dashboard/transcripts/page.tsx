@@ -34,7 +34,8 @@ const TranscriptsPage: React.FC = () => {
           setTranscripts(data.transcripts);
         }
       } catch (err) {
-        setError("Failed to fetch transcripts.");
+        console.error("Error fetching transcripts:", err);
+        setError(`Failed to fetch transcripts: ${err instanceof Error ? err.message : String(err)}`);
       } finally {
         setLoading(false);
       }

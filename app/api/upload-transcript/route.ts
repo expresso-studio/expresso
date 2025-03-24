@@ -14,13 +14,11 @@ export async function POST(request: NextRequest) {
     }
 
 
-    let transcriptId;
-      // Insert new transcript
       const insertResult = await query(
         'INSERT INTO transcripts (user_id, presentation_id, transcript_text) VALUES ($1, $2, $3) RETURNING id',
         [userId, presentationId, transcript]
       );
-      transcriptId = insertResult.rows[0].id;
+      const transcriptId = insertResult.rows[0].id;
     
     return NextResponse.json({ 
       success: true, 

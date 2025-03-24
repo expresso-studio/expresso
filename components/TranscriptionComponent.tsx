@@ -60,12 +60,12 @@ function TranscriptionComponent({
         const wordCount = transcript.trim().split(/\s+/).filter(Boolean).length;
         const currentWPM = wordCount / elapsedMinutes;
         setSessionWPM(currentWPM);
-
+  
         setMaxWPM((prev) => (prev === null || currentWPM > prev ? currentWPM : prev));
         setMinWPM((prev) => (prev === null || currentWPM < prev ? currentWPM : prev));
       }
     }
-  }, [transcript]);
+  }, [transcript, startTime]);
 
   useEffect(() => {
     // Connect to our WebSocket server on port 3001.

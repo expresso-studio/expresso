@@ -10,15 +10,15 @@ export default function Page() {
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [isDeveloperMode, setIsDeveloperMode] = useState(true); // Default to true for developer
-  const { user, isAuthenticated, isLoading, error, refreshToken } = useAuthUtils();
+  // const { user, isAuthenticated, isLoading, error, refreshToken } = useAuthUtils();
     
-  // If there's an auth error, try to refresh the token
-  React.useEffect(() => {
-    if (error) {
-      console.error("Auth error in dashboard:", error);
-      refreshToken();
-    }
-  }, [error, refreshToken]);
+  // // If there's an auth error, try to refresh the token
+  // React.useEffect(() => {
+  //   if (error) {
+  //     console.error("Auth error in dashboard:", error);
+  //     refreshToken();
+  //   }
+  // }, [error, refreshToken]);
   
   // Handle recording state changes from the TranscriptionComponent
   const handleRecordingStateChange = (recording: boolean) => {

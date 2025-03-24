@@ -74,7 +74,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoKey, title, userId }) =>
 
 
 export default function PreviousPresentationsSection() {
-  const { user, isAuthenticated, isLoading, refreshToken } = useAuthUtils();
+  const { user, isAuthenticated, isLoading } = useAuthUtils();
   const [reports, setReports] = React.useState<ReportItemType[]>([]);
   const [loadingReports, setLoadingReports] = React.useState(true);
   const [selectedReport, setSelectedReport] =
