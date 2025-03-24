@@ -1,3 +1,4 @@
+//app/auth0-provider.tsx
 "use client";
 
 import { Auth0Provider, User } from "@auth0/auth0-react";
@@ -20,7 +21,7 @@ export default function AuthProvider({
   // After redirect, sync user with our database.
   const onRedirectCallback = async (appState?: AppState, user?: User) => {
     if (user) {
-      console.log(user.sub);
+      console.log("User authenticated:", user.sub);
       try {
         await fetch("/api/users/sync", {
           method: "POST",
@@ -43,10 +44,12 @@ export default function AuthProvider({
       domain={domain}
       clientId={clientId}
       authorizationParams={{
-        redirect_uri:
-          typeof window !== "undefined" ? window.location.origin : "",
+        redirect_uri: typeof window !== "undefined" ? window.location.origin : "",
       }}
       onRedirectCallback={onRedirectCallback}
+      cacheLocation="localstorage" // Use localStorage instead of memory for better persistence
+      useRefreshTokens={true} // Enable refresh tokens
+      skipRedirectCallback={typeof window !== "undefined" && window.location.pathname === "/api/auth/callback"}
     >
       {children}
     </Auth0Provider>

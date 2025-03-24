@@ -3,7 +3,7 @@
  */
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 interface PoseLandmark {
   x: number;
@@ -132,76 +132,76 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
     };
   }, [isClient, onError]);
 
-  // Handle recording state changes
-  useEffect(() => {
-    if (!streamRef.current) return;
+// Start recording function - memoized with useCallback
+const startRecording = useCallback(() => {
+  if (!streamRef.current) return;
+  
+  try {
+    recordedChunksRef.current = [];
     
-    if (isRecording) {
-      startRecording();
+    // Create a combined stream with video and audio tracks
+    const combinedTracks = [];
+    
+    // Add video track
+    const videoTrack = streamRef.current.getVideoTracks()[0];
+    if (videoTrack) {
+      combinedTracks.push(videoTrack);
     } else {
-      stopRecording();
+      console.error("No video track available");
+      return;
     }
-  }, [isRecording]);
-
-  // Start recording function
-  const startRecording = () => {
-    if (!streamRef.current) return;
     
-    try {
-      recordedChunksRef.current = [];
-      
-      // Create a combined stream with video and audio tracks
-      const combinedTracks = [];
-      
-      // Add video track
-      const videoTrack = streamRef.current.getVideoTracks()[0];
-      if (videoTrack) {
-        combinedTracks.push(videoTrack);
-      } else {
-        console.error("No video track available");
-        return;
-      }
-      
-      // Add audio track if available
-      if (audioStreamRef.current && audioStreamRef.current.getAudioTracks().length > 0) {
-        const audioTrack = audioStreamRef.current.getAudioTracks()[0];
-        combinedTracks.push(audioTrack);
-      }
-      
-      // Create combined stream
-      const combinedStream = new MediaStream(combinedTracks);
-      
-      // Create media recorder
-      const options = { mimeType: 'video/webm' };
-      mediaRecorderRef.current = new MediaRecorder(combinedStream, options);
-      
-      // Handle data available
-      mediaRecorderRef.current.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          recordedChunksRef.current.push(event.data);
-        }
-      };
-      
-      // Start recording
-      mediaRecorderRef.current.start(1000);
-      console.log("Recording started with audio");
-    } catch (error) {
-      console.error("Error starting recording:", error);
+    // Add audio track if available
+    if (audioStreamRef.current && audioStreamRef.current.getAudioTracks().length > 0) {
+      const audioTrack = audioStreamRef.current.getAudioTracks()[0];
+      combinedTracks.push(audioTrack);
     }
-  };
+    
+    // Create combined stream
+    const combinedStream = new MediaStream(combinedTracks);
+    
+    // Create media recorder
+    const options = { mimeType: 'video/webm' };
+    mediaRecorderRef.current = new MediaRecorder(combinedStream, options);
+    
+    // Handle data available
+    mediaRecorderRef.current.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        recordedChunksRef.current.push(event.data);
+      }
+    };
+    
+    // Start recording
+    mediaRecorderRef.current.start(1000);
+    console.log("Recording started with audio");
+  } catch (error) {
+    console.error("Error starting recording:", error);
+  }
+}, []);
 
-  // Stop recording function
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-      mediaRecorderRef.current.onstop = () => {
-        const videoBlob = new Blob(recordedChunksRef.current, { type: 'video/mp4' });
-        onVideoRecorded(videoBlob);
-        console.log("Recording stopped and saved");
-      };
-      
-      mediaRecorderRef.current.stop();
-    }
-  };
+// Stop recording function - memoized with useCallback
+const stopRecording = useCallback(() => {
+  if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+    mediaRecorderRef.current.onstop = () => {
+      const videoBlob = new Blob(recordedChunksRef.current, { type: 'video/mp4' });
+      onVideoRecorded(videoBlob);
+      console.log("Recording stopped and saved");
+    };
+    
+    mediaRecorderRef.current.stop();
+  }
+}, [onVideoRecorded]);
+
+// Handle recording state changes
+useEffect(() => {
+  if (!streamRef.current) return;
+  
+  if (isRecording) {
+    startRecording();
+  } else {
+    stopRecording();
+  }
+}, [isRecording, startRecording, stopRecording]);
 
   // Initialize pose detection
   useEffect(() => {

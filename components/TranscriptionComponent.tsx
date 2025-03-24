@@ -30,6 +30,10 @@ function TranscriptionComponent({
   const [fillerWordCount, setFillerWordCount] = useState(0);
   const [fillerWordsStats, setFillerWordsStats] = useState<{ [word: string]: number }>({});
   const [recordingDuration, setRecordingDuration] = useState(0);
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [sessionWPM, setSessionWPM] = useState<number>(0);
+  const [maxWPM, setMaxWPM] = useState<number | null>(null);
+  const [minWPM, setMinWPM] = useState<number | null>(null);
   
   // Refs for stable references
   const socketRef = useRef<WebSocket | null>(null);
@@ -74,6 +78,7 @@ function TranscriptionComponent({
     if (isRecording) {
       // Reset and start timer
       setRecordingDuration(0);
+      setStartTime(Date.now());
       timerIntervalRef.current = setInterval(() => {
         setRecordingDuration(prev => prev + 1);
       }, 1000);
@@ -92,6 +97,21 @@ function TranscriptionComponent({
       }
     };
   }, [isRecording]);
+
+  // Calculate WPM
+  useEffect(() => {
+    if (startTime !== null) {
+      const elapsedMinutes = (Date.now() - startTime) / 60000;
+      if (elapsedMinutes > 0) {
+        const wordCount = transcript.trim().split(/\s+/).filter(Boolean).length;
+        const currentWPM = wordCount / elapsedMinutes;
+        setSessionWPM(currentWPM);
+  
+        setMaxWPM((prev) => (prev === null || currentWPM > prev ? currentWPM : prev));
+        setMinWPM((prev) => (prev === null || currentWPM < prev ? currentWPM : prev));
+      }
+    }
+  }, [transcript, startTime]);
 
   // Function to format time (MM:SS)
   const formatTime = (seconds: number): string => {
@@ -210,6 +230,9 @@ function TranscriptionComponent({
       setTranscript("");
       setFillerWordCount(0);
       setFillerWordsStats({});
+      setSessionWPM(0);
+      setMaxWPM(null);
+      setMinWPM(null);
       
       console.log("Establishing WebSocket connection...");
       const ws = await createWebSocketConnection();
@@ -274,6 +297,9 @@ function TranscriptionComponent({
             user: "auth0|67baac4182c20de0c41b0395", // TODO: Fix with actual user id
             fillerWordCount: fillerWordCount,
             fillerWordsStats: fillerWordsStats,
+            maxWPM: maxWPM,
+            minWPM: minWPM,
+            sessionWPM: sessionWPM,
           }),
         });
         const data = await response.json();

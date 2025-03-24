@@ -1,33 +1,84 @@
 "use client";
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface VideoPlaybackProps {
   videoBlob: Blob | null;
   onDownload?: () => void;
 }
 
-const VideoPlayback: React.FC<VideoPlaybackProps> = ({ 
-  videoBlob,
-  onDownload
-}) => {
+const VideoPlayback: React.FC<VideoPlaybackProps> = ({ videoBlob, onDownload }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  
+  const { user, isAuthenticated } = useAuth0();
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [showTitleDialog, setShowTitleDialog] = useState(false);
+  const [title, setTitle] = useState("");
+
   useEffect(() => {
     if (videoBlob && videoRef.current) {
-      // Create object URL from the blob
+      // Create an object URL from the blob
       const videoUrl = URL.createObjectURL(videoBlob);
-      
-      // Set the video source
       videoRef.current.src = videoUrl;
-      
-      // Clean up the object URL when component unmounts
+      // Clean up the object URL when the component unmounts
       return () => {
         URL.revokeObjectURL(videoUrl);
       };
     }
   }, [videoBlob]);
-  
+
+  const handleSaveClick = () => {
+    setTitle(""); // Reset title
+    setShowTitleDialog(true);
+  };
+
+  const handleTitleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setShowTitleDialog(false);
+    await handleUpload();
+  };
+
+  const handleUpload = async () => {
+    if (!videoBlob) return;
+    if (!isAuthenticated || !user?.sub) {
+      console.error('User not authenticated');
+      return;
+    }
+    
+    setUploading(true);
+    setUploadError(null);
+    setUploadSuccess(false);
+
+    const formData = new FormData();
+    formData.append('video', videoBlob, 'presentation-recording.mp4');
+
+    try {
+      const finalTitle = title.trim() || "Untitled Presentation";
+      const res = await fetch(
+        `/api/upload-video?user=${encodeURIComponent(user.sub)}&title=${encodeURIComponent(finalTitle)}`, 
+        {
+          method: 'POST',
+          body: formData,
+        }
+      );
+      
+      if (!res.ok) {
+        throw new Error('Upload failed');
+      }
+      
+      const data = await res.json();
+      console.log('Video uploaded, URL:', data.videoUrl, 'ID:', data.presentationId);
+      setUploadSuccess(true);
+    } catch (error) {
+      console.error('Error during video upload:', error);
+      setUploadError('Failed to upload video.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   if (!videoBlob) {
     return (
       <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-8 bg-gray-50 dark:bg-gray-900">
@@ -40,7 +91,7 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({
       </div>
     );
   }
-  
+
   return (
     <div className="flex flex-col">
       <video 
@@ -49,7 +100,7 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({
         controls
         playsInline
       />
-      <div className="mt-2 flex justify-end">
+      <div className="mt-2 flex justify-end space-x-2">
         <a
           href={URL.createObjectURL(videoBlob)}
           download="presentation-recording.mp4"
@@ -61,7 +112,50 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({
           </svg>
           Download Video
         </a>
+        <button
+          onClick={handleSaveClick}
+          disabled={uploading}
+          className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center"
+        >
+          {uploading ? "Saving..." : "Save Video"}
+        </button>
       </div>
+      {uploadError && <p className="mt-2 text-red-500">{uploadError}</p>}
+      {uploadSuccess && <p className="mt-2 text-green-500">Video saved successfully!</p>}
+
+      {/* Title Dialog */}
+      {showTitleDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-medium mb-4">Enter Presentation Title</h3>
+            <form onSubmit={handleTitleSubmit}>
+              <input
+                type="text"
+                className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 mb-4"
+                placeholder="Presentation Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                autoFocus
+              />
+              <div className="flex justify-end space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setShowTitleDialog(false)}
+                  className="px-4 py-2 border rounded"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

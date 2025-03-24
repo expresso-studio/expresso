@@ -8,27 +8,68 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-];
+import { useEffect, useState } from "react";
+
+type ChartDataType = {
+  day: string;
+  high: number;
+  low: number;
+};
+
+type FillerWordStats = {
+  id: number;
+  created_at: string;
+  max_wpm: string;
+  min_wpm: string;
+  session_wpm: string;
+}
 
 const chartConfig = {
   desktop: {
-    label: "High",
+    label: "high",
     color: "hsl(var(--chart-1))",
   },
   mobile: {
-    label: "Low",
+    label: "low",
     color: "hsl(var(--chart-3))",
   },
 } satisfies ChartConfig;
 
 export function WPMChart() {
+  const [chartData, setChartData] = useState<ChartDataType[]>([]);
+
+  useEffect(() => {
+    const fetchWPM = async () => {
+      try {
+        const response = await fetch("/api/fillerwords/wpm");
+        if (!response.ok) {
+          throw new Error("Failed to fetch filler words");
+        }
+
+        const data = await response.json();
+        console.log(data)
+        if (data.fillerWords) {
+          const formattedData: ChartDataType[] = data.fillerWords.map(
+            (entry: FillerWordStats) => ({
+              day: new Date(entry.created_at).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              }),
+              high: parseFloat(entry.max_wpm),
+              low: parseFloat(entry.min_wpm),
+            })
+          );
+
+          setChartData(formattedData);
+        }
+      } catch (error) {
+        console.error("Error fetching filler words:", error);
+      }
+    };
+  
+    fetchWPM();
+  }, []);
+
   return (
     <Card>
       <CardHeader>
@@ -48,7 +89,7 @@ export function WPMChart() {
           >
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="month"
+              dataKey="day"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
@@ -59,7 +100,7 @@ export function WPMChart() {
               content={<ChartTooltipContent indicator="dot" />}
             />
             <Area
-              dataKey="mobile"
+              dataKey="high"
               type="natural"
               fill="var(--color-mobile)"
               fillOpacity={0.4}
@@ -67,7 +108,7 @@ export function WPMChart() {
               stackId="a"
             />
             <Area
-              dataKey="desktop"
+              dataKey="low"
               type="natural"
               fill="var(--color-desktop)"
               fillOpacity={0.4}
