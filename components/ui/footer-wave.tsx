@@ -1,10 +1,12 @@
+import Image from "next/image";
 const FooterWave = () => {
     return (
-      <footer className="relative w-full">
-        <img
+      <footer className="relative w-full h-32">
+        <Image
           src="/footer-wave-1.svg" 
           alt="Wave Design in Footer"
-          className="absolute bottom-0 left-0 w-full"
+          fill
+          className="object-cover w-full"
         />
       </footer>
     );
