@@ -2,24 +2,7 @@
 
 import React from "react";
 import VideoPlayback from "./VideoPlayback";
-
-interface MetricData {
-  value: number;
-  status: string;
-}
-
-export interface AnalysisData {
-  handMovement: MetricData;
-  headMovement: MetricData;
-  bodyMovement: MetricData;
-  posture: MetricData;
-  handSymmetry: MetricData;
-  gestureVariety: MetricData;
-  eyeContact: MetricData;
-  overallScore: number;
-  sessionDuration: number;
-  transcript: string;
-}
+import { AnalysisData, MetricData } from "@/lib/types";
 
 interface AnalysisReportProps {
   isOpen: boolean;

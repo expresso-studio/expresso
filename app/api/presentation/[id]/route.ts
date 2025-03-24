@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
-import { PresentationMetrics } from "@/lib/constants";
+import { MetricIds, MetricIdToName } from "@/lib/constants";
 
 export async function GET(
   request: Request,
@@ -56,10 +56,13 @@ export async function GET(
     );
 
     // Map metric_ids to their names
-    const metricsWithNames = metricsResult.rows.map((metric) => ({
-      ...metric,
-      name: PresentationMetrics[metric.metric_id], // This will get the enum key name
-    }));
+    const metricsWithNames = metricsResult.rows.map((metric) => {
+      const metric_name = MetricIdToName[metric.metric_id as MetricIds];
+      return {
+        ...metric,
+        name: metric_name, // This will get the enum key name
+      };
+    });
 
     console.log("howdy :2");
     console.log(metricsWithNames);

@@ -1,4 +1,15 @@
-export enum PresentationMetrics {
+export enum MetricNames {
+  HandMovement = "handMovement",
+  HeadMovement = "headMovement",
+  BodyMovement = "bodyMovement",
+  Posture = "posture",
+  HandSymmetry = "handSymmetry",
+  GestureVariety = "gestureVariety",
+  EyeContact = "eyeContact",
+  OverallScore = "overallScore",
+}
+
+export enum MetricIds {
   HandMovement = 1,
   HeadMovement = 2,
   BodyMovement = 3,
@@ -9,13 +20,45 @@ export enum PresentationMetrics {
   OverallScore = 8,
 }
 
-// Optional: You can also add the optimal ranges as a constant if needed
-export const METRIC_OPTIMAL_RANGES = {
-  [PresentationMetrics.HandMovement]: { min: 0.08, max: 0.7 },
-  [PresentationMetrics.HeadMovement]: { min: 0.01, max: 0.5 },
-  [PresentationMetrics.BodyMovement]: { min: 0.02, max: 0.6 },
-  [PresentationMetrics.Posture]: { min: 0.4, max: 1.0 },
-  [PresentationMetrics.HandSymmetry]: { min: 0.2, max: 0.9 },
-  [PresentationMetrics.GestureVariety]: { min: 0.15, max: 0.9 },
-  [PresentationMetrics.EyeContact]: { min: 0.3, max: 0.9 },
-} as const;
+export const MetricNameToId: Record<MetricNames, MetricIds> = {
+  [MetricNames.HandMovement]: MetricIds.HandMovement,
+  [MetricNames.HeadMovement]: MetricIds.HeadMovement,
+  [MetricNames.BodyMovement]: MetricIds.BodyMovement,
+  [MetricNames.Posture]: MetricIds.Posture,
+  [MetricNames.HandSymmetry]: MetricIds.HandSymmetry,
+  [MetricNames.GestureVariety]: MetricIds.GestureVariety,
+  [MetricNames.EyeContact]: MetricIds.EyeContact,
+  [MetricNames.OverallScore]: MetricIds.OverallScore,
+};
+
+export const MetricIdToName: Record<MetricIds, MetricNames> = {
+  [MetricIds.HandMovement]: MetricNames.HandMovement,
+  [MetricIds.HeadMovement]: MetricNames.HeadMovement,
+  [MetricIds.BodyMovement]: MetricNames.BodyMovement,
+  [MetricIds.Posture]: MetricNames.Posture,
+  [MetricIds.HandSymmetry]: MetricNames.HandSymmetry,
+  [MetricIds.GestureVariety]: MetricNames.GestureVariety,
+  [MetricIds.EyeContact]: MetricNames.EyeContact,
+  [MetricIds.OverallScore]: MetricNames.OverallScore,
+};
+
+// Buffer sizes and coefficients
+export const MOVEMENT_BUFFER_SIZE = 60; // 2 seconds at 30fps
+export const POSTURE_COEFFICIENT = 0.25;
+export const HAND_MOVEMENT_COEFFICIENT = 0.2;
+export const HEAD_MOVEMENT_COEFFICIENT = 0.15;
+export const BODY_MOVEMENT_COEFFICIENT = 0.15;
+export const HAND_SYMMETRY_COEFFICIENT = 0.1;
+export const GESTURE_VARIETY_COEFFICIENT = 0.05;
+export const EYE_CONTACT_COEFFICIENT = 0.1;
+
+// Optimal value ranges for public speaking - with wider ranges for easier achievement
+export const OPTIMAL_RANGES = {
+  handMovement: { min: 0.08, max: 0.7 }, // Even wider range for hand movement
+  headMovement: { min: 0.01, max: 0.5 }, // Wider range for head movement
+  bodyMovement: { min: 0.02, max: 0.6 }, // New parameter with wide range
+  posture: { min: 0.4, max: 1.0 }, // Lower threshold for good posture
+  handSymmetry: { min: 0.2, max: 0.9 }, // Even lower minimum threshold
+  gestureVariety: { min: 0.15, max: 0.9 }, // Lower minimum threshold
+  eyeContact: { min: 0.3, max: 0.9 }, // Lower minimum threshold
+};

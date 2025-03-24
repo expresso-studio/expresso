@@ -3,11 +3,21 @@
 import { useEffect, useState, use } from "react";
 import { useAuthUtils } from "@/hooks/useAuthUtils";
 import { outfit } from "@/app/fonts";
-import { cn } from "@/lib/utils";
-import { LoaderCircle } from "lucide-react";
+import { cn, transformMetricsToGestureMetrics } from "@/lib/utils";
+import { MetricType } from "@/lib/types";
+import { Download, LoaderCircle, MessagesSquare } from "lucide-react";
 import Loading from "@/components/loading";
 import PageFormat from "@/components/page-format";
 import Heading1 from "@/components/heading-1";
+import Link from "next/link";
+import { MetricsDisplay } from "@/app/dashboard/evaluate/gesture-analysis";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface Metric {
   metric_id: number;
@@ -31,43 +41,6 @@ interface VideoPlayerProps {
   videoKey: string;
   userId: string;
 }
-
-const MetricCard: React.FC<{ metric: Metric }> = ({ metric }) => {
-  // Calculate color based on score
-  const getScoreColor = (score: number) => {
-    if (score >= 80) return "text-green-600 dark:text-green-400";
-    if (score >= 60) return "text-yellow-600 dark:text-yellow-400";
-    return "text-red-600 dark:text-red-400";
-  };
-
-  // Calculate width of progress bar
-  const progressWidth = Math.max(0, Math.min(100, metric.score));
-
-  return (
-    <div className="bg-white dark:bg-stone-800 p-4 rounded-lg shadow">
-      <div className="flex justify-between items-center mb-2">
-        <h3 className="font-medium text-lg">{metric.name}</h3>
-        <span className={cn("font-bold", getScoreColor(metric.score))}>
-          {metric.score.toFixed(1)}%
-        </span>
-      </div>
-
-      <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-        <div
-          className={cn(
-            "h-full rounded-full transition-all duration-500",
-            getScoreColor(metric.score).replace("text-", "bg-")
-          )}
-          style={{ width: `${progressWidth}%` }}
-        />
-      </div>
-
-      <p className="text-sm text-stone-500 mt-2">
-        Evaluated: {new Date(metric.evaluated_at).toLocaleDateString()}
-      </p>
-    </div>
-  );
-};
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoKey, userId }) => {
   const [signedUrl, setSignedUrl] = useState<string>("");
@@ -160,11 +133,19 @@ export default function PresentationPage({
   }
 
   if (!isAuthenticated || !user?.sub) {
-    return <div>Please log in to view this presentation.</div>;
+    return (
+      <div className="w-full h-full items-center justify-center">
+        Please log in to view this presentation.
+      </div>
+    );
   }
 
   if (!presentation) {
-    return <div>Presentation not found.</div>;
+    return (
+      <div className="w-full h-full items-center justify-center">
+        Presentation not found.
+      </div>
+    );
   }
 
   return (
@@ -175,12 +156,11 @@ export default function PresentationPage({
         { name: presentation.title },
       ]}
     >
-      <Heading1 id="user">{presentation.title}</Heading1>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full">
-        <div>
+        <div className="flex flex-col gap-2">
+          <Heading1 id="user">{presentation.title}</Heading1>
           <VideoPlayer videoKey={presentation.video_url} userId={user.sub} />
-          <div className="mt-2">
+          <div className="flex items-center justify-between">
             <p className="text-stone-500">
               Created on:{" "}
               {new Date(presentation.created_at).toLocaleDateString()}
@@ -188,14 +168,50 @@ export default function PresentationPage({
           </div>
         </div>
 
-        <div className="bg-stone-100 dark:bg-stone-900 py-6 px-4 rounded-lg h-full">
-          <h2 className={cn("text-xl font-semibold mb-4", outfit.className)}>
-            Performance Metrics
-          </h2>
-          <div className="space-y-4">
-            {presentation.metrics.map((metric) => (
-              <MetricCard key={metric.metric_id} metric={metric} />
-            ))}
+        <div className="h-full flex flex-col gap-2">
+          <div className="flex items-center justify-end gap-2">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger className="group">
+                  <Button
+                    onClick={() => window.print()}
+                    variant="link"
+                    size="icon"
+                  >
+                    <Download className="text-stone-400 group-hover:text-stone-800 dark:text-stone-400 dark:group-hover:text-white scale-110 duration-200" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Download Report</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger className="group">
+                  <Link
+                    href="/dashboard/qna"
+                    className="flex items-center gap-1 px-2 py-1 rounded-md bg-darkCoffee group-hover:bg-lightCoffee"
+                  >
+                    <MessagesSquare size={14} />
+                    QnA
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Practice a QnA session with this presentation!</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          <div className="bg-stone-100 dark:bg-stone-900 py-6 px-4 rounded-lg h-full">
+            <h2 className={cn("text-xl font-semibold mb-4", outfit.className)}>
+              Performance Metrics
+            </h2>
+            <MetricsDisplay
+              metrics={transformMetricsToGestureMetrics(
+                presentation.metrics as MetricType[]
+              )}
+            />
           </div>
         </div>
       </div>

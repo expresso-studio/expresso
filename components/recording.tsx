@@ -6,6 +6,7 @@ import { LuSpeech } from "react-icons/lu";
 import { useRouter } from "next/navigation";
 import { useAuthUtils } from "@/hooks/useAuthUtils";
 import Image from "next/image";
+import { MetricNames } from "@/lib/constants";
 
 interface Props extends PresentationType {
   className?: string;
@@ -113,7 +114,9 @@ const Recording = React.memo<Props>(function Recording({
         )}
       >
         <LuSpeech />
-        {metrics.find((metric) => metric.name == "OverallScore")?.score ?? 0}%
+        {metrics.find((metric) => metric.name == MetricNames.OverallScore)
+          ?.score ?? 0}
+        %
       </div>
       {signedUrl ? (
         <video

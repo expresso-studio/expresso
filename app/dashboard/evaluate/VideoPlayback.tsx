@@ -2,6 +2,7 @@
 
 import React, { useRef, useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { MetricInput, MetricNames } from "./gesture-analysis";
 
 interface MetricData {
   value: number;
@@ -100,53 +101,38 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({
           console.log("Sending metrics:", metrics);
 
           // Format metrics data properly and ensure values are between 0-100
-          const metricsToSend = [
+          const metricsToSend: MetricInput[] = [
             {
-              metricName: "handMovement",
-              value: Math.min(
-                100,
-                Math.max(0, metrics.handMovement.value * 100)
-              ),
+              name: MetricNames.HandSymmetry,
+              value: Math.min(1, Math.max(0, metrics.handMovement.value)),
             },
             {
-              metricName: "headMovement",
-              value: Math.min(
-                100,
-                Math.max(0, metrics.headMovement.value * 100)
-              ),
+              name: MetricNames.HeadMovement,
+              value: Math.min(1, Math.max(0, metrics.headMovement.value)),
             },
             {
-              metricName: "bodyMovement",
-              value: Math.min(
-                100,
-                Math.max(0, metrics.bodyMovement.value * 100)
-              ),
+              name: MetricNames.BodyMovement,
+              value: Math.min(1, Math.max(0, metrics.bodyMovement.value)),
             },
             {
-              metricName: "posture",
-              value: Math.min(100, Math.max(0, metrics.posture.value * 100)),
+              name: MetricNames.Posture,
+              value: Math.min(1, Math.max(0, metrics.posture.value)),
             },
             {
-              metricName: "handSymmetry",
-              value: Math.min(
-                100,
-                Math.max(0, metrics.handSymmetry.value * 100)
-              ),
+              name: MetricNames.HandSymmetry,
+              value: Math.min(1, Math.max(0, metrics.handSymmetry.value)),
             },
             {
-              metricName: "gestureVariety",
-              value: Math.min(
-                100,
-                Math.max(0, metrics.gestureVariety.value * 100)
-              ),
+              name: MetricNames.GestureVariety,
+              value: Math.min(1, Math.max(0, metrics.gestureVariety.value)),
             },
             {
-              metricName: "eyeContact",
-              value: Math.min(100, Math.max(0, metrics.eyeContact.value * 100)),
+              name: MetricNames.EyeContact,
+              value: Math.min(1, Math.max(0, metrics.eyeContact.value)),
             },
             {
-              metricName: "overallScore",
-              value: Math.min(100, Math.max(0, metrics.overallScore)), // overallScore is already 0-100
+              name: MetricNames.OverallScore,
+              value: Math.min(1, Math.max(0, metrics.overallScore)),
             },
           ];
 

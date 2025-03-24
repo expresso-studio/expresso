@@ -1,10 +1,7 @@
 import { query } from "@/lib/db";
+import { MetricNameToId } from "@/lib/constants";
+import { MetricInput } from "@/lib/types";
 import { randomUUID } from "crypto";
-
-interface MetricInput {
-  metricName: string;
-  value: number;
-}
 
 export async function POST(request: Request) {
   try {
@@ -36,39 +33,19 @@ export async function POST(request: Request) {
       );
     }
 
-    // Verify all metrics exist in the metrics table
-    const metricNames = metrics.map(
-      (m) => m.metricName.charAt(0).toUpperCase() + m.metricName.slice(1)
-    );
-    const metricsCheck = await query(
-      `SELECT id, name FROM metrics WHERE name = ANY($1)`,
-      metricNames
-    );
-
-    const metricIdMap = metricsCheck.rows.reduce(
-      (acc: { [key: string]: number }, row) => {
-        acc[row.name.toLowerCase()] = row.id;
-        return acc;
-      },
-      {}
-    );
-
     // Insert each metric
     const promises = metrics.map((metric: MetricInput) => {
-      const metricId = metricIdMap[metric.metricName.toLowerCase()];
+      const metricId = MetricNameToId[metric.name];
 
       if (!metricId) {
-        console.warn(`Skipping invalid metric: ${metric.metricName}`);
+        console.warn(`Skipping invalid metric: ${metric.name}`);
         return null;
       }
-
-      // Ensure value is between 0 and 100
-      const normalizedValue = Math.min(100, Math.max(0, metric.value));
 
       return query(
         `INSERT INTO presentation_metrics (id, presentation_id, metric_id, score)
          VALUES ($1, $2, $3, $4)`,
-        [randomUUID(), presentationId, metricId, normalizedValue]
+        [randomUUID(), presentationId, metricId, metric.value]
       );
     });
 
