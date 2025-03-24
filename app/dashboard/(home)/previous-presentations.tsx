@@ -4,8 +4,20 @@ import * as React from "react";
 import Recording from "@/components/recording";
 import Section from "@/components/section";
 import { useAuthUtils } from "@/hooks/useAuthUtils";
-import { ReportItemType } from "@/lib/types";
 import { cn } from "@/lib/utils";
+
+interface ReportItemType {
+  presentation_id: string;
+  title: string;
+  created_at: string;
+  video_url: string;
+  metrics: {
+    metric_id: number;
+    name: string;
+    score: number;
+    evaluated_at: string;
+  }[];
+}
 
 export default function PreviousPresentationsSection() {
   const { user, isAuthenticated, isLoading } = useAuthUtils();
@@ -58,7 +70,7 @@ export default function PreviousPresentationsSection() {
                   title={""}
                   created_at={""}
                   video_url={""}
-                  metrics={null}
+                  metrics={[]}
                 />
                 <Recording
                   loading={true}
@@ -66,7 +78,7 @@ export default function PreviousPresentationsSection() {
                   title={""}
                   created_at={""}
                   video_url={""}
-                  metrics={null}
+                  metrics={[]}
                 />
                 <Recording
                   loading={true}
@@ -74,7 +86,7 @@ export default function PreviousPresentationsSection() {
                   title={""}
                   created_at={""}
                   video_url={""}
-                  metrics={null}
+                  metrics={[]}
                 />
               </>
             ) : !isAuthenticated ? (
@@ -85,17 +97,20 @@ export default function PreviousPresentationsSection() {
               </div>
             ) : (
               user &&
-              reports.map((report) => (
-                <Recording
-                  key={report.presentation_id}
-                  id={report.presentation_id}
-                  title={report.title}
-                  created_at={report.created_at}
-                  loading={false}
-                  video_url={report.video_url}
-                  metrics={report.metrics}
-                />
-              ))
+              reports.map(
+                (report, i) =>
+                  i < 3 && (
+                    <Recording
+                      key={report.presentation_id}
+                      id={report.presentation_id}
+                      title={report.title}
+                      created_at={report.created_at}
+                      loading={false}
+                      video_url={report.video_url}
+                      metrics={report.metrics || []}
+                    />
+                  )
+              )
             )}
             <div aria-hidden={true} className={"max-w-[1rem] opacity-0"}>
               x

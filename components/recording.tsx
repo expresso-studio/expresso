@@ -112,7 +112,7 @@ const Recording = React.memo<Props>(function Recording({
         )}
       >
         <LuSpeech />
-        {metrics?.score ?? 0}%
+        {metrics.find((metric) => metric.name == "OverallScore")?.score ?? 0}%
       </div>
       {signedUrl ? (
         <video

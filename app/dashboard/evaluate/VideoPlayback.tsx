@@ -1,14 +1,35 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+
+interface MetricData {
+  value: number;
+  status: string;
+}
 
 interface VideoPlaybackProps {
   videoBlob: Blob | null;
   onDownload?: () => void;
+  metrics: {
+    handMovement: MetricData;
+    headMovement: MetricData;
+    bodyMovement: MetricData;
+    posture: MetricData;
+    handSymmetry: MetricData;
+    gestureVariety: MetricData;
+    eyeContact: MetricData;
+    overallScore: number;
+    sessionDuration: number;
+    transcript: string;
+  };
 }
 
-const VideoPlayback: React.FC<VideoPlaybackProps> = ({ videoBlob, onDownload }) => {
+const VideoPlayback: React.FC<VideoPlaybackProps> = ({
+  videoBlob,
+  onDownload,
+  metrics,
+}) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { user, isAuthenticated } = useAuth0();
   const [uploading, setUploading] = useState(false);
@@ -43,37 +64,134 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({ videoBlob, onDownload }) 
   const handleUpload = async () => {
     if (!videoBlob) return;
     if (!isAuthenticated || !user?.sub) {
-      console.error('User not authenticated');
+      console.error("User not authenticated");
       return;
     }
-    
+
     setUploading(true);
     setUploadError(null);
     setUploadSuccess(false);
 
     const formData = new FormData();
-    formData.append('video', videoBlob, 'presentation-recording.mp4');
+    formData.append("video", videoBlob, "presentation-recording.mp4");
 
     try {
       const finalTitle = title.trim() || "Untitled Presentation";
-      const res = await fetch(
-        `/api/upload-video?user=${encodeURIComponent(user.sub)}&title=${encodeURIComponent(finalTitle)}`, 
+      // Upload video first
+      const videoRes = await fetch(
+        `/api/upload-video?user=${encodeURIComponent(
+          user.sub
+        )}&title=${encodeURIComponent(finalTitle)}`,
         {
-          method: 'POST',
+          method: "POST",
           body: formData,
         }
       );
-      
-      if (!res.ok) {
-        throw new Error('Upload failed');
+
+      if (!videoRes.ok) {
+        throw new Error("Video upload failed");
       }
-      
-      const data = await res.json();
-      console.log('Video uploaded, URL:', data.videoUrl, 'ID:', data.presentationId);
+
+      const { videoUrl, presentationId } = await videoRes.json();
+
+      // If metrics are provided and we have a presentationId, save the metrics
+      if (metrics && presentationId) {
+        try {
+          console.log("Sending metrics:", metrics);
+
+          // Format metrics data properly and ensure values are between 0-100
+          const metricsToSend = [
+            {
+              metricName: "handMovement",
+              value: Math.min(
+                100,
+                Math.max(0, metrics.handMovement.value * 100)
+              ),
+            },
+            {
+              metricName: "headMovement",
+              value: Math.min(
+                100,
+                Math.max(0, metrics.headMovement.value * 100)
+              ),
+            },
+            {
+              metricName: "bodyMovement",
+              value: Math.min(
+                100,
+                Math.max(0, metrics.bodyMovement.value * 100)
+              ),
+            },
+            {
+              metricName: "posture",
+              value: Math.min(100, Math.max(0, metrics.posture.value * 100)),
+            },
+            {
+              metricName: "handSymmetry",
+              value: Math.min(
+                100,
+                Math.max(0, metrics.handSymmetry.value * 100)
+              ),
+            },
+            {
+              metricName: "gestureVariety",
+              value: Math.min(
+                100,
+                Math.max(0, metrics.gestureVariety.value * 100)
+              ),
+            },
+            {
+              metricName: "eyeContact",
+              value: Math.min(100, Math.max(0, metrics.eyeContact.value * 100)),
+            },
+            {
+              metricName: "overallScore",
+              value: Math.min(100, Math.max(0, metrics.overallScore)), // overallScore is already 0-100
+            },
+          ];
+
+          const metricsRes = await fetch("/api/presentation/metrics", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              presentationId,
+              userId: user.sub,
+              metrics: metricsToSend,
+            }),
+          });
+
+          if (!metricsRes.ok) {
+            const errorData = await metricsRes.json();
+            console.error("Metrics response:", errorData);
+            throw new Error(
+              `Failed to save metrics: ${errorData.error || "Unknown error"}`
+            );
+          }
+
+          const metricsData = await metricsRes.json();
+          console.log("Metrics saved successfully:", metricsData);
+        } catch (metricsError) {
+          console.error("Error saving metrics:", metricsError);
+          setUploadError("Video uploaded but failed to save metrics.");
+        }
+      } else {
+        console.warn("No metrics provided or missing presentationId:", {
+          hasMetrics: !!metrics,
+          presentationId,
+        });
+      }
+
+      console.log("Video uploaded, URL:", videoUrl, "ID:", presentationId);
       setUploadSuccess(true);
     } catch (error) {
-      console.error('Error during video upload:', error);
-      setUploadError('Failed to upload video.');
+      console.error("Error during upload:", error);
+      setUploadError(
+        error instanceof Error
+          ? error.message
+          : "Failed to upload video or save metrics."
+      );
     } finally {
       setUploading(false);
     }
@@ -83,8 +201,19 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({ videoBlob, onDownload }) 
     return (
       <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-8 bg-gray-50 dark:bg-gray-900">
         <div className="text-center text-gray-500 dark:text-gray-400">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-12 w-12 mx-auto mb-3"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+            />
           </svg>
           <p className="text-sm font-medium">No video recording available</p>
         </div>
@@ -94,8 +223,8 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({ videoBlob, onDownload }) 
 
   return (
     <div className="flex flex-col">
-      <video 
-        ref={videoRef} 
+      <video
+        ref={videoRef}
         className="w-full rounded-lg border dark:border-gray-700"
         controls
         playsInline
@@ -107,8 +236,19 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({ videoBlob, onDownload }) 
           className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
           onClick={() => onDownload && onDownload()}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 mr-2"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+            />
           </svg>
           Download Video
         </a>
@@ -121,13 +261,17 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({ videoBlob, onDownload }) 
         </button>
       </div>
       {uploadError && <p className="mt-2 text-red-500">{uploadError}</p>}
-      {uploadSuccess && <p className="mt-2 text-green-500">Video saved successfully!</p>}
+      {uploadSuccess && (
+        <p className="mt-2 text-green-500">Video saved successfully!</p>
+      )}
 
       {/* Title Dialog */}
       {showTitleDialog && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-medium mb-4">Enter Presentation Title</h3>
+            <h3 className="text-lg font-medium mb-4">
+              Enter Presentation Title
+            </h3>
             <form onSubmit={handleTitleSubmit}>
               <input
                 type="text"

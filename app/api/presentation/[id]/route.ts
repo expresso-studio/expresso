@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
+import { PresentationMetrics } from "@/lib/constants";
 
 export async function GET(
   request: Request,
@@ -48,17 +49,25 @@ export async function GET(
 
     // Get the metrics for this presentation
     const metricsResult = await query(
-      `SELECT pm.metric_id, m.name, pm.score, pm.evaluated_at 
+      `SELECT pm.metric_id, pm.score, pm.evaluated_at 
        FROM presentation_metrics pm
-       JOIN metrics m ON pm.metric_id = m.id
        WHERE pm.presentation_id = $1`,
       [presentationId]
     );
 
+    // Map metric_ids to their names
+    const metricsWithNames = metricsResult.rows.map((metric) => ({
+      ...metric,
+      name: PresentationMetrics[metric.metric_id], // This will get the enum key name
+    }));
+
+    console.log("howdy :2");
+    console.log(metricsWithNames);
+
     return NextResponse.json(
       {
         ...presentation,
-        metrics: metricsResult.rows,
+        metrics: metricsWithNames,
       },
       {
         status: 200,
