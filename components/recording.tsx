@@ -51,14 +51,14 @@ const Recording = React.memo<Props>(function Recording({
     fetchSignedUrl();
   }, [video_url, user?.sub]);
 
-  const handleLoadedData = () => {
+  const handleLoadedData = React.useCallback(() => {
     const video = videoRef.current;
     if (video) {
-      video.currentTime = 0.1;
+      video.currentTime = 0.01;
       video.pause();
       setIsLoaded(true);
     }
-  };
+  }, [videoRef.current]);
 
   const handleClick = () => {
     if (user?.sub && id) {
