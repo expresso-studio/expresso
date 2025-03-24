@@ -17,12 +17,11 @@ const TopFiller = React.memo<Props>(function TopFiller({ short }) {
         if (!response.ok) {
           throw new Error("Failed to fetch filler words");
         }
-        // Assume the API returns JSON in the format: { fillerWords: string[] }
+
         const data = await response.json();
         const words = data.fillerWords.map(
           (item: { filler_word: string; total_count: string }) => item.filler_word
         );
-        console.log(words);
         setFillerWords(words.slice(0, 3));
       } catch (error) {
         console.error("Error fetching filler words:", error);
