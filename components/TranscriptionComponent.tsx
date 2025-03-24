@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from "react";
 
@@ -18,9 +18,9 @@ const FILLER_WORDS = new Set([
   "like",
 ]);
 
-function TranscriptionComponent({ 
-  onRecordingStateChange, 
-  onTranscriptUpdate 
+function TranscriptionComponent({
+  onRecordingStateChange,
+  onTranscriptUpdate,
 }: TranscriptionComponentProps) {
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [microphone, setMicrophone] = useState<MediaRecorder | null>(null);
@@ -28,16 +28,20 @@ function TranscriptionComponent({
   const [isRecording, setIsRecording] = useState(false);
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [fillerWordCount, setFillerWordCount] = useState(0);
-  const [fillerWordsStats, setFillerWordsStats] = useState<{ [word: string]: number }>({});
+  const [fillerWordsStats, setFillerWordsStats] = useState<{
+    [word: string]: number;
+  }>({});
   const [startTime, setStartTime] = useState<number | null>(null);
   const [sessionWPM, setSessionWPM] = useState<number>(0);
   const [maxWPM, setMaxWPM] = useState<number | null>(null);
   const [minWPM, setMinWPM] = useState<number | null>(null);
 
   useEffect(() => {
-    async function initAudio() {  
+    async function initAudio() {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
         setAudioStream(stream);
       } catch (error) {
         console.error("Error accessing microphone:", error);
@@ -61,15 +65,21 @@ function TranscriptionComponent({
         const currentWPM = wordCount / elapsedMinutes;
         setSessionWPM(currentWPM);
 
-        setMaxWPM((prev) => (prev === null || currentWPM > prev ? currentWPM : prev));
-        setMinWPM((prev) => (prev === null || currentWPM < prev ? currentWPM : prev));
+        setMaxWPM((prev) =>
+          prev === null || currentWPM > prev ? currentWPM : prev
+        );
+        setMinWPM((prev) =>
+          prev === null || currentWPM < prev ? currentWPM : prev
+        );
       }
     }
-  }, [transcript]);
+  }, [transcript, startTime]);
 
   useEffect(() => {
     // Connect to our WebSocket server on port 3001.
-    const ws = new WebSocket("wss://transcriptionwebsocket-production.up.railway.app");
+    const ws = new WebSocket(
+      "wss://transcriptionwebsocket-production.up.railway.app"
+    );
     ws.addEventListener("open", () => {
       console.log("client: connected to server");
     });
@@ -92,10 +102,10 @@ function TranscriptionComponent({
         setTranscript((prev) => prev + newText + " ");
 
         const words = newText
-        .toLowerCase()
-        .replace(/[.,?!]/g, "")
-        .split(/\s+/);
-        
+          .toLowerCase()
+          .replace(/[.,?!]/g, "")
+          .split(/\s+/);
+
         setFillerWordsStats((prevStats) => {
           const newStats = { ...prevStats };
           words.forEach((word: string) => {
@@ -105,10 +115,10 @@ function TranscriptionComponent({
           });
           return newStats;
         });
-        
+
         let countInChunk = 0;
         words.forEach((word: string) => {
-          if (FILLER_WORDS.has(word)){
+          if (FILLER_WORDS.has(word)) {
             countInChunk += 1;
           }
         });
@@ -156,7 +166,7 @@ function TranscriptionComponent({
   const closeMicrophone = async (mic: MediaRecorder) => {
     mic.stop();
 
-     try {
+    try {
       const response = await fetch("/api/fillerwords", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -208,24 +218,25 @@ function TranscriptionComponent({
     }
   };
 
-
   return (
     <div className="w-full max-w-[600px] mx-auto">
       <div className="mt-4 flex justify-between items-center">
-        <button 
+        <button
           onClick={handleRecordButtonClick}
           className={`px-4 py-2 rounded ${
-            isRecording ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'
+            isRecording
+              ? "bg-red-500 hover:bg-red-600"
+              : "bg-green-500 hover:bg-green-600"
           } text-white transition-colors`}
         >
           {isRecording ? "Stop Recording" : "Start Recording"}
         </button>
-        
-       
       </div>
-      
+
       <div className="mt-4 p-4 border border-gray-300 rounded-lg min-h-[100px] bg-white dark:bg-gray-800 dark:border-gray-700">
-        <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Transcript:</h3>
+        <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+          Transcript:
+        </h3>
         <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
           {transcript || "Speech will appear here..."}
         </p>

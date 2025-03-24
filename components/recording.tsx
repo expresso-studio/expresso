@@ -49,7 +49,7 @@ const Recording = React.memo<Props>(function Recording({
     };
 
     fetchSignedUrl();
-  }, [video_url, user?.sub]);
+  }, [video_url, user?.sub, isAuthenticated, isLoading]);
 
   const handleLoadedData = React.useCallback(() => {
     const video = videoRef.current;
@@ -58,13 +58,14 @@ const Recording = React.memo<Props>(function Recording({
       video.pause();
       setIsLoaded(true);
     }
-  }, [videoRef.current]);
+  }, []);
 
-  const handleClick = () => {
+  const handleClick = React.useCallback(() => {
+    console.log("opening ", id);
     if (user?.sub && id) {
       router.push(`/dashboard/progress/previous/presentation/${id}`);
     }
-  };
+  }, [user?.sub]);
 
   if (loading) {
     return (
@@ -81,7 +82,7 @@ const Recording = React.memo<Props>(function Recording({
           )}
         ></div>
         <div className="bg-darkCoffee/50 w-full h-[144px] rounded-md flex items-start justify-end relative overflow-hidden">
-          <img
+          <Image
             src={"/coffee_bean.svg"}
             alt={""}
             width={100}
@@ -129,23 +130,25 @@ const Recording = React.memo<Props>(function Recording({
         </video>
       ) : (
         <div className="animate-pulse bg-darkCoffee/50 w-full h-[144px] rounded-md flex items-start justify-end relative overflow-hidden">
-          <img
+          <Image
             src={"/coffee_bean.svg"}
             alt={""}
             width={100}
             height={100}
             className="absolute translate-y-4 translate-x-2 opacity-40"
+            unoptimized
           />
         </div>
       )}
       {!isLoaded && signedUrl && (
         <div className="animate-pulse bg-darkCoffee/50 w-full h-[144px] rounded-md flex items-start justify-end relative overflow-hidden">
-          <img
+          <Image
             src={"/coffee_bean.svg"}
             alt={""}
             width={100}
             height={100}
             className="absolute translate-y-4 translate-x-2 opacity-40"
+            unoptimized
           />
         </div>
       )}

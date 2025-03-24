@@ -1,5 +1,4 @@
 import { query } from "@/lib/db";
-import { PresentationMetrics } from "@/lib/constants";
 import { randomUUID } from "crypto";
 
 interface MetricInput {
@@ -43,7 +42,7 @@ export async function POST(request: Request) {
     );
     const metricsCheck = await query(
       `SELECT id, name FROM metrics WHERE name = ANY($1)`,
-      [metricNames]
+      metricNames
     );
 
     const metricIdMap = metricsCheck.rows.reduce(

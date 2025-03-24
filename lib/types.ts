@@ -13,14 +13,6 @@ export type CourseType = {
   nLessons: number;
 };
 
-export type RecordingType = {
-  id: string;
-  title: string;
-  thumbnail: string;
-  created_at: string;
-  overallScore: number;
-};
-
 export type PresentationType = {
   id: string;
   title: string;
@@ -34,6 +26,8 @@ export type PresentationType = {
   }[];
 };
 
+// literally the only difference between this and the PresentationType
+// is presentation_id vs id
 export type ReportItemType = {
   presentation_id: string;
   title: string;
@@ -44,7 +38,7 @@ export type ReportItemType = {
     name: string;
     score: number;
     evaluated_at: string;
-  };
+  }[];
 };
 
 export type UserType = {

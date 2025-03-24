@@ -15,8 +15,8 @@ import ProtectedRoute from "@/components/protected-route";
 import { useAuthUtils } from "@/hooks/useAuthUtils";
 
 export default function Page() {
-  const { user, isAuthenticated, isLoading, error, refreshToken } = useAuthUtils();
-  
+  const { user, isAuthenticated, error, refreshToken } = useAuthUtils();
+
   // If there's an auth error, try to refresh the token
   React.useEffect(() => {
     if (error) {

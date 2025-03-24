@@ -3,7 +3,7 @@
  */
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 
 interface PoseLandmark {
   x: number;
@@ -49,7 +49,7 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
   onPoseResults,
   onError,
   isRecording,
-  onVideoRecorded
+  onVideoRecorded,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -59,7 +59,7 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
   const animationFrameRef = useRef<number | null>(null);
   const lastProcessedTimeRef = useRef<number>(0);
   const [isClient, setIsClient] = useState(false);
-  
+
   // Recording state
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const recordedChunksRef = useRef<BlobPart[]>([]);
@@ -85,22 +85,22 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
             frameRate: { ideal: 30 },
           },
         });
-        
+
         // Store the video stream reference
         streamRef.current = videoStream;
-        
+
         // Set the video source
         videoRef.current.srcObject = videoStream;
         videoRef.current.muted = true; // Mute the video element to prevent feedback
-        
+
         // Get separate audio stream (will be used only for recording)
         try {
           const audioStream = await navigator.mediaDevices.getUserMedia({
             audio: {
               echoCancellation: true,
               noiseSuppression: true,
-              autoGainControl: true
-            }
+              autoGainControl: true,
+            },
           });
           audioStreamRef.current = audioStream;
         } catch (audioErr) {
@@ -130,27 +130,45 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
     };
   }, [isClient, onError]);
 
+  // Stop recording function
+  const stopRecording = useCallback(() => {
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state !== "inactive"
+    ) {
+      mediaRecorderRef.current.onstop = () => {
+        const videoBlob = new Blob(recordedChunksRef.current, {
+          type: "video/mp4",
+        });
+        onVideoRecorded(videoBlob);
+        console.log("Recording stopped and saved");
+      };
+
+      mediaRecorderRef.current.stop();
+    }
+  }, [onVideoRecorded]);
+
   // Handle recording state changes
   useEffect(() => {
     if (!streamRef.current) return;
-    
+
     if (isRecording) {
       startRecording();
     } else {
       stopRecording();
     }
-  }, [isRecording]);
+  }, [isRecording, stopRecording]);
 
   // Start recording function
   const startRecording = () => {
     if (!streamRef.current) return;
-    
+
     try {
       recordedChunksRef.current = [];
-      
+
       // Create a combined stream with video and audio tracks
       const combinedTracks = [];
-      
+
       // Add video track
       const videoTrack = streamRef.current.getVideoTracks()[0];
       if (videoTrack) {
@@ -159,45 +177,35 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
         console.error("No video track available");
         return;
       }
-      
+
       // Add audio track if available
-      if (audioStreamRef.current && audioStreamRef.current.getAudioTracks().length > 0) {
+      if (
+        audioStreamRef.current &&
+        audioStreamRef.current.getAudioTracks().length > 0
+      ) {
         const audioTrack = audioStreamRef.current.getAudioTracks()[0];
         combinedTracks.push(audioTrack);
       }
-      
+
       // Create combined stream
       const combinedStream = new MediaStream(combinedTracks);
-      
+
       // Create media recorder
-      const options = { mimeType: 'video/webm' };
+      const options = { mimeType: "video/webm" };
       mediaRecorderRef.current = new MediaRecorder(combinedStream, options);
-      
+
       // Handle data available
       mediaRecorderRef.current.ondataavailable = (event) => {
         if (event.data.size > 0) {
           recordedChunksRef.current.push(event.data);
         }
       };
-      
+
       // Start recording
       mediaRecorderRef.current.start(1000);
       console.log("Recording started with audio");
     } catch (error) {
       console.error("Error starting recording:", error);
-    }
-  };
-
-  // Stop recording function
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-      mediaRecorderRef.current.onstop = () => {
-        const videoBlob = new Blob(recordedChunksRef.current, { type: 'video/mp4' });
-        onVideoRecorded(videoBlob);
-        console.log("Recording stopped and saved");
-      };
-      
-      mediaRecorderRef.current.stop();
     }
   };
 

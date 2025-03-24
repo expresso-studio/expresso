@@ -5,19 +5,7 @@ import Recording from "@/components/recording";
 import Section from "@/components/section";
 import { useAuthUtils } from "@/hooks/useAuthUtils";
 import { cn } from "@/lib/utils";
-
-interface ReportItemType {
-  presentation_id: string;
-  title: string;
-  created_at: string;
-  video_url: string;
-  metrics: {
-    metric_id: number;
-    name: string;
-    score: number;
-    evaluated_at: string;
-  }[];
-}
+import { ReportItemType } from "@/lib/types";
 
 export default function PreviousPresentationsSection() {
   const { user, isAuthenticated, isLoading } = useAuthUtils();
@@ -107,7 +95,7 @@ export default function PreviousPresentationsSection() {
                       created_at={report.created_at}
                       loading={false}
                       video_url={report.video_url}
-                      metrics={report.metrics || []}
+                      metrics={report.metrics}
                     />
                   )
               )

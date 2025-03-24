@@ -4,11 +4,11 @@ import { PresentationMetrics } from "@/lib/constants";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get("user");
-  const presentationId = params.id;
+  const presentationId = (await params).id;
 
   if (!presentationId) {
     return NextResponse.json(

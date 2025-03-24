@@ -75,12 +75,16 @@ export default function Page() {
     // Score filter
     if (scoreRange.min !== "") {
       filtered = filtered.filter(
-        (report) => report.metrics.score >= Number(scoreRange.min)
+        (report) =>
+          report.metrics.filter((metric) => metric.name == "overallScore")[0]
+            .score >= Number(scoreRange.min)
       );
     }
     if (scoreRange.max !== "") {
       filtered = filtered.filter(
-        (report) => report.metrics.score <= Number(scoreRange.max)
+        (report) =>
+          report.metrics.filter((metric) => metric.name == "overallScore")[0]
+            .score <= Number(scoreRange.max)
       );
     }
 
@@ -96,9 +100,17 @@ export default function Page() {
             new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
           );
         case "score-desc":
-          return b.metrics.score - a.metrics.score;
+          return (
+            b.metrics.filter((metric) => metric.name == "overallScore")[0]
+              .score -
+            a.metrics.filter((metric) => metric.name == "overallScore")[0].score
+          );
         case "score-asc":
-          return a.metrics.score - b.metrics.score;
+          return (
+            a.metrics.filter((metric) => metric.name == "overallScore")[0]
+              .score -
+            b.metrics.filter((metric) => metric.name == "overallScore")[0].score
+          );
         default:
           return 0;
       }
@@ -144,7 +156,7 @@ export default function Page() {
         <Heading1 id="previous">Previous Sessions</Heading1>
 
         <div className="pt-8 flex flex-col sm:flex-row gap-8">
-          <div className="bg-lightLatte dark:bg-darkCoffee rounded-md p-4 h-[60vh] w-full sm:w-[20vw] flex flex-col gap-4">
+          <div className="bg-lightLatte dark:bg-darkCoffee rounded-md p-4 min-h-[60vh] w-full sm:w-[20vw] flex flex-col gap-4">
             <div className="space-y-4">
               <input
                 type="text"
@@ -241,7 +253,7 @@ export default function Page() {
                     id={""}
                     title={"blank"}
                     created_at={""}
-                    metrics={null}
+                    metrics={[]}
                     loading={true}
                     className={cn(`delay-${delay}`)}
                     video_url={""}
@@ -267,7 +279,10 @@ export default function Page() {
               </div>
             ) : (
               user && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div
+                  className="grid grid-cols-2 md:grid-cols-4 gap-4"
+                  key="filtered"
+                >
                   {filteredReports.map((report) => (
                     <Recording
                       key={report.presentation_id}

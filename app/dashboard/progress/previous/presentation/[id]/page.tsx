@@ -167,13 +167,6 @@ export default function PresentationPage({
     return <div>Presentation not found.</div>;
   }
 
-  // Calculate average score
-  const averageScore =
-    presentation.metrics.length > 0
-      ? presentation.metrics.reduce((sum, metric) => sum + metric.score, 0) /
-        presentation.metrics.length
-      : 0;
-
   return (
     <PageFormat
       breadCrumbs={[

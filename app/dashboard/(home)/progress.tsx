@@ -6,7 +6,7 @@ import TopFiller from "../progress/top-filler";
 import { useAuthUtils } from "@/hooks/useAuthUtils";
 
 export default function ProgressSection() {
-  const { user, isAuthenticated, isLoading, error, refreshToken } = useAuthUtils();
+  const { error, refreshToken } = useAuthUtils();
   // If there's an auth error, try to refresh the token
   React.useEffect(() => {
     if (error) {
