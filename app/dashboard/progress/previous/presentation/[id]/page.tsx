@@ -6,6 +6,8 @@ import { outfit } from "@/app/fonts";
 import { cn } from "@/lib/utils";
 import { LoaderCircle } from "lucide-react";
 import Loading from "@/components/loading";
+import PageFormat from "@/components/page-format";
+import Heading1 from "@/components/heading-1";
 
 interface Metric {
   metric_id: number;
@@ -27,7 +29,6 @@ interface Presentation {
 
 interface VideoPlayerProps {
   videoKey: string;
-  title: string;
   userId: string;
 }
 
@@ -68,11 +69,7 @@ const MetricCard: React.FC<{ metric: Metric }> = ({ metric }) => {
   );
 };
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({
-  videoKey,
-  title,
-  userId,
-}) => {
+const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoKey, userId }) => {
   const [signedUrl, setSignedUrl] = useState<string>("");
 
   useEffect(() => {
@@ -99,19 +96,18 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   if (!signedUrl) {
     return (
-      <div>
-        <div className="text-xl font-bold mb-2">{title}</div>
-        <div className="animate-pulse w-full h-[342px] flex items-center justify-center rounded-lg shadow-lg bg-stone-300 dark:bg-stone-800">
-          <LoaderCircle className="animate-spin" />
-        </div>
+      <div className="animate-pulse w-full h-[342px] flex items-center justify-center rounded-lg shadow-lg bg-stone-300 dark:bg-stone-800">
+        <LoaderCircle className="animate-spin" />
       </div>
     );
   }
 
   return (
     <div>
-      <h2 className="text-xl font-bold mb-2">{title}</h2>
-      <video className="w-full rounded-lg shadow-lg" controls>
+      <video
+        className="w-full rounded-lg shadow-lg border border-stone-600"
+        controls
+      >
         <source src={signedUrl} type="video/mp4" />
         Your browser does not support the video tag.
       </video>
@@ -179,38 +175,27 @@ export default function PresentationPage({
       : 0;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className={cn("text-3xl font-bold", outfit.className)}>
-          {presentation.title}
-        </h1>
-        <div className="text-right">
-          <p className="text-lg font-semibold">Overall Score</p>
-          <p
-            className={cn(
-              "text-2xl font-bold",
-              averageScore >= 80
-                ? "text-green-600 dark:text-green-400"
-                : averageScore >= 60
-                ? "text-yellow-600 dark:text-yellow-400"
-                : "text-red-600 dark:text-red-400"
-            )}
-          >
-            {averageScore.toFixed(1)}%
-          </p>
-        </div>
-      </div>
+    <PageFormat
+      breadCrumbs={[
+        { name: "progress", url: "/dashboard/progress" },
+        { name: "previous", url: "/dashboard/progress/previous" },
+        { name: presentation.title },
+      ]}
+    >
+      <Heading1 id="user">{presentation.title}</Heading1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full">
         <div>
-          <VideoPlayer
-            videoKey={presentation.video_url}
-            title={presentation.title}
-            userId={user.sub}
-          />
+          <VideoPlayer videoKey={presentation.video_url} userId={user.sub} />
+          <div className="mt-2">
+            <p className="text-stone-500">
+              Created on:{" "}
+              {new Date(presentation.created_at).toLocaleDateString()}
+            </p>
+          </div>
         </div>
 
-        <div>
+        <div className="bg-stone-100 dark:bg-stone-900 py-6 px-4 rounded-lg h-full">
           <h2 className={cn("text-xl font-semibold mb-4", outfit.className)}>
             Performance Metrics
           </h2>
@@ -221,12 +206,6 @@ export default function PresentationPage({
           </div>
         </div>
       </div>
-
-      <div className="mt-8">
-        <p className="text-stone-500">
-          Created on: {new Date(presentation.created_at).toLocaleDateString()}
-        </p>
-      </div>
-    </div>
+    </PageFormat>
   );
 }
