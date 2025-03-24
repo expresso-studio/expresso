@@ -172,14 +172,14 @@ export default function PresentationPage({
           <div className="flex items-center justify-end gap-2">
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger className="group">
-                  <Button
-                    onClick={() => window.print()}
-                    variant="link"
-                    size="icon"
-                  >
-                    <Download className="text-stone-400 group-hover:text-stone-800 dark:text-stone-400 dark:group-hover:text-white scale-110 duration-200" />
-                  </Button>
+                <TooltipTrigger
+                  className="group"
+                  onClick={() => window.print()}
+                >
+                  <Download
+                    className="text-stone-400 group-hover:text-stone-800 dark:text-stone-400 dark:group-hover:text-white duration-200"
+                    size={20}
+                  />
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Download Report</p>

@@ -1,3 +1,9 @@
+import { IconType } from "react-icons";
+import { MdOutlineWavingHand } from "react-icons/md";
+import { FaPersonFalling, FaHandSparkles } from "react-icons/fa6";
+import { LuPersonStanding, LuEye, LuSpeech, LuSmile } from "react-icons/lu";
+import { PiHandsPrayingFill } from "react-icons/pi";
+
 export enum MetricNames {
   HandMovement = "handMovement",
   HeadMovement = "headMovement",
@@ -19,6 +25,17 @@ export enum MetricIds {
   EyeContact = 7,
   OverallScore = 8,
 }
+
+export const MetricNameToIcon: Record<MetricNames, IconType> = {
+  [MetricNames.HandMovement]: MdOutlineWavingHand,
+  [MetricNames.HeadMovement]: LuSmile,
+  [MetricNames.BodyMovement]: FaPersonFalling,
+  [MetricNames.Posture]: LuPersonStanding,
+  [MetricNames.HandSymmetry]: PiHandsPrayingFill,
+  [MetricNames.GestureVariety]: FaHandSparkles,
+  [MetricNames.EyeContact]: LuEye,
+  [MetricNames.OverallScore]: LuSpeech,
+};
 
 export const MetricNameToId: Record<MetricNames, MetricIds> = {
   [MetricNames.HandMovement]: MetricIds.HandMovement,
