@@ -1,11 +1,9 @@
 "use client"
-import Heading1 from "@/components/heading-1";
 import PageFormat from "@/components/page-format";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, ChangeEvent } from "react";
-import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import FooterWave from "@/components/ui/footer-wave";
 import { ImageUp, Camera } from "lucide-react";
@@ -97,7 +95,7 @@ export default function Page() {
         // Builds URL with all true metrics
         const query = new URLSearchParams(
             Object.entries(formData)
-              .filter(([_, v]) => v !== '' && v !== false)
+              .filter(([, v]) => v !== '' && v !== false)
               .map(([key, value]) => [key, String(value)]) 
         ).toString();
         
@@ -240,6 +238,7 @@ export default function Page() {
                     </div>
                 </form>
             </div>
+            <FooterWave />
         </PageFormat>
     );
 }
