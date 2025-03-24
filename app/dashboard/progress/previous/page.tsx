@@ -240,11 +240,11 @@ export default function Page() {
                     key={i}
                     id={""}
                     title={"blank"}
-                    thumbnail={"/example-thumbnail.png"}
                     created_at={""}
-                    overallScore={0}
+                    metrics={null}
                     loading={true}
                     className={cn(`delay-${delay}`)}
+                    video_url={""}
                   />
                 ))}
               </div>
@@ -272,8 +272,6 @@ export default function Page() {
                     <Recording
                       key={report.presentation_id}
                       id={report.presentation_id}
-                      thumbnail={"/example-thumbnail.png"}
-                      overallScore={report.metrics.score ?? 0}
                       {...report}
                     />
                   ))}

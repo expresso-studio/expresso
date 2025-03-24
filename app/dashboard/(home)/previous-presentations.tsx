@@ -56,25 +56,25 @@ export default function PreviousPresentationsSection() {
                   loading={true}
                   id={""}
                   title={""}
-                  thumbnail={""}
                   created_at={""}
-                  overallScore={0}
+                  video_url={""}
+                  metrics={null}
                 />
                 <Recording
                   loading={true}
                   id={""}
                   title={""}
-                  thumbnail={""}
                   created_at={""}
-                  overallScore={0}
+                  video_url={""}
+                  metrics={null}
                 />
                 <Recording
                   loading={true}
                   id={""}
                   title={""}
-                  thumbnail={""}
                   created_at={""}
-                  overallScore={0}
+                  video_url={""}
+                  metrics={null}
                 />
               </>
             ) : !isAuthenticated ? (
@@ -90,10 +90,10 @@ export default function PreviousPresentationsSection() {
                   key={report.presentation_id}
                   id={report.presentation_id}
                   title={report.title}
-                  thumbnail={"/example-thumbnail.png"}
                   created_at={report.created_at}
-                  overallScore={report.metrics?.score || 0}
                   loading={false}
+                  video_url={report.video_url}
+                  metrics={report.metrics}
                 />
               ))
             )}

@@ -31,7 +31,7 @@ export type PresentationType = {
     name: string;
     score: number;
     evaluated_at: string;
-  }[];
+  } | null;
 };
 
 export type ReportItemType = {

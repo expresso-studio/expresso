@@ -1,13 +1,13 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { outfit } from "@/app/fonts";
 import { cn } from "@/lib/utils";
-import { RecordingType } from "@/lib/types";
+import { PresentationType } from "@/lib/types";
 import { LuSpeech } from "react-icons/lu";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuthUtils } from "@/hooks/useAuthUtils";
+import Image from "next/image";
 
-interface Props extends RecordingType {
+interface Props extends PresentationType {
   className?: string;
   loading?: boolean;
 }
@@ -15,14 +15,50 @@ interface Props extends RecordingType {
 const Recording = React.memo<Props>(function Recording({
   id,
   title,
-  thumbnail,
+  video_url,
   created_at,
-  overallScore,
+  metrics,
   className,
   loading,
 }) {
   const router = useRouter();
-  const { user } = useAuthUtils();
+  const { user, isAuthenticated, isLoading } = useAuthUtils();
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [signedUrl, setSignedUrl] = useState<string>("");
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!video_url || isLoading || !isAuthenticated || !user?.sub) return;
+
+    const fetchSignedUrl = async () => {
+      try {
+        const res = await fetch(
+          `/api/get-signed-url?videoKey=${encodeURIComponent(
+            video_url
+          )}&user=${encodeURIComponent(user.sub ?? "")}`
+        );
+        if (!res.ok) {
+          console.error("Failed to fetch signed URL");
+          return;
+        }
+        const data = await res.json();
+        setSignedUrl(data.url);
+      } catch (error) {
+        console.error("Error fetching signed URL:", error);
+      }
+    };
+
+    fetchSignedUrl();
+  }, [video_url, user?.sub]);
+
+  const handleLoadedData = () => {
+    const video = videoRef.current;
+    if (video) {
+      video.currentTime = 0.1;
+      video.pause();
+      setIsLoaded(true);
+    }
+  };
 
   const handleClick = () => {
     if (user?.sub && id) {
@@ -63,20 +99,40 @@ const Recording = React.memo<Props>(function Recording({
     >
       <div
         className={cn(
-          "absolute bg-lightCream dark:bg-darkBurnt w-min rounded-xl px-2 translate-x-2 translate-y-2",
+          "absolute bg-lightCream dark:bg-darkBurnt w-min rounded-xl px-2 translate-x-2 translate-y-2 z-10",
           "flex items-center gap-2"
         )}
       >
         <LuSpeech />
-        {overallScore}%
+        {metrics?.score ?? 0}%
       </div>
-      <Image
-        src={thumbnail}
-        alt={title}
-        width={960}
-        height={720}
-        className="rounded-md"
-      />
+      {signedUrl ? (
+        <video
+          ref={videoRef}
+          onLoadedData={handleLoadedData}
+          className={cn(
+            "w-full h-[144px] rounded-md object-cover",
+            !isLoaded && "hidden"
+          )}
+          muted
+          playsInline
+        >
+          <source src={signedUrl} type="video/mp4" />
+        </video>
+      ) : (
+        <div className="bg-[#e0cabf] dark:bg-[#463f3c] w-full h-[144px] rounded-md" />
+      )}
+      {!isLoaded && signedUrl && (
+        <div className="animate-pulse bg-darkCoffee/50 w-full h-[144px] rounded-md flex items-start justify-end relative overflow-hidden">
+          <Image
+            src={"./coffee_bean.svg"}
+            alt={""}
+            width={100}
+            height={100}
+            className="absolute translate-y-4 translate-x-2 opacity-40"
+          />
+        </div>
+      )}
       <div className="flex items-center justify-between truncate gap-4">
         <span
           className={cn("font-bold truncate dark:text-white", outfit.className)}
