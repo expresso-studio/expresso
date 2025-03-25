@@ -1,10 +1,17 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest} from 'next/server';
 import { query } from "../../../../lib/db";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const userId = 'auth0|67baac4182c20de0c41b0395';
+    const url = new URL(request.url);
+    const userId = url.searchParams.get("userId");
 
+    if (!userId) {
+      return NextResponse.json({ 
+        error: 'User ID is required' 
+      }, { status: 400 });
+    }
+    
     const results = await query(
       `SELECT * FROM (
         SELECT id, created_at, max_wpm, min_wpm, session_wpm
