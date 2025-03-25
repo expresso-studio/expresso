@@ -25,6 +25,7 @@ import {
   GESTURE_VARIETY_COEFFICIENT,
   EYE_CONTACT_COEFFICIENT,
 } from "@/lib/constants";
+import { useSearchParams } from "next/navigation";
 
 interface Props {
   poseLandmarks?: PoseLandmark[];
@@ -54,6 +55,30 @@ const GestureAnalysis: React.FC<Props> = ({
   const [sessionDuration, setSessionDuration] = useState(0);
   const [isPanelVisible, setIsPanelVisible] = useState(false); // Changed to false by default
   const [isDevReportVisible, setIsDevReportVisible] = useState(false);
+  
+  const searchParams = useSearchParams();
+
+  const [enabledMetrics, setEnabledMetrics] = useState<Record<keyof GestureMetrics, boolean>>({
+    handMovement: true,
+    headMovement: true,
+    bodyMovement: true,
+    posture: true,
+    handSymmetry: true,
+    gestureVariety: true,
+    eyeContact: true,
+    overallScore: true,
+  });
+
+  useEffect(() => {
+    const newEnabled = { ...enabledMetrics };
+    Object.keys(newEnabled).forEach((key) => {
+      const param = searchParams?.get(key);
+      if (param === "false" || param === "true") {
+        newEnabled[key as keyof GestureMetrics] = param === "true";
+      }
+    });
+    setEnabledMetrics(newEnabled);
+  }, []);
 
   // Refs for tracking movement and analysis data
   const prevLandmarksRef = useRef<PoseLandmark[]>([]);
@@ -287,6 +312,10 @@ const GestureAnalysis: React.FC<Props> = ({
     }
   };
 
+  const toggleMetric = (metric: keyof GestureMetrics) => {
+    setEnabledMetrics(prev =>({...prev, [metric]: !prev[metric] }));
+  };
+
   // Minimized view when panel is hidden
   if (!isPanelVisible) {
     return (
@@ -384,7 +413,11 @@ const GestureAnalysis: React.FC<Props> = ({
         </div>
 
         {/* Metrics Display Component */}
-        <MetricsDisplay metrics={metrics} />
+        <MetricsDisplay 
+          metrics={metrics} 
+          enabledMetrics={enabledMetrics} 
+          toggleMetric={toggleMetric}
+        />
 
         {/* Feedback Panel Component */}
         <FeedbackPanel feedback={feedback} isRecording={isRecording} />

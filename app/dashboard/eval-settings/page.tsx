@@ -72,9 +72,10 @@ export default function Page() {
                 eyeContact: true,
             }));
         } else if (persona === 'none') {
-            // Clear all selections for custom mode
+            // Clear all selections for none mode
             setFormData(prev => ({
                 ...prev,
+                location:"",
                 handMovement: false,
                 headMovement: false,
                 bodyMovement: false,
@@ -84,7 +85,6 @@ export default function Page() {
                 eyeContact: false,
             }));
         } else if (persona === 'online') {
-            // Clear all selections for custom mode
             setFormData(prev => ({
                 ...prev,
                 location: "online",
@@ -97,7 +97,6 @@ export default function Page() {
                 eyeContact: true,
             }));
         } else if (persona === 'meeting') {
-            // Clear all selections for custom mode
             setFormData(prev => ({
                 ...prev,
                 location: "meeting",
@@ -120,6 +119,18 @@ export default function Page() {
                 handSymmetry: false,
                 gestureVariety: true,
                 eyeContact: true,
+            }));
+        } else if (persona === 'custom') {
+            setFormData(prev => ({
+                ...prev,
+                location:"",
+                handMovement: false,
+                headMovement: false,
+                bodyMovement: false,
+                posture: false,
+                handSymmetry: false,
+                gestureVariety: false,
+                eyeContact: false,
             }));
         } 
     };
@@ -164,7 +175,7 @@ export default function Page() {
         // Builds URL with all true metrics
         const query = new URLSearchParams(
             Object.entries(formData)
-              .filter(([, v]) => v !== '' && v !== false)
+              .filter(([, v]) => v !== '')
               .map(([key, value]) => [key, String(value)]) 
         ).toString();
         
@@ -194,7 +205,7 @@ export default function Page() {
 
                     <div className="mb-4">
                         <label>
-                            Attendees:
+                            Number of Attendees:
                             <Input
                                 type="number"
                                 name="attendees"
@@ -227,9 +238,9 @@ export default function Page() {
                             onClick={() => handlePersonaSelect('class-presentation')}
                             className ={`px-3 py-6 rounded-lg flex items-center justify-center text-lg font-medium ${
                                 selectedPersona === 'class-presentation'
-                                    ? 'bg-[#dfcbbf] text-black' 
-                                    : 'bg-gray-200 text-black'
-                                } hover:bg-[#c4a99e]`}
+                                    ? 'bg-[#F8AC78] text-black dark:bg-[#311E13] dark:text-white' 
+                                    : 'bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white dark:hover:bg-[#311E13]'
+                                } hover:bg-[#F8AC78]`}
                             >
                             <PersonStanding className = "w-10 h-10 mx-2"/>
                             Class Presentation
@@ -239,9 +250,9 @@ export default function Page() {
                             onClick={() => handlePersonaSelect('meeting')}
                             className ={`px-3 py-6 rounded-lg flex items-center justify-center text-lg font-medium ${
                                 selectedPersona === 'meeting'
-                                    ? 'bg-[#dfcbbf] text-black' 
-                                    : 'bg-gray-200 text-black'
-                                } hover:bg-[#c4a99e]`}
+                                    ? 'bg-[#F8AC78] text-black dark:bg-[#311E13] dark:text-white' 
+                                    : 'bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white dark:hover:bg-[#311E13]'
+                                } hover:bg-[#F8AC78]`}
                             >
                             <Users className = "w-10 h-10 mx-2"/>
                             In-person Meeting
@@ -251,9 +262,9 @@ export default function Page() {
                             onClick={() => handlePersonaSelect('online')}
                             className ={`px-3 py-6 rounded-lg flex items-center justify-center text-lg font-medium ${
                                 selectedPersona === 'online'
-                                    ? 'bg-[#dfcbbf] text-black' 
-                                    : 'bg-gray-200 text-black'
-                                } hover:bg-[#c4a99e]`}
+                                    ? 'bg-[#F8AC78] text-black dark:bg-[#311E13] dark:text-white' 
+                                    : 'bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white dark:hover:bg-[#311E13]'
+                                } hover:bg-[#F8AC78]`}
                             >
                             <Laptop className = "w-10 h-10 mx-2"/>
                             Online Presentation
@@ -263,9 +274,9 @@ export default function Page() {
                             onClick={() => handlePersonaSelect('lecture')}
                             className ={`px-3 py-6 rounded-lg flex items-center justify-center text-lg font-medium ${
                                 selectedPersona === 'lecture'
-                                    ? 'bg-[#dfcbbf] text-black' 
-                                    : 'bg-gray-200 text-black'
-                                } hover:bg-[#c4a99e]`}
+                                    ? 'bg-[#F8AC78] text-black dark:bg-[#311E13] dark:text-white' 
+                                    : 'bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white dark:hover:bg-[#311E13]'
+                                } hover:bg-[#F8AC78]`}
                             >
                             <Presentation className = "w-10 h-10 mx-2"/>
                             Lecture
@@ -275,9 +286,9 @@ export default function Page() {
                             onClick={() => handlePersonaSelect('custom')}
                             className ={`px-3 py-6 rounded-lg flex items-center justify-center text-lg font-medium ${
                                 selectedPersona === 'custom'
-                                    ? 'bg-[#dfcbbf] text-black' 
-                                    : 'bg-gray-200 text-black'
-                                } hover:bg-[#c4a99e]`}
+                                    ? 'bg-[#F8AC78] text-black dark:bg-[#311E13] dark:text-white' 
+                                    : 'bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white dark:hover:bg-[#311E13]'
+                                } hover:bg-[#F8AC78]`}
                             >
                             <UserCog className = "w-10 h-10 mx-2"/>
                             Custom (from profile)
@@ -287,9 +298,9 @@ export default function Page() {
                             onClick={() => handlePersonaSelect('none')}
                             className ={`px-3 py-6 rounded-lg flex items-center justify-center text-lg font-medium ${
                                 selectedPersona === 'none'
-                                    ? 'bg-[#dfcbbf] text-black' 
-                                    : 'bg-gray-200 text-black'
-                                } hover:bg-[#c4a99e]`}
+                                    ? 'bg-[#F8AC78] text-black dark:bg-[#311E13] dark:text-white' 
+                                    : 'bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white dark:hover:bg-[#311E13]'
+                                } hover:bg-[#F8AC78]`}
                             >
                             <X className = "w-10 h-10 mx-2"/>
                             None
@@ -350,7 +361,7 @@ export default function Page() {
                             {getTipSentence(selectedPersona || '')}
                         </div>
                         <div className = "w-full max-w-100">
-                            <button type = "button" className = "flex flex-row p-2 bg-gray-200 text-black rounded-lg">
+                            <button type = "button" className = "flex flex-row px-4 py-2 bg-gray-200 text-black dark:bg-[#311E13] dark: text-white rounded-lg">
                                 <Upload className = "mr-1"/>
                                 Upload
                             </button>
@@ -365,10 +376,10 @@ export default function Page() {
                             onClick={() => handleOptionSelect('practice')}
                             className={`p-4 rounded-lg flex flex-row items-center justify-start 
                                 transition ${
-                                selectedOption === 'practice' 
-                                    ? 'bg-[#dfcbbf] text-black' 
-                                    : 'bg-[#ffffff] text-black'
-                            } hover:bg-[#c4a99e]`}
+                                selectedOption === 'practice'
+                                    ? 'bg-[#F8AC78] text-black dark:bg-[#311E13] dark:text-white' 
+                                    : 'bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white dark:hover:bg-[#311E13]'
+                            } hover:bg-[#F8AC78]`}
                         > 
                             <ImageUp className = "mr-4 ml-2"/>
                             Practice Now
@@ -379,9 +390,9 @@ export default function Page() {
                             className={`p-4 rounded-lg flex flex-row items-center justify-start
                                 transition ${
                                 selectedOption === 'upload' 
-                                    ? 'bg-[#dfcbbf] text-black' 
-                                    : 'bg-gray-200 text-black'
-                            } hover:bg-[#c4a99e]`}
+                                    ? 'bg-[#F8AC78] text-black dark:bg-[#311E13] dark:text-white' 
+                                    : 'bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white dark:hover:bg-[#311E13]'
+                            } hover:bg-[#F8AC78]`}
                         >
                             <Camera className = "mr-4 ml-2"/>
                             Upload Video
@@ -392,8 +403,8 @@ export default function Page() {
                     <div style={{ marginTop: '1.5rem' }}>
                         <div className = "p-2 rounded-lg space-y-4 justify-self-end">
                             <button type = "button" onClick = {handleStart} disabled = {!Boolean(isFormValid())}
-                                className ={`px-4 py-2 rounded-lg flex row bg-gray-200 text-black 
-                                    hover:bg-[#c4a99e]
+                                className ={`px-4 py-2 rounded-lg flex row bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white
+                                    hover:bg-[#F8AC78] dark:hover:bg-[#CA773F]
                                     disabled:opacity-50 disabled:cursor-not-allowed
                                 `}
                             >
