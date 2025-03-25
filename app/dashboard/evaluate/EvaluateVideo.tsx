@@ -3,7 +3,7 @@
  */
 "use client";
 
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 interface PoseLandmark {
   x: number;
@@ -42,6 +42,7 @@ interface EvaluateVideoProps {
   onError: (error: string) => void;
   isRecording: boolean;
   onVideoRecorded: (videoBlob: Blob) => void;
+  showSkeleton?: boolean; // New prop to control skeleton visibility
 }
 
 export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
@@ -50,6 +51,7 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
   onError,
   isRecording,
   onVideoRecorded,
+  showSkeleton = false, // Default to hidden
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -130,24 +132,6 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
     };
   }, [isClient, onError]);
 
-  // Stop recording function
-  const stopRecording = useCallback(() => {
-    if (
-      mediaRecorderRef.current &&
-      mediaRecorderRef.current.state !== "inactive"
-    ) {
-      mediaRecorderRef.current.onstop = () => {
-        const videoBlob = new Blob(recordedChunksRef.current, {
-          type: "video/mp4",
-        });
-        onVideoRecorded(videoBlob);
-        console.log("Recording stopped and saved");
-      };
-
-      mediaRecorderRef.current.stop();
-    }
-  }, [onVideoRecorded]);
-
   // Handle recording state changes
   useEffect(() => {
     if (!streamRef.current) return;
@@ -157,7 +141,7 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
     } else {
       stopRecording();
     }
-  }, [isRecording, stopRecording]);
+  }, [isRecording]);
 
   // Start recording function
   const startRecording = () => {
@@ -209,6 +193,24 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
     }
   };
 
+  // Stop recording function
+  const stopRecording = () => {
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state !== "inactive"
+    ) {
+      mediaRecorderRef.current.onstop = () => {
+        const videoBlob = new Blob(recordedChunksRef.current, {
+          type: "video/mp4",
+        });
+        onVideoRecorded(videoBlob);
+        console.log("Recording stopped and saved");
+      };
+
+      mediaRecorderRef.current.stop();
+    }
+  };
+
   // Initialize pose detection
   useEffect(() => {
     if (!isClient || loading || !videoRef.current || !canvasRef.current) return;
@@ -221,6 +223,8 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
       ctx: CanvasRenderingContext2D,
       landmarks: PoseLandmark[]
     ) => {
+      if (!showSkeleton) return; // Skip drawing if skeleton is hidden
+
       // Draw points for each landmark
       landmarks.forEach((landmark: PoseLandmark) => {
         if (landmark.visibility && landmark.visibility > 0.5) {
@@ -319,6 +323,8 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
           ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
           if (!videoRef.current) return;
 
+          // Only draw the video on the canvas - no skeleton overlay
+          // when showSkeleton is false
           ctx.drawImage(
             videoRef.current,
             0,
@@ -328,7 +334,10 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
           );
 
           if (results.poseLandmarks) {
-            drawPoseLandmarks(ctx, results.poseLandmarks);
+            // Only draw landmarks if showSkeleton is true
+            if (showSkeleton) {
+              drawPoseLandmarks(ctx, results.poseLandmarks);
+            }
           }
 
           onPoseResults(results);
@@ -362,7 +371,7 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
         poseRef.current.close();
       }
     };
-  }, [isClient, loading, onError, onPoseResults]);
+  }, [isClient, loading, onError, onPoseResults, showSkeleton]); // Added showSkeleton to dependencies
 
   // Don't render anything during SSR
   if (!isClient) return null;
