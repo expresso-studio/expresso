@@ -66,7 +66,7 @@ const Recording = React.memo<Props>(function Recording({
     if (user?.sub && id) {
       router.push(`/dashboard/progress/previous/presentation/${id}`);
     }
-  }, [user?.sub]);
+  }, [user?.sub, id, router]);
 
   if (loading) {
     return (

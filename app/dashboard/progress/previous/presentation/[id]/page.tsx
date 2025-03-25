@@ -11,7 +11,6 @@ import PageFormat from "@/components/page-format";
 import Heading1 from "@/components/heading-1";
 import Link from "next/link";
 import { MetricsDisplay } from "@/app/dashboard/evaluate/gesture-analysis";
-import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
