@@ -45,10 +45,10 @@ export default function Page() {
               <Section
                 id="evaluate"
                 title="Jump on in!"
-                link={"/dashboard/evaluate"}
+                link={"/dashboard/eval-settings"}
                 className="sm:min-w-[300px] bg-lightCoffee dark:bg-darkCoffee group cursor-pointer"
               >
-                <Link href={"/dashboard/evaluate"} className=" overflow-hidden">
+                <Link href={"/dashboard/eval-settings"} className=" overflow-hidden">
                   <div className="absolute z-20 flex flex-col gap-2 w-full">
                     <span className="text-6xl md:text-[5vw] font-black text-white uppercase group-hover:translate-x-1 duration-200">
                       Evaluate
