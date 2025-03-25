@@ -147,13 +147,14 @@ export default function Page() {
 
     const isFormValid = () => {
         return (
-            selectedOption && 
-            formData.topic &&
-            formData.location &&
-            formData.attendees &&
-            formData.duration
+            !!selectedOption && 
+            !!formData.topic &&
+            !!formData.location &&
+            !!formData.attendees &&
+            !!formData.duration
         );
     };
+
     const handleStart = () => {
         if(!selectedOption) {
             alert('Please select an option');
@@ -390,10 +391,10 @@ export default function Page() {
                     
                     <div style={{ marginTop: '1.5rem' }}>
                         <div className = "p-2 rounded-lg space-y-4 justify-self-end">
-                            <button type = "button" onClick = {handleStart} disabled = {!isFormValid}
+                            <button type = "button" onClick = {handleStart} disabled = {!Boolean(isFormValid())}
                                 className ={`px-4 py-2 rounded-lg flex row bg-gray-200 text-black 
                                     hover:bg-[#c4a99e]
-                                    disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-gray-200
+                                    disabled:opacity-50 disabled:cursor-not-allowed
                                 `}
                             >
                                 Start
