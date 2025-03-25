@@ -1,4 +1,3 @@
-import LoginButtonUI from "@/components/ui/loginbutton-ui";
 import LoginButton from "../components/login-button";
 import FooterWave from "@/components/ui/footer-wave";
 import Image from "next/image";
@@ -7,8 +6,8 @@ import { ArrowRight } from "lucide-react";
 export default function Page() {
   return (
     <div className="flex flex-col min-h-screen">
-      <main className="flex-grow flex items-center justify-center -mt-32">
-        <div className="items-center grid grid-cols-2 gap-8 max-w-4xl">
+      <main className="flex-grow flex items-center justify-center">
+        <div className="flex items-center grid grid-cols-2 gap-8 max-w-4xl">
           <div className="p-6 rounded-lg">
             <Image
               src={"/expresso.png"}
@@ -17,16 +16,14 @@ export default function Page() {
               height="300"
             />
           </div>
-          <div className="p-6 rounded-lg flex flex-col items-center space-y-4">
-            <p className="text-4xl">
+          <div className="p-6 rounded-lg flex flex-col items-center">
+            <p className="text-4xl mb-4">
               Welcome to <span className="font-bold">Expresso</span>!
             </p>
-            <h1>[insert slogan]</h1>
-            <LoginButton />
-            <LoginButtonUI className="flex items-center gap-2">
-              <span className="text-2xl">Start Here</span>
-              <ArrowRight />
-            </LoginButtonUI>
+            <h1 className="mb-2">Brewing confidence, one gesture at a time.</h1>
+            <div className="mt-8">
+              <LoginButton />
+            </div>
           </div>
         </div>
       </main>
