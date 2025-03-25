@@ -31,14 +31,14 @@ interface Props {
   poseLandmarks?: PoseLandmark[];
   isRecording: boolean;
   onMetricsUpdate?: (metrics: GestureMetrics) => void;
-  developerMode?: boolean; // Add this prop to control developer mode
+  developerMode?: boolean;
 }
 
 const GestureAnalysis: React.FC<Props> = ({ 
   poseLandmarks, 
   isRecording,
   onMetricsUpdate,
-  developerMode = true // Default to false
+  developerMode = true
 }) => {
   // State
   const [metrics, setMetrics] = useState<GestureMetrics>({
@@ -53,7 +53,7 @@ const GestureAnalysis: React.FC<Props> = ({
   });
   const [feedback, setFeedback] = useState<GestureFeedback[]>([]);
   const [sessionDuration, setSessionDuration] = useState(0);
-  const [isPanelVisible, setIsPanelVisible] = useState(true);
+  const [isPanelVisible, setIsPanelVisible] = useState(false); // Changed to false by default
   const [isDevReportVisible, setIsDevReportVisible] = useState(false);
   
   // Refs for tracking movement and analysis data

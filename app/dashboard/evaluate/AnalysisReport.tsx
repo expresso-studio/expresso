@@ -98,6 +98,11 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
 
   const recommendations = generateRecommendations();
 
+  // Truncate or format transcript if it's too long
+  const formattedTranscript = analysisData.transcript.length > 500 
+    ? analysisData.transcript.substring(0, 500) + "..." 
+    : analysisData.transcript || "No transcript available.";
+
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -183,7 +188,7 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
           <div className="mt-6 border rounded-lg p-4 dark:border-gray-700">
             <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">Transcript</h3>
             <div className="max-h-60 overflow-y-auto p-3 bg-gray-100 dark:bg-gray-900 rounded text-gray-800 dark:text-gray-300">
-              {analysisData.transcript || "No transcript available."}
+              {formattedTranscript}
             </div>
           </div>
 
