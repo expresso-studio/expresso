@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState, ChangeEvent } from "react";
 import { useRouter } from 'next/navigation';
 import FooterWave from "@/components/ui/footer-wave";
-import { ImageUp, Camera, ArrowRight, CircleAlert } from "lucide-react";
+import { ImageUp, Camera, ArrowRight, CircleAlert, Upload, Laptop, PersonStanding, Presentation, Users, X, UserCog } from "lucide-react";
  
 type FormData = {
     topic: string
@@ -40,7 +40,22 @@ export default function Page() {
 
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
-    const [selectedPersona, setSelectedPersona] = useState<string | null>(null)
+    const [selectedPersona, setSelectedPersona] = useState<string | null>(null);
+
+    const getTipSentence = (persona: string) => {
+        switch (persona) {
+            case 'class-presentation':
+                return 'Tip: Upload your script and presentation slides';
+            case 'in-person-meeting':
+                return 'Tip: Upload your meeting notes and any relevant documents';
+            case 'online-presentation':
+                return 'Tip: Upload your script and slides';
+            case 'lecture':
+                return 'Tip: Upload your lecture notes and presentation materials';
+            default:
+                return 'Tip: Upload script and presentation materials';
+        }
+    };
 
     const handlePersonaSelect = (persona: string) => {
         setSelectedPersona(persona)
@@ -50,9 +65,9 @@ export default function Page() {
                 location:"classroom",
                 handMovement: true,
                 headMovement: true,
-                bodyMovement: false,
+                bodyMovement: true,
                 posture: true,
-                handSymmetry: false,
+                handSymmetry: true,
                 gestureVariety: true,
                 eyeContact: true,
             }));
@@ -86,13 +101,13 @@ export default function Page() {
             setFormData(prev => ({
                 ...prev,
                 location: "meeting",
-                handMovement: false,
-                headMovement: false,
+                handMovement: true,
+                headMovement: true,
                 bodyMovement: false,
                 posture: false,
                 handSymmetry: false,
-                gestureVariety: false,
-                eyeContact: false,
+                gestureVariety: true,
+                eyeContact: true,
             }));
         } else if (persona === 'lecture') {
             setFormData(prev => ({
@@ -110,7 +125,6 @@ export default function Page() {
     };
     
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        
         if (e.target instanceof HTMLInputElement) {
             const { name, value, type, checked } = e.target;
 
@@ -131,6 +145,15 @@ export default function Page() {
         setSelectedOption(option);
     };
 
+    const isFormValid = () => {
+        return (
+            selectedOption && 
+            formData.topic &&
+            formData.location &&
+            formData.attendees &&
+            formData.duration
+        );
+    };
     const handleStart = () => {
         if(!selectedOption) {
             alert('Please select an option');
@@ -145,7 +168,7 @@ export default function Page() {
         ).toString();
         
         if (selectedOption === 'practice') {
-            router.push(`/dashboard/evaluation?${query}`);
+            router.push(`/dashboard/evaluate?${query}`);
             } else if (selectedOption === 'upload') {
             router.push(`/dashboard/upload-video?${query}`);
         }
@@ -155,79 +178,7 @@ export default function Page() {
     return(
         <PageFormat breadCrumbs={[{ name: "Evaluation Settings" }]}>
             <div className = "flex flex-col min-h-screen px-4 items-center">                    
-                <div className="w-full max-w-[800px]">
-                    <p className="text-lg font-medium">Select preset persona:</p>
-                </div>
-                <div className = "w-full max-w-[800px] grid grid-cols-2 gap-x-8 gap-y-6 mb-2">
-                    <button
-                        type="button"
-                        onClick={() => handlePersonaSelect('class-presentation')}
-                        className ={`px-3 py-6 rounded-lg text-lg font-medium ${
-                            selectedPersona === 'class-presentation'
-                                ? 'bg-[#dfcbbf] text-black' 
-                                : 'bg-gray-200 text-black'
-                            } hover:bg-[#c4a99e]`}
-                        >
-                        Class Presentation
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => handlePersonaSelect('meeting')}
-                        className ={`px-3 py-6 rounded-lg text-lg font-medium ${
-                            selectedPersona === 'meeting'
-                                ? 'bg-[#dfcbbf] text-black' 
-                                : 'bg-gray-200 text-black'
-                            } hover:bg-[#c4a99e]`}
-                        >
-                        In-person Meeting
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => handlePersonaSelect('online')}
-                        className ={`px-3 py-6 rounded-lg text-lg font-medium ${
-                            selectedPersona === 'online'
-                                ? 'bg-[#dfcbbf] text-black' 
-                                : 'bg-gray-200 text-black'
-                            } hover:bg-[#c4a99e]`}
-                        >
-                        Online Presentation
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => handlePersonaSelect('lecture')}
-                        className ={`p-3 rounded-lg text-lg font-medium ${
-                            selectedPersona === 'lecture'
-                                ? 'bg-[#dfcbbf] text-black' 
-                                : 'bg-gray-200 text-black'
-                            } hover:bg-[#c4a99e]`}
-                        >
-                        Lecture
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => handlePersonaSelect('custom')}
-                        className ={`px-3 py-6 rounded-lg text-lg font-medium ${
-                            selectedPersona === 'custom'
-                                ? 'bg-[#dfcbbf] text-black' 
-                                : 'bg-gray-200 text-black'
-                            } hover:bg-[#c4a99e]`}
-                        >
-                        Custom (from profile)
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => handlePersonaSelect('none')}
-                        className ={`p-3 rounded-lg text-lg font-medium border-2 ${
-                            selectedPersona === 'none'
-                                ? 'bg-[#dfcbbf] text-black' 
-                                : 'bg-gray-200 text-black'
-                            } hover:bg-[#c4a99e]`}
-                        >
-                        None
-                    </button>
-                </div>
-
-                <form className="w-full max-w-[800px] p-8 border border-gray-300 rounded-lg">
+                <form className="w-full max-w-[800px] p-8 rounded-lg">
                     <div className = "mb-4">
                         <label>
                             Presenting about...
@@ -264,6 +215,84 @@ export default function Page() {
                                 required
                             />
                         </label>
+                    </div>
+
+                    <div className="w-full max-w-[800px]">
+                        <p className="text-lg font-medium">Select preset persona:</p>
+                    </div>
+                    <div className = "w-full max-w-[800px] grid grid-cols-2 gap-x-8 gap-y-6 mb-2">
+                        <button
+                            type="button"
+                            onClick={() => handlePersonaSelect('class-presentation')}
+                            className ={`px-3 py-6 rounded-lg flex items-center justify-center text-lg font-medium ${
+                                selectedPersona === 'class-presentation'
+                                    ? 'bg-[#dfcbbf] text-black' 
+                                    : 'bg-gray-200 text-black'
+                                } hover:bg-[#c4a99e]`}
+                            >
+                            <PersonStanding className = "w-10 h-10 mx-2"/>
+                            Class Presentation
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => handlePersonaSelect('meeting')}
+                            className ={`px-3 py-6 rounded-lg flex items-center justify-center text-lg font-medium ${
+                                selectedPersona === 'meeting'
+                                    ? 'bg-[#dfcbbf] text-black' 
+                                    : 'bg-gray-200 text-black'
+                                } hover:bg-[#c4a99e]`}
+                            >
+                            <Users className = "w-10 h-10 mx-2"/>
+                            In-person Meeting
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => handlePersonaSelect('online')}
+                            className ={`px-3 py-6 rounded-lg flex items-center justify-center text-lg font-medium ${
+                                selectedPersona === 'online'
+                                    ? 'bg-[#dfcbbf] text-black' 
+                                    : 'bg-gray-200 text-black'
+                                } hover:bg-[#c4a99e]`}
+                            >
+                            <Laptop className = "w-10 h-10 mx-2"/>
+                            Online Presentation
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => handlePersonaSelect('lecture')}
+                            className ={`px-3 py-6 rounded-lg flex items-center justify-center text-lg font-medium ${
+                                selectedPersona === 'lecture'
+                                    ? 'bg-[#dfcbbf] text-black' 
+                                    : 'bg-gray-200 text-black'
+                                } hover:bg-[#c4a99e]`}
+                            >
+                            <Presentation className = "w-10 h-10 mx-2"/>
+                            Lecture
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => handlePersonaSelect('custom')}
+                            className ={`px-3 py-6 rounded-lg flex items-center justify-center text-lg font-medium ${
+                                selectedPersona === 'custom'
+                                    ? 'bg-[#dfcbbf] text-black' 
+                                    : 'bg-gray-200 text-black'
+                                } hover:bg-[#c4a99e]`}
+                            >
+                            <UserCog className = "w-10 h-10 mx-2"/>
+                            Custom (from profile)
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => handlePersonaSelect('none')}
+                            className ={`px-3 py-6 rounded-lg flex items-center justify-center text-lg font-medium ${
+                                selectedPersona === 'none'
+                                    ? 'bg-[#dfcbbf] text-black' 
+                                    : 'bg-gray-200 text-black'
+                                } hover:bg-[#c4a99e]`}
+                            >
+                            <X className = "w-10 h-10 mx-2"/>
+                            None
+                        </button>
                     </div>
 
                     <div className = "mb-4" >
@@ -315,9 +344,15 @@ export default function Page() {
 
                     <div className = "mb-4">
                         Upload Optional Material:
-                        <div className ="p-1 flex flex-row bg-[#84d3fa] dark:bg-[#1e3a8a] text-black dark:text-white rounded-lg">
+                        <div className ="mb-4 p-1 flex flex-row bg-[#84d3fa] dark:bg-[#1e3a8a] text-black dark:text-white rounded-lg">
                             <CircleAlert className = "w-5 h-5 mx-2 mt-0.5"/>
-                            tip: upload script and presentation materials
+                            {getTipSentence(selectedPersona || '')}
+                        </div>
+                        <div className = "w-full max-w-100">
+                            <button type = "button" className = "flex flex-row p-2 bg-gray-200 text-black rounded-lg">
+                                <Upload className = "mr-1"/>
+                                Upload
+                            </button>
                         </div>
                     </div>
 
@@ -355,7 +390,7 @@ export default function Page() {
                     
                     <div style={{ marginTop: '1.5rem' }}>
                         <div className = "p-2 rounded-lg space-y-4 justify-self-end">
-                            <button type = "button" onClick = {handleStart} disabled = {!selectedOption}
+                            <button type = "button" onClick = {handleStart} disabled = {!isFormValid}
                                 className ={`px-4 py-2 rounded-lg flex row bg-gray-200 text-black 
                                     hover:bg-[#c4a99e]
                                     disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-gray-200
