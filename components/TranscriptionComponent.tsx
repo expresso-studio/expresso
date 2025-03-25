@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useRef } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface TranscriptionComponentProps {
   onRecordingStateChange: (recording: boolean) => void;
@@ -34,6 +35,7 @@ function TranscriptionComponent({
   const [sessionWPM, setSessionWPM] = useState<number>(0);
   const [maxWPM, setMaxWPM] = useState<number | null>(null);
   const [minWPM, setMinWPM] = useState<number | null>(null);
+  const { user } = useAuth0();
   
   // Refs for stable references
   const socketRef = useRef<WebSocket | null>(null);
@@ -294,7 +296,7 @@ function TranscriptionComponent({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            user: "auth0|67baac4182c20de0c41b0395", // TODO: Fix with actual user id
+            user: user?.sub,
             fillerWordCount: fillerWordCount,
             fillerWordsStats: fillerWordsStats,
             maxWPM: maxWPM,
@@ -324,8 +326,16 @@ function TranscriptionComponent({
   };
 
   return (
-    <>
-      {/* Recording Button */}
+    <div className="w-full max-w-[600px] mx-auto">
+      {/* Main UI with transcript
+      <div className="mt-4 p-4 border border-gray-300 rounded-lg min-h-[100px] bg-white dark:bg-gray-800 dark:border-gray-700">
+        <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Transcript:</h3>
+        <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+          {transcript || "Speech will appear here..."}
+        </p>
+      </div> */}
+      
+      {/* Recording controls */}
       <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-black/80 rounded-lg p-4 shadow-lg z-10 w-auto">
         <button 
           onClick={handleRecordButtonClick}
@@ -349,7 +359,7 @@ function TranscriptionComponent({
           <span className="font-mono">{formatTime(recordingDuration)}</span>
         </div>
       )}
-    </>
+    </div>
   );
 }
 
