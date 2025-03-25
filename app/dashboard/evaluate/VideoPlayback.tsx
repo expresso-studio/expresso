@@ -25,7 +25,7 @@ interface VideoPlaybackProps {
   };
 }
 
-const VideoPlayback: React.FC<VideoPlaybackProps> = ({ videoBlob, onDownload }) => {
+const VideoPlayback: React.FC<VideoPlaybackProps> = ({ videoBlob, onDownload, metrics }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { user, isAuthenticated } = useAuth0();
   const [uploading, setUploading] = useState(false);
@@ -85,8 +85,33 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({ videoBlob, onDownload }) 
         throw new Error('Upload failed');
       }
       
-      const data = await res.json();
-      console.log('Video uploaded, URL:', data.videoUrl, 'ID:', data.presentationId);
+      const { videoUrl, presentationId } = await res.json();
+
+      // Upload transcript if available
+      if (metrics?.transcript && presentationId) {
+        const transcriptRes = await fetch('/api/upload-transcript', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: user.sub,
+            presentationId,
+            transcript: metrics.transcript,
+          }),
+        });
+
+        if (!transcriptRes.ok) {
+          throw new Error('Transcript upload failed');
+        }
+
+        const transcriptData = await transcriptRes.json();
+        console.log('Transcript uploaded, ID:', transcriptData.transcriptId);
+      } else {
+        console.warn("No transcript provided or missing presentationId.");
+      }
+      
+      console.log('Video uploaded, URL:', videoUrl, 'ID:', presentationId);
       setUploadSuccess(true);
     } catch (error) {
       console.error('Error during video upload:', error);
