@@ -27,12 +27,14 @@ const MetricsDisplay: React.FC<MetricsDisplayProps> = ({
           <div key={key} className="flex flex-col mb-2">
             <div className="flex justify-between text-sm mb-1">
               <span className="text-gray-300 capitalize flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={enabled}
-                  onChange={() => toggleMetric(metricKey)}
-                  className="form-checkbox"
-                />
+                {toggleMetric && (
+                  <input
+                    type="checkbox"
+                    checked={enabled}
+                    onChange={() => toggleMetric(metricKey)}
+                    className="form-checkbox"
+                  />
+                )}
                 <Icon />
                 {formatMetricName(key)}
               </span>
