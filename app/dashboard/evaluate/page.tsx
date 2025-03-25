@@ -4,21 +4,21 @@ import React, { Suspense, useState } from "react";
 import GestureAnalyzer from "./GestureAnalyzer";
 import TranscriptionComponent from "@/components/TranscriptionComponent";
 import ProtectedRoute from "@/components/protected-route";
-import { useAuthUtils } from "@/hooks/useAuthUtils";
+// import { useAuthUtils } from "@/hooks/useAuthUtils";
 
 export default function Page() {
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [isDeveloperMode, setIsDeveloperMode] = useState(true); // Default to true for developer
-  const { error, refreshToken } = useAuthUtils();
+  // const { user, isAuthenticated, isLoading, error, refreshToken } = useAuthUtils();
 
-  // If there's an auth error, try to refresh the token
-  React.useEffect(() => {
-    if (error) {
-      console.error("Auth error in dashboard:", error);
-      refreshToken();
-    }
-  }, [error, refreshToken]);
+  // // If there's an auth error, try to refresh the token
+  // React.useEffect(() => {
+  //   if (error) {
+  //     console.error("Auth error in dashboard:", error);
+  //     refreshToken();
+  //   }
+  // }, [error, refreshToken]);
 
   // Handle recording state changes from the TranscriptionComponent
   const handleRecordingStateChange = (recording: boolean) => {
