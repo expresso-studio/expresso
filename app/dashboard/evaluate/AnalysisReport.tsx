@@ -117,7 +117,7 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
           {/* Video Recording */}
           <div className="mb-6 border rounded-lg p-4 dark:border-gray-700">
             <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Presentation Recording</h3>
-            <VideoPlayback videoBlob={recordedVideo} />
+            <VideoPlayback videoBlob={recordedVideo} metrics={analysisData}/>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
