@@ -126,7 +126,7 @@ export default function Page() {
     
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         if (e.target instanceof HTMLInputElement) {
-            const { name, value, type, checked } = e.target;
+            const { name, value, checked } = e.target;
 
             setFormData(prev => ({
                 ...prev,
