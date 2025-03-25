@@ -9,7 +9,7 @@ export async function GET() {
       `SELECT * FROM (
         SELECT id, created_at, max_wpm, min_wpm, session_wpm
         FROM filler_stats
-        WHERE user_id = $1
+        WHERE user_id = $1 AND max_wpm IS NOT NULL AND min_wpm IS NOT NULL
         ORDER BY created_at DESC
         LIMIT 10
       ) subquery 
