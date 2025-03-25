@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
 
 interface TranscriptionComponentProps {
   onRecordingStateChange: (recording: boolean) => void;
@@ -37,7 +36,6 @@ function TranscriptionComponent({
   const [sessionWPM, setSessionWPM] = useState<number>(0);
   const [maxWPM, setMaxWPM] = useState<number | null>(null);
   const [minWPM, setMinWPM] = useState<number | null>(null);
-  const { user } = useAuth0();
 
   // Refs for stable references
   const socketRef = useRef<WebSocket | null>(null);
