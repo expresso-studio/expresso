@@ -7,11 +7,16 @@ import { formatMetricName, getColorClass, getMetricStatus } from "../utils";
 
 interface MetricsDisplayProps {
   metrics: GestureMetrics;
-  enabledMetrics: Record<keyof GestureMetrics, boolean>;
-  toggleMetric: (metric: keyof GestureMetrics) => void;
+  enabledMetrics?: Record<keyof GestureMetrics, boolean>;
+  toggleMetric?: (metric: keyof GestureMetrics) => void;
 }
 
-const MetricsDisplay: React.FC<MetricsDisplayProps> = ({ metrics, enabledMetrics, toggleMetric }) => {
+const MetricsDisplay: React.FC<MetricsDisplayProps> = ({ 
+  metrics, 
+  enabledMetrics = Object.fromEntries(
+    Object.keys(metrics).map(key => [key, true])
+  ) as Record<keyof GestureMetrics, boolean>, 
+  toggleMetric }) => {
   return (
     <div className="space-y-3">
       {Object.entries(metrics).map(([key, value]) => {
