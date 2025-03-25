@@ -34,7 +34,7 @@ function TranscriptionComponent({
   const [sessionWPM, setSessionWPM] = useState<number>(0);
   const [maxWPM, setMaxWPM] = useState<number | null>(null);
   const [minWPM, setMinWPM] = useState<number | null>(null);
-  const { user, isAuthenticated } = useAuth0();
+  const { user } = useAuth0();
 
   useEffect(() => {
     async function initAudio() {  
