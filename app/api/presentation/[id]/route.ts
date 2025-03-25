@@ -24,9 +24,12 @@ export async function GET(
   try {
     // Get the presentation details
     const presentationResult = await query(
-      `SELECT id, title, video_url, slides_url, transcript_url, created_at, user_id 
+      `SELECT presentations.id AS presentation_id, presentations.title, presentations.video_url, 
+              presentations.slides_url, presentations.transcript_url, presentations.created_at, 
+              presentations.user_id, transcripts.transcript_text 
        FROM presentations 
-       WHERE id = $1 AND user_id = $2`,
+       LEFT JOIN transcripts ON presentations.id = transcripts.presentation_id
+       WHERE presentations.id = $1 AND presentations.user_id = $2`,
       [presentationId, userId]
     );
 

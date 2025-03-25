@@ -34,6 +34,7 @@ interface Presentation {
   transcript_url: string;
   created_at: string;
   metrics: Metric[];
+  transcript_text?: string;
 }
 
 interface VideoPlayerProps {
@@ -163,6 +164,14 @@ export default function PresentationPage({
             <p className="text-stone-500">
               Created on:{" "}
               {new Date(presentation.created_at).toLocaleDateString()}
+            </p>
+          </div>
+          <div className="bg-stone-100 dark:bg-stone-900 py-6 px-4 rounded-lg h-full mt-4">
+            <h2 className={cn("text-xl font-semibold mb-4", outfit.className)}>
+              Transcript
+            </h2>
+            <p className="whitespace-pre-wrap">
+              {presentation.transcript_text || "No transcript available."}
             </p>
           </div>
         </div>
