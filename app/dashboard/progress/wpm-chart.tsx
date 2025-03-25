@@ -9,6 +9,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { useEffect, useState } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 
 type ChartDataType = {
   day: string;
@@ -37,17 +38,22 @@ const chartConfig = {
 
 export function WPMChart() {
   const [chartData, setChartData] = useState<ChartDataType[]>([]);
+  const { user, isAuthenticated } = useAuth0();
 
   useEffect(() => {
     const fetchWPM = async () => {
+      if (!isAuthenticated || !user?.sub) {
+        console.error('User not authenticated');
+        return;
+      }
+      
       try {
-        const response = await fetch("/api/fillerwords/wpm");
+        const response = await fetch(`/api/fillerwords/wpm?userId=${encodeURIComponent(user.sub)}`);
         if (!response.ok) {
           throw new Error("Failed to fetch filler words");
         }
 
         const data = await response.json();
-        console.log(data)
         if (data.fillerWords) {
           const formattedData: ChartDataType[] = data.fillerWords.map(
             (entry: FillerWordStats) => ({

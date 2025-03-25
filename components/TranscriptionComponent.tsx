@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface TranscriptionComponentProps {
   onRecordingStateChange: (recording: boolean) => void;
@@ -35,6 +36,7 @@ function TranscriptionComponent({
   const [sessionWPM, setSessionWPM] = useState<number>(0);
   const [maxWPM, setMaxWPM] = useState<number | null>(null);
   const [minWPM, setMinWPM] = useState<number | null>(null);
+  const { user } = useAuth0();
 
   useEffect(() => {
     async function initAudio() {
@@ -171,7 +173,7 @@ function TranscriptionComponent({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          user: "auth0|67baac4182c20de0c41b0395", // TODO: Fix with actual user id
+          user: user?.sub,
           fillerWordCount: fillerWordCount,
           fillerWordsStats: fillerWordsStats,
           maxWPM: maxWPM,

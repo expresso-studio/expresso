@@ -2,12 +2,8 @@
 
 import React, { useRef, useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { MetricInput, MetricNames } from "./gesture-analysis";
-
-interface MetricData {
-  value: number;
-  status: string;
-}
+import { MetricData, MetricInput } from "@/lib/types";
+import { MetricNames } from "@/lib/constants";
 
 interface VideoPlaybackProps {
   videoBlob: Blob | null;
@@ -94,6 +90,32 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({
       }
 
       const { videoUrl, presentationId } = await videoRes.json();
+
+      // Upload transcript if available
+      if (metrics?.transcript && presentationId) {
+        const transcriptRes = await fetch("/api/upload-transcript", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: user.sub,
+            presentationId,
+            transcript: metrics.transcript,
+          }),
+        });
+
+        if (!transcriptRes.ok) {
+          throw new Error("Transcript upload failed");
+        }
+
+        const transcriptData = await transcriptRes.json();
+        console.log("Transcript uploaded, ID:", transcriptData.transcriptId);
+      } else {
+        console.warn("No transcript provided or missing presentationId.");
+      }
+
+      console.log("Video uploaded, URL:", videoUrl, "ID:", presentationId);
 
       // If metrics are provided and we have a presentationId, save the metrics
       if (metrics && presentationId) {
