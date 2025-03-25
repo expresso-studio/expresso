@@ -3,13 +3,15 @@
 
 import { useEffect } from "react";
 import { useAuthUtils } from "@/hooks/useAuthUtils";
+import Loading from "./loading";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { isAuthenticated, isLoading, loginWithRedirect, error, refreshToken } = useAuthUtils();
+  const { isAuthenticated, isLoading, loginWithRedirect, error, refreshToken } =
+    useAuthUtils();
 
   useEffect(() => {
     // If not authenticated and not loading, redirect to login
@@ -17,7 +19,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
       console.log("Not authenticated, redirecting to login");
       loginWithRedirect();
     }
-    
+
     // If there's an error, try to refresh the token once
     if (error && !isLoading) {
       refreshToken();
@@ -28,8 +30,10 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen flex-col">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-lightCoffee dark:border-darkCoffee mb-4"></div>
-        <p className="text-lg">Loading your dashboard...</p>
+        <div className="h-[20vw]">
+          <Loading />
+        </div>
+        <p className="text-lg">Loading...</p>
       </div>
     );
   }

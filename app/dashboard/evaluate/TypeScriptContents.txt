@@ -6,7 +6,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { PoseLandmark, GestureMetrics } from '../types';
+import { PoseLandmark, GestureMetrics } from '@/lib/types';
 import { formatTime } from '../utils';
 
 interface DeveloperReportProps {
