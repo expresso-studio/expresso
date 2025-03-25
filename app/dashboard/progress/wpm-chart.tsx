@@ -47,7 +47,6 @@ export function WPMChart() {
         }
 
         const data = await response.json();
-        console.log(data)
         if (data.fillerWords) {
           const formattedData: ChartDataType[] = data.fillerWords.map(
             (entry: FillerWordStats) => ({

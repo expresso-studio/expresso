@@ -3,9 +3,26 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useAuth0 } from "@auth0/auth0-react";
 
+interface MetricData {
+  value: number;
+  status: string;
+}
+
 interface VideoPlaybackProps {
   videoBlob: Blob | null;
   onDownload?: () => void;
+  metrics: {
+    handMovement: MetricData;
+    headMovement: MetricData;
+    bodyMovement: MetricData;
+    posture: MetricData;
+    handSymmetry: MetricData;
+    gestureVariety: MetricData;
+    eyeContact: MetricData;
+    overallScore: number;
+    sessionDuration: number;
+    transcript: string;
+  };
 }
 
 const VideoPlayback: React.FC<VideoPlaybackProps> = ({ videoBlob, onDownload }) => {
