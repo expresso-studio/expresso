@@ -8,7 +8,7 @@ import ProtectedRoute from "@/components/protected-route";
 export default function Page() {
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState("");
-  const [isDeveloperMode, setIsDeveloperMode] = useState(false);
+  // const [isDeveloperMode, setIsDeveloperMode] = useState(false);
   const [showTranscript, setShowTranscript] = useState(true);
   
   // Handle recording state changes from the TranscriptionComponent
@@ -22,15 +22,16 @@ export default function Page() {
   
   // Handle transcript updates from the TranscriptionComponent  
   const handleTranscriptUpdate = (newTranscript: string) => {
-    if (showTranscript) {
+    // Always update the transcript when recording, regardless of the showTranscript setting
+    if (isRecording) {
       setTranscript(newTranscript);
     }
   };
   
-  // Toggle developer mode
-  const toggleDeveloperMode = () => {
-    setIsDeveloperMode(!isDeveloperMode);
-  };
+  // // Toggle developer mode
+  // const toggleDeveloperMode = () => {
+  //   setIsDeveloperMode(!isDeveloperMode);
+  // };
 
   // Toggle transcript visibility
   const toggleTranscript = () => {
@@ -68,7 +69,7 @@ export default function Page() {
           <GestureAnalyzer 
             isRecording={isRecording}
             transcript={transcript}
-            developerMode={isDeveloperMode}
+            // developerMode={isDeveloperMode}
           />
         </Suspense>
         

@@ -237,9 +237,21 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
         </button>
       </div>
       
-      {/* Analysis panel is positioned in the top right, this doesn't change */}
+      {/* Analysis panel is conditionally displayed based on showAnalysisPanel */}
       {poseResults && showAnalysisPanel && (
         <div className="absolute inset-0">
+          <GestureAnalysis
+            poseLandmarks={poseResults.poseLandmarks}
+            isRecording={isRecording}
+            onMetricsUpdate={handleMetricsUpdate}
+            developerMode={developerMode}
+          />
+        </div>
+      )}
+      
+      {/* Run analysis in background regardless of panel visibility */}
+      {poseResults && !showAnalysisPanel && (
+        <div className="absolute inset-0" style={{ display: 'none' }}>
           <GestureAnalysis
             poseLandmarks={poseResults.poseLandmarks}
             isRecording={isRecording}
