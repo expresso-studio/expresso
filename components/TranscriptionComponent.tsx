@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface TranscriptionComponentProps {
   onRecordingStateChange: (recording: boolean) => void;
@@ -29,6 +30,11 @@ function TranscriptionComponent({
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [fillerWordCount, setFillerWordCount] = useState(0);
   const [fillerWordsStats, setFillerWordsStats] = useState<{ [word: string]: number }>({});
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [sessionWPM, setSessionWPM] = useState<number>(0);
+  const [maxWPM, setMaxWPM] = useState<number | null>(null);
+  const [minWPM, setMinWPM] = useState<number | null>(null);
+  const { user } = useAuth0();
 
   useEffect(() => {
     async function initAudio() {  
@@ -48,6 +54,20 @@ function TranscriptionComponent({
       onTranscriptUpdate(transcript);
     }
   }, [transcript, onTranscriptUpdate]);
+
+  useEffect(() => {
+    if (startTime !== null) {
+      const elapsedMinutes = (Date.now() - startTime) / 60000;
+      if (elapsedMinutes > 0) {
+        const wordCount = transcript.trim().split(/\s+/).filter(Boolean).length;
+        const currentWPM = wordCount / elapsedMinutes;
+        setSessionWPM(currentWPM);
+  
+        setMaxWPM((prev) => (prev === null || currentWPM > prev ? currentWPM : prev));
+        setMinWPM((prev) => (prev === null || currentWPM < prev ? currentWPM : prev));
+      }
+    }
+  }, [transcript, startTime]);
 
   useEffect(() => {
     // Connect to our WebSocket server on port 3001.
@@ -143,9 +163,12 @@ function TranscriptionComponent({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          user: "auth0|67baac4182c20de0c41b0395", // TODO: Fix with actual user id
+          user: user?.sub,
           fillerWordCount: fillerWordCount,
           fillerWordsStats: fillerWordsStats,
+          maxWPM: maxWPM,
+          minWPM: minWPM,
+          sessionWPM: sessionWPM,
         }),
       });
       const data = await response.json();
@@ -162,6 +185,11 @@ function TranscriptionComponent({
     }
     if (!microphone) {
       try {
+        setStartTime(Date.now());
+        setTranscript("");
+        setSessionWPM(0);
+        setMaxWPM(null);
+        setMinWPM(null);
         const mic = await getMicrophone();
         await openMicrophone(mic, socket);
         setMicrophone(mic);
@@ -182,9 +210,6 @@ function TranscriptionComponent({
     }
   };
 
-  // const handleClearTranscript = () => {
-  //   setTranscript("");
-  // };
 
   return (
     <div className="w-full max-w-[600px] mx-auto">

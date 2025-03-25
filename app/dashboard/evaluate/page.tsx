@@ -3,11 +3,22 @@
 import React, { Suspense, useState } from 'react';
 import GestureAnalyzer from './GestureAnalyzer';
 import TranscriptionComponent from '@/components/TranscriptionComponent';
+import ProtectedRoute from "@/components/protected-route";
+// import { useAuthUtils } from "@/hooks/useAuthUtils";
 
 export default function Page() {
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [isDeveloperMode, setIsDeveloperMode] = useState(true); // Default to true for developer
+  // const { user, isAuthenticated, isLoading, error, refreshToken } = useAuthUtils();
+    
+  // // If there's an auth error, try to refresh the token
+  // React.useEffect(() => {
+  //   if (error) {
+  //     console.error("Auth error in dashboard:", error);
+  //     refreshToken();
+  //   }
+  // }, [error, refreshToken]);
   
   // Handle recording state changes from the TranscriptionComponent
   const handleRecordingStateChange = (recording: boolean) => {
@@ -30,6 +41,7 @@ export default function Page() {
   };
 
   return (
+    <ProtectedRoute>
     <div className="relative flex flex-col items-center p-4">
       <div className="w-full flex justify-between items-center mb-6">
         
@@ -61,5 +73,6 @@ export default function Page() {
         />
       </div>
     </div>
+    </ProtectedRoute>
   );
 }
