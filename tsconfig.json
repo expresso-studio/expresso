@@ -18,9 +18,7 @@
     "jsx": "preserve",
     "incremental": true,
     "types": [
-      "jest",
-      "node",
-      "@testing-library/jest-dom"
+      "node"
     ],
     "plugins": [
       {
@@ -45,6 +43,11 @@
     "jest.config.js"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules", 
+    "**/*.test.js", 
+    "**/*.spec.js", 
+    "jest.config.js", 
+    "jest.setup.js"
+
   ]
 }
