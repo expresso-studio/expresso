@@ -1,8 +1,5 @@
 /**
- * Component responsible for video capture and pose detection processing.
- * Handles webcam setup, MediaPipe initialization, and real-time pose detection.
- * Uses refs to manage video and canvas elements, and provides pose detection results
- * to parent component.
+ * Component responsible for video capture, pose detection, and video recording.
  */
 "use client";
 
@@ -43,19 +40,31 @@ interface EvaluateVideoProps {
   loading: boolean;
   onPoseResults: (results: PoseResults) => void;
   onError: (error: string) => void;
+  isRecording: boolean;
+  onVideoRecorded: (videoBlob: Blob) => void;
+  showSkeleton?: boolean; // New prop to control skeleton visibility
 }
 
 export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
   loading,
   onPoseResults,
   onError,
+  isRecording,
+  onVideoRecorded,
+  showSkeleton = false, // Default to hidden
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const audioStreamRef = useRef<MediaStream | null>(null);
   const poseRef = useRef<MediaPipePose | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const lastProcessedTimeRef = useRef<number>(0);
   const [isClient, setIsClient] = useState(false);
+
+  // Recording state
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const recordedChunksRef = useRef<BlobPart[]>([]);
 
   // Set isClient to true once component mounts
   useEffect(() => {
@@ -70,14 +79,35 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
       if (!videoRef.current) return;
 
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
+        // Get video stream
+        const videoStream = await navigator.mediaDevices.getUserMedia({
           video: {
-            width: 1200,
-            height: 800,
+            width: 1280,
+            height: 720,
             frameRate: { ideal: 30 },
           },
         });
-        videoRef.current.srcObject = stream;
+
+        // Store the video stream reference
+        streamRef.current = videoStream;
+
+        // Set the video source
+        videoRef.current.srcObject = videoStream;
+        videoRef.current.muted = true; // Mute the video element to prevent feedback
+
+        // Get separate audio stream (will be used only for recording)
+        try {
+          const audioStream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+              echoCancellation: true,
+              noiseSuppression: true,
+              autoGainControl: true,
+            },
+          });
+          audioStreamRef.current = audioStream;
+        } catch (audioErr) {
+          console.warn("Could not access microphone:", audioErr);
+        }
       } catch (err) {
         onError(
           `Failed to access webcam: ${
@@ -90,12 +120,96 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
     setupCamera();
 
     return () => {
-      if (videoRef.current?.srcObject) {
-        const stream = videoRef.current.srcObject as MediaStream; // eslint-disable-line react-hooks/exhaustive-deps
-        stream.getTracks().forEach((track) => track.stop());
+      // Clean up all streams
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+        streamRef.current = null;
+      }
+      if (audioStreamRef.current) {
+        audioStreamRef.current.getTracks().forEach((track) => track.stop());
+        audioStreamRef.current = null;
       }
     };
   }, [isClient, onError]);
+
+  // Handle recording state changes
+  useEffect(() => {
+    if (!streamRef.current) return;
+
+    if (isRecording) {
+      startRecording();
+    } else {
+      stopRecording();
+    }
+  }, [isRecording]);
+
+  // Start recording function
+  const startRecording = () => {
+    if (!streamRef.current) return;
+
+    try {
+      recordedChunksRef.current = [];
+
+      // Create a combined stream with video and audio tracks
+      const combinedTracks = [];
+
+      // Add video track
+      const videoTrack = streamRef.current.getVideoTracks()[0];
+      if (videoTrack) {
+        combinedTracks.push(videoTrack);
+      } else {
+        console.error("No video track available");
+        return;
+      }
+
+      // Add audio track if available
+      if (
+        audioStreamRef.current &&
+        audioStreamRef.current.getAudioTracks().length > 0
+      ) {
+        const audioTrack = audioStreamRef.current.getAudioTracks()[0];
+        combinedTracks.push(audioTrack);
+      }
+
+      // Create combined stream
+      const combinedStream = new MediaStream(combinedTracks);
+
+      // Create media recorder
+      const options = { mimeType: "video/webm" };
+      mediaRecorderRef.current = new MediaRecorder(combinedStream, options);
+
+      // Handle data available
+      mediaRecorderRef.current.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          recordedChunksRef.current.push(event.data);
+        }
+      };
+
+      // Start recording
+      mediaRecorderRef.current.start(1000);
+      console.log("Recording started with audio");
+    } catch (error) {
+      console.error("Error starting recording:", error);
+    }
+  };
+
+  // Stop recording function
+  const stopRecording = () => {
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state !== "inactive"
+    ) {
+      mediaRecorderRef.current.onstop = () => {
+        const videoBlob = new Blob(recordedChunksRef.current, {
+          type: "video/mp4",
+        });
+        onVideoRecorded(videoBlob);
+        console.log("Recording stopped and saved");
+      };
+
+      mediaRecorderRef.current.stop();
+    }
+  };
 
   // Initialize pose detection
   useEffect(() => {
@@ -109,6 +223,8 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
       ctx: CanvasRenderingContext2D,
       landmarks: PoseLandmark[]
     ) => {
+      if (!showSkeleton) return; // Skip drawing if skeleton is hidden
+
       // Draw points for each landmark
       landmarks.forEach((landmark: PoseLandmark) => {
         if (landmark.visibility && landmark.visibility > 0.5) {
@@ -207,6 +323,8 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
           ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
           if (!videoRef.current) return;
 
+          // Only draw the video on the canvas - no skeleton overlay
+          // when showSkeleton is false
           ctx.drawImage(
             videoRef.current,
             0,
@@ -216,7 +334,10 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
           );
 
           if (results.poseLandmarks) {
-            drawPoseLandmarks(ctx, results.poseLandmarks);
+            // Only draw landmarks if showSkeleton is true
+            if (showSkeleton) {
+              drawPoseLandmarks(ctx, results.poseLandmarks);
+            }
           }
 
           onPoseResults(results);
@@ -250,7 +371,7 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
         poseRef.current.close();
       }
     };
-  }, [isClient, loading, onError, onPoseResults]);
+  }, [isClient, loading, onError, onPoseResults, showSkeleton]); // Added showSkeleton to dependencies
 
   // Don't render anything during SSR
   if (!isClient) return null;
@@ -262,6 +383,7 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
         className="absolute w-full h-full object-cover"
         autoPlay
         playsInline
+        muted
       />
       <canvas
         ref={canvasRef}

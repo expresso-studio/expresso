@@ -1,3 +1,5 @@
+import { MetricNames, MetricIds } from "./constants";
+
 export type StatisticType = {
   icon: React.ReactNode;
   text: string;
@@ -13,12 +15,11 @@ export type CourseType = {
   nLessons: number;
 };
 
-export type RecordingType = {
-  id: string;
-  title: string;
-  thumbnail: string;
-  date: Date;
-  overallScore: number;
+export type MetricType = {
+  metric_id: MetricIds;
+  name: MetricNames;
+  score: number;
+  evaluated_at: string;
 };
 
 export type PresentationType = {
@@ -26,25 +27,17 @@ export type PresentationType = {
   title: string;
   video_url: string;
   created_at: string;
-  metrics: {
-    metric_id: number;
-    name: string;
-    score: number;
-    evaluated_at: string;
-  }[];
+  metrics: MetricType[];
 };
 
+// literally the only difference between this and the PresentationType
+// is presentation_id vs id
 export type ReportItemType = {
   presentation_id: string;
   title: string;
   video_url: string;
   created_at: string;
-  metrics: {
-    metric_id: number;
-    name: string;
-    score: number;
-    evaluated_at: string;
-  }[];
+  metrics: MetricType[];
 };
 
 export type UserType = {
@@ -65,3 +58,49 @@ export type NavItemType = {
     url: string;
   }[];
 };
+
+export interface PoseLandmark {
+  x: number;
+  y: number;
+  z: number;
+  visibility?: number;
+}
+
+export interface GestureMetrics {
+  handMovement: number;
+  headMovement: number;
+  bodyMovement: number;
+  posture: number;
+  handSymmetry: number;
+  gestureVariety: number;
+  eyeContact: number;
+  overallScore: number;
+}
+
+export interface GestureFeedback {
+  message: string;
+  type: "success" | "warning" | "error" | "info";
+}
+
+export interface MetricInput {
+  name: MetricNames;
+  value: number;
+}
+
+export interface MetricData {
+  value: number;
+  status: string;
+}
+
+export interface AnalysisData {
+  handMovement: MetricData;
+  headMovement: MetricData;
+  bodyMovement: MetricData;
+  posture: MetricData;
+  handSymmetry: MetricData;
+  gestureVariety: MetricData;
+  eyeContact: MetricData;
+  overallScore: number;
+  sessionDuration: number;
+  transcript: string;
+}
