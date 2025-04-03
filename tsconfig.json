@@ -41,7 +41,7 @@
     "jest.setup.ts",
     "__tests__/components/nav-main.test.jsx",
     "jest.config.js"
-  ],
+, "__tests__/eval-settings.test.jsx"  ],
   "exclude": [
     "node_modules", 
     "**/*.test.js", 

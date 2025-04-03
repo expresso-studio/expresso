@@ -21,6 +21,7 @@ const config = {
   moduleNameMapper: {
     "^lucide-react$": "<rootDir>/node_modules/lucide-react/dist/cjs/lucide-react.js",
     "^@/(.*)$": "<rootDir>/$1", 
+    '^app/(.*)$': '<rootDir>/app/$1',
   },
   globals: {
     'ts-jest': {
