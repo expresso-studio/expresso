@@ -57,9 +57,13 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
           setEmotionData(result.emotion);
           setSentimentScore(result.sentiment); // Store sentiment score
 
-        } catch (error: any) {
+        } catch (error: unknown) {
           console.error("Failed to fetch tone analysis:", error);
-          setAnalysisError(error.message || "Failed to load tone analysis.");
+          if (error instanceof Error) {
+            setAnalysisError(error.message || "Failed to load tone analysis.");
+          } else {
+            setAnalysisError("An unknown error occurred.");
+          }        
         } finally {
           setIsLoadingAnalysis(false);
         }

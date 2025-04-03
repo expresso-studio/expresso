@@ -51,11 +51,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ emotion: emotionResult, sentiment: sentimentResult }, { status: 200 });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error analyzing tone with IBM Watson:', error);
-    // Provide a more specific error message if possible
-    const errorMessage = error.message || 'Failed to analyze tone.';
-    const statusCode = error.status || 500;
+
+    const errorMessage = 'Failed to analyze tone.';
+    const statusCode = 500;
     return NextResponse.json({ error: errorMessage }, { status: statusCode });
   }
 }
