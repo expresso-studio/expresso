@@ -1,7 +1,16 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react'; // Import useState and useEffect
 import VideoPlayback from './VideoPlayback';
+
+// Define interface for Emotion data if needed, based on API response
+interface EmotionScores {
+  sadness?: number;
+  joy?: number;
+  fear?: number;
+  disgust?: number;
+  anger?: number;
+}
 
 interface MetricData {
   value: number;
@@ -28,12 +37,55 @@ interface AnalysisReportProps {
   recordedVideo: Blob | null;
 }
 
-const AnalysisReport: React.FC<AnalysisReportProps> = ({ 
-  isOpen, 
-  onClose, 
+const AnalysisReport: React.FC<AnalysisReportProps> = ({
+  isOpen,
+  onClose,
   analysisData,
   recordedVideo
 }) => {
+  const [emotionData, setEmotionData] = useState<EmotionScores | null>(null);
+  const [sentimentScore, setSentimentScore] = useState<number | null>(null); // Add state for sentiment
+  const [isLoadingAnalysis, setIsLoadingAnalysis] = useState<boolean>(false); // Rename for clarity
+  const [analysisError, setAnalysisError] = useState<string | null>(null); // Rename for clarity
+
+  useEffect(() => {
+    if (isOpen && analysisData?.transcript) {
+      const fetchToneAnalysis = async () => { // Rename function
+        setIsLoadingAnalysis(true);
+        setAnalysisError(null);
+        setEmotionData(null); // Reset previous data
+        setSentimentScore(null); // Reset sentiment score
+
+        try {
+          const response = await fetch('/api/tone-analyzer', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ text: analysisData.transcript }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+          }
+
+          const result = await response.json();
+          setEmotionData(result.emotion);
+          setSentimentScore(result.sentiment); // Store sentiment score
+
+        } catch (error: any) {
+          console.error("Failed to fetch tone analysis:", error);
+          setAnalysisError(error.message || "Failed to load tone analysis.");
+        } finally {
+          setIsLoadingAnalysis(false);
+        }
+      };
+
+      fetchToneAnalysis(); // Call renamed function
+    }
+  }, [isOpen, analysisData?.transcript]); // Rerun when modal opens or transcript changes
+
   if (!isOpen || !analysisData) return null;
 
   // Format time for display
@@ -191,6 +243,72 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
               {formattedTranscript}
             </div>
           </div>
+
+          {/* Tone Analysis Section (Emotion & Sentiment) */}
+          <div className="mt-6 border rounded-lg p-4 dark:border-gray-700">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Tone Analysis (via IBM Watson)</h3>
+            {isLoadingAnalysis && <p className="text-gray-600 dark:text-gray-400">Loading analysis data...</p>}
+            {analysisError && <p className="text-red-500">Error: {analysisError}</p>}
+
+            {/* Sentiment Display */}
+            {sentimentScore !== null && !isLoadingAnalysis && !analysisError && (
+              <div className="mb-4 border rounded-lg p-3 dark:border-gray-700">
+                <div className="flex justify-between items-center mb-1">
+                  <h4 className="font-medium text-gray-900 dark:text-white">Overall Sentiment</h4>
+                  <span className={`font-semibold px-2 py-0.5 rounded text-sm ${
+                    sentimentScore > 0.3 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+                    sentimentScore < -0.3 ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' :
+                    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                  }`}>
+                    {sentimentScore > 0.3 ? 'Positive' : sentimentScore < -0.3 ? 'Negative' : 'Neutral'} ({sentimentScore.toFixed(2)})
+                  </span>
+                </div>
+                <div className="w-full bg-gray-300 dark:bg-gray-700 rounded-full h-2.5">
+                  {/* Represent score from -1 to 1 on a 0 to 100 scale */}
+                  <div
+                    className={`h-2.5 rounded-full ${
+                      sentimentScore > 0 ? 'bg-green-500' : 'bg-red-500'
+                    }`}
+                    style={{ width: `${Math.abs(sentimentScore) * 100}%`, marginLeft: sentimentScore < 0 ? `${(1 - Math.abs(sentimentScore)) * 50}%` : '50%', marginRight: sentimentScore > 0 ? `${(1 - sentimentScore) * 50}%` : '50%' }}
+                  ></div>
+                   {/* Add a marker for neutral */}
+                   <div className="relative bottom-1.5 h-full flex justify-center items-center">
+                     <div className="w-px h-4 bg-gray-500 dark:bg-gray-400"></div>
+                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* Emotion Display */}
+            {emotionData && !isLoadingAnalysis && !analysisError && (
+              <div>
+                <h4 className="text-md font-semibold mb-2 text-gray-800 dark:text-gray-200">Emotion Breakdown</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {Object.entries(emotionData).map(([emotion, score]) => (
+                    <div key={emotion} className="border rounded-lg p-3 dark:border-gray-700">
+                    <div className="flex justify-between items-center mb-1">
+                      <h4 className="font-medium text-gray-900 dark:text-white capitalize">{emotion}</h4>
+                      <span className="font-medium text-blue-600">
+                        {(score * 100).toFixed(1)}% 
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-300 dark:bg-gray-700 rounded-full h-2.5">
+                      <div
+                        className="bg-blue-500 h-2.5 rounded-full"
+                        style={{ width: `${score * 100}%` }}
+                      ></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {/* Combined No Data Message */}
+            {!emotionData && sentimentScore === null && !isLoadingAnalysis && !analysisError && (
+                 <p className="text-gray-600 dark:text-gray-400">No tone analysis data available for this transcript.</p>
+             )}
+          </div>
+
 
           {/* Action Buttons */}
           <div className="mt-6 flex justify-end space-x-3">
