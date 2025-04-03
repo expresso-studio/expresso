@@ -1,31 +1,31 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from 'react';
-import _ from 'lodash';
-import { PoseLandmark, GestureMetrics, GestureFeedback } from './types';
-import { MOVEMENT_BUFFER_SIZE } from './constants';
-import { formatTime, smoothUpdate } from './utils';
+import React, { useEffect, useRef, useState } from "react";
+import _ from "lodash";
+import { PoseLandmark, GestureMetrics, GestureFeedback } from "@/lib/types";
+import { formatTime, smoothUpdate, calculateMovement } from "./utils";
 import {
   analyzePosture,
   calculateBodyMovement,
   calculateEyeContact,
   calculateGestureVariety,
   calculateHandSymmetry,
-  generateFeedback
-} from './analysisAlgorithms';
-import { calculateMovement } from './utils';
-import MetricsDisplay from './components/MetricsDisplay';
-import FeedbackPanel from './components/FeedbackPanel';
-import DeveloperReport from './components/DeveloperReport';
-import { 
-  HAND_MOVEMENT_COEFFICIENT, 
-  HEAD_MOVEMENT_COEFFICIENT, 
+  generateFeedback,
+} from "./analysisAlgorithms";
+import MetricsDisplay from "./components/MetricsDisplay";
+import FeedbackPanel from "./components/FeedbackPanel";
+import DeveloperReport from "./components/DeveloperReport";
+import {
+  MOVEMENT_BUFFER_SIZE,
+  HAND_MOVEMENT_COEFFICIENT,
+  HEAD_MOVEMENT_COEFFICIENT,
   BODY_MOVEMENT_COEFFICIENT,
   POSTURE_COEFFICIENT,
   HAND_SYMMETRY_COEFFICIENT,
   GESTURE_VARIETY_COEFFICIENT,
-  EYE_CONTACT_COEFFICIENT
-} from './constants';
+  EYE_CONTACT_COEFFICIENT,
+} from "@/lib/constants";
+import { useSearchParams } from "next/navigation";
 
 interface Props {
   poseLandmarks?: PoseLandmark[];
@@ -34,11 +34,11 @@ interface Props {
   developerMode?: boolean;
 }
 
-const GestureAnalysis: React.FC<Props> = ({ 
-  poseLandmarks, 
+const GestureAnalysis: React.FC<Props> = ({
+  poseLandmarks,
   isRecording,
   onMetricsUpdate,
-  developerMode = true
+  developerMode = true,
 }) => {
   // State
   const [metrics, setMetrics] = useState<GestureMetrics>({
@@ -49,19 +49,51 @@ const GestureAnalysis: React.FC<Props> = ({
     handSymmetry: 0.5,
     gestureVariety: 0.5,
     eyeContact: 0.5,
-    overallScore: 50
+    overallScore: 50,
   });
   const [feedback, setFeedback] = useState<GestureFeedback[]>([]);
   const [sessionDuration, setSessionDuration] = useState(0);
   const [isPanelVisible, setIsPanelVisible] = useState(false); // Changed to false by default
   const [isDevReportVisible, setIsDevReportVisible] = useState(false);
   
+  const searchParams = useSearchParams();
+
+  const [enabledMetrics, setEnabledMetrics] = useState<Record<keyof GestureMetrics, boolean>>({
+    handMovement: true,
+    headMovement: true,
+    bodyMovement: true,
+    posture: true,
+    handSymmetry: true,
+    gestureVariety: true,
+    eyeContact: true,
+    overallScore: true,
+  });
+
+  useEffect(() => {
+    const newEnabled = { ...enabledMetrics };
+    Object.keys(newEnabled).forEach((key) => {
+      const param = searchParams?.get(key);
+      if (param === "false" || param === "true") {
+        newEnabled[key as keyof GestureMetrics] = param === "true";
+      }
+    });
+    setEnabledMetrics(newEnabled);
+  }, []);
+
   // Refs for tracking movement and analysis data
   const prevLandmarksRef = useRef<PoseLandmark[]>([]);
-  const handMovementBufferRef = useRef<number[]>(Array(MOVEMENT_BUFFER_SIZE).fill(0.5));
-  const headMovementBufferRef = useRef<number[]>(Array(MOVEMENT_BUFFER_SIZE).fill(0.5));
-  const bodyMovementBufferRef = useRef<number[]>(Array(MOVEMENT_BUFFER_SIZE).fill(0.5));
-  const handPositionsBufferRef = useRef<{left: PoseLandmark, right: PoseLandmark}[]>([]);
+  const handMovementBufferRef = useRef<number[]>(
+    Array(MOVEMENT_BUFFER_SIZE).fill(0.5)
+  );
+  const headMovementBufferRef = useRef<number[]>(
+    Array(MOVEMENT_BUFFER_SIZE).fill(0.5)
+  );
+  const bodyMovementBufferRef = useRef<number[]>(
+    Array(MOVEMENT_BUFFER_SIZE).fill(0.5)
+  );
+  const handPositionsBufferRef = useRef<
+    { left: PoseLandmark; right: PoseLandmark }[]
+  >([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const frameCountRef = useRef(0);
 
@@ -76,7 +108,7 @@ const GestureAnalysis: React.FC<Props> = ({
   useEffect(() => {
     if (isRecording) {
       timerRef.current = setInterval(() => {
-        setSessionDuration(prev => prev + 1);
+        setSessionDuration((prev) => prev + 1);
       }, 1000);
     } else {
       if (timerRef.current) {
@@ -84,7 +116,7 @@ const GestureAnalysis: React.FC<Props> = ({
       }
       setSessionDuration(0);
     }
-    
+
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
@@ -111,76 +143,130 @@ const GestureAnalysis: React.FC<Props> = ({
 
       // Calculate all metrics
       const postureScore = analyzePosture(poseLandmarks);
-      
+
       // Hand movements - more balanced sensitivity for middle zone
-      const leftHandMove = calculateMovement(poseLandmarks[15], prevLandmarksRef.current[15], 8);
-      const rightHandMove = calculateMovement(poseLandmarks[16], prevLandmarksRef.current[16], 8);
+      const leftHandMove = calculateMovement(
+        poseLandmarks[15],
+        prevLandmarksRef.current[15],
+        8
+      );
+      const rightHandMove = calculateMovement(
+        poseLandmarks[16],
+        prevLandmarksRef.current[16],
+        8
+      );
       const handScore = Math.max(leftHandMove, rightHandMove);
-      
+
       // Head movement - more balanced sensitivity for middle zone
-      const headMove = calculateMovement(poseLandmarks[0], prevLandmarksRef.current[0], 15);
-      
+      const headMove = calculateMovement(
+        poseLandmarks[0],
+        prevLandmarksRef.current[0],
+        15
+      );
+
       // Body movement - track torso movement
-      const bodyMove = calculateBodyMovement(poseLandmarks, prevLandmarksRef.current);
-      
+      const bodyMove = calculateBodyMovement(
+        poseLandmarks,
+        prevLandmarksRef.current
+      );
+
       // Update movement buffers
-      handMovementBufferRef.current = [...handMovementBufferRef.current.slice(1), handScore];
-      headMovementBufferRef.current = [...headMovementBufferRef.current.slice(1), headMove];
-      bodyMovementBufferRef.current = [...bodyMovementBufferRef.current.slice(1), bodyMove];
-      
+      handMovementBufferRef.current = [
+        ...handMovementBufferRef.current.slice(1),
+        handScore,
+      ];
+      headMovementBufferRef.current = [
+        ...headMovementBufferRef.current.slice(1),
+        headMove,
+      ];
+      bodyMovementBufferRef.current = [
+        ...bodyMovementBufferRef.current.slice(1),
+        bodyMove,
+      ];
+
       // Update hand positions buffer for symmetry and variety calculations
       if (handPositionsBufferRef.current.length >= 30) {
         handPositionsBufferRef.current.shift();
       }
-      
+
       if (poseLandmarks[15] && poseLandmarks[16]) {
         handPositionsBufferRef.current.push({
           left: { ...poseLandmarks[15] },
-          right: { ...poseLandmarks[16] }
+          right: { ...poseLandmarks[16] },
         });
       }
-      
+
       // Calculate averages from buffers for stability
       const recentHandBuffer = handMovementBufferRef.current.slice(-30);
       const recentHeadBuffer = headMovementBufferRef.current.slice(-30);
       const recentBodyBuffer = bodyMovementBufferRef.current.slice(-30);
-      
+
       const averageHandMovement = _.mean(recentHandBuffer);
       const averageHeadMovement = _.mean(recentHeadBuffer);
       const averageBodyMovement = _.mean(recentBodyBuffer);
-      
+
       // Calculate advanced metrics
-      const handSymmetry = calculateHandSymmetry(poseLandmarks, handPositionsBufferRef.current);
-      const gestureVariety = calculateGestureVariety(poseLandmarks, handPositionsBufferRef.current);
+      const handSymmetry = calculateHandSymmetry(
+        poseLandmarks,
+        handPositionsBufferRef.current
+      );
+      const gestureVariety = calculateGestureVariety(
+        poseLandmarks,
+        handPositionsBufferRef.current
+      );
       const eyeContact = calculateEyeContact(poseLandmarks);
 
       // Update metrics using functional update with slower update rate
-      setMetrics(prevMetrics => {
+      setMetrics((prevMetrics) => {
         const newMetrics = {
-          handMovement: smoothUpdate(prevMetrics.handMovement, averageHandMovement, 0.05),
-          headMovement: smoothUpdate(prevMetrics.headMovement, averageHeadMovement, 0.05),
-          bodyMovement: smoothUpdate(prevMetrics.bodyMovement, averageBodyMovement, 0.05),
+          handMovement: smoothUpdate(
+            prevMetrics.handMovement,
+            averageHandMovement,
+            0.05
+          ),
+          headMovement: smoothUpdate(
+            prevMetrics.headMovement,
+            averageHeadMovement,
+            0.05
+          ),
+          bodyMovement: smoothUpdate(
+            prevMetrics.bodyMovement,
+            averageBodyMovement,
+            0.05
+          ),
           posture: postureScore, // Directly use posture score (already discrete)
-          handSymmetry: smoothUpdate(prevMetrics.handSymmetry, handSymmetry, 0.05),
-          gestureVariety: smoothUpdate(prevMetrics.gestureVariety, gestureVariety, 0.05),
+          handSymmetry: smoothUpdate(
+            prevMetrics.handSymmetry,
+            handSymmetry,
+            0.05
+          ),
+          gestureVariety: smoothUpdate(
+            prevMetrics.gestureVariety,
+            gestureVariety,
+            0.05
+          ),
           eyeContact: smoothUpdate(prevMetrics.eyeContact, eyeContact, 0.05),
-          overallScore: 0
+          overallScore: 0,
         };
 
         // Calculate overall score (weighted average) with a boost to improve user experience
-        const rawScore = (
-          (newMetrics.handMovement * HAND_MOVEMENT_COEFFICIENT +
-           newMetrics.headMovement * HEAD_MOVEMENT_COEFFICIENT +
-           newMetrics.bodyMovement * BODY_MOVEMENT_COEFFICIENT +
-           newMetrics.posture * POSTURE_COEFFICIENT +
-           newMetrics.handSymmetry * HAND_SYMMETRY_COEFFICIENT +
-           newMetrics.gestureVariety * GESTURE_VARIETY_COEFFICIENT +
-           newMetrics.eyeContact * EYE_CONTACT_COEFFICIENT) * 100 /
-          (HAND_MOVEMENT_COEFFICIENT + HEAD_MOVEMENT_COEFFICIENT + BODY_MOVEMENT_COEFFICIENT + 
-           POSTURE_COEFFICIENT + HAND_SYMMETRY_COEFFICIENT + GESTURE_VARIETY_COEFFICIENT + 
-           EYE_CONTACT_COEFFICIENT)
-        );
-        
+        const rawScore =
+          ((newMetrics.handMovement * HAND_MOVEMENT_COEFFICIENT +
+            newMetrics.headMovement * HEAD_MOVEMENT_COEFFICIENT +
+            newMetrics.bodyMovement * BODY_MOVEMENT_COEFFICIENT +
+            newMetrics.posture * POSTURE_COEFFICIENT +
+            newMetrics.handSymmetry * HAND_SYMMETRY_COEFFICIENT +
+            newMetrics.gestureVariety * GESTURE_VARIETY_COEFFICIENT +
+            newMetrics.eyeContact * EYE_CONTACT_COEFFICIENT) *
+            100) /
+          (HAND_MOVEMENT_COEFFICIENT +
+            HEAD_MOVEMENT_COEFFICIENT +
+            BODY_MOVEMENT_COEFFICIENT +
+            POSTURE_COEFFICIENT +
+            HAND_SYMMETRY_COEFFICIENT +
+            GESTURE_VARIETY_COEFFICIENT +
+            EYE_CONTACT_COEFFICIENT);
+
         // Apply curve to make scores higher - this gives a 10-15 point boost to mid-range scores
         const curvedScore = Math.round(Math.min(100, rawScore * 1.15));
         newMetrics.overallScore = curvedScore;
@@ -192,7 +278,7 @@ const GestureAnalysis: React.FC<Props> = ({
       const shouldUpdateFeedback = sessionDuration % 5 === 0;
       if (shouldUpdateFeedback) {
         // Get metrics first to ensure we have the latest values
-        setMetrics(currentMetrics => {
+        setMetrics((currentMetrics) => {
           // Generate feedback based on current metrics
           const newFeedback = generateFeedback(currentMetrics);
           // Update feedback in a separate state update to avoid triggering rerenders
@@ -204,9 +290,8 @@ const GestureAnalysis: React.FC<Props> = ({
 
       // Update reference for next frame
       prevLandmarksRef.current = poseLandmarks;
-
     } catch (error) {
-      console.error('Error analyzing gestures:', error);
+      console.error("Error analyzing gestures:", error);
     }
   }, [poseLandmarks, isRecording, sessionDuration]);
 
@@ -227,18 +312,33 @@ const GestureAnalysis: React.FC<Props> = ({
     }
   };
 
+  const toggleMetric = (metric: keyof GestureMetrics) => {
+    setEnabledMetrics(prev =>({...prev, [metric]: !prev[metric] }));
+  };
+
   // Minimized view when panel is hidden
   if (!isPanelVisible) {
     return (
       <>
         <div className="fixed top-4 right-4 bg-black/80 p-3 rounded-lg shadow-lg">
-          <button 
+          <button
             onClick={togglePanelVisibility}
             className="flex items-center text-white text-sm hover:text-blue-300 transition-colors"
           >
             <span className="mr-2">Show Analysis</span>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              />
             </svg>
           </button>
         </div>
@@ -260,7 +360,7 @@ const GestureAnalysis: React.FC<Props> = ({
   return (
     <>
       <div className="fixed top-4 right-4 space-y-4 bg-black/80 p-4 rounded-lg w-96 shadow-lg">
-        <div 
+        <div
           className="flex justify-between items-center"
           onDoubleClick={handleHeaderDoubleClick}
         >
@@ -269,37 +369,56 @@ const GestureAnalysis: React.FC<Props> = ({
             {isRecording && (
               <div className="flex items-center">
                 <span className="animate-pulse mr-2 h-3 w-3 rounded-full bg-red-500"></span>
-                <span className="text-white text-sm">{formatTime(sessionDuration)}</span>
+                <span className="text-white text-sm">
+                  {formatTime(sessionDuration)}
+                </span>
               </div>
             )}
-            <button 
+            <button
               onClick={togglePanelVisibility}
               className="text-gray-400 hover:text-white transition-colors"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
         </div>
-        
+
         {/* Overall Score */}
         <div className="bg-gray-900/50 p-3 rounded-lg border border-gray-700">
           <div className="flex justify-between items-center mb-2">
             <span className="text-gray-300">Overall Score</span>
-            <span className="text-xl font-bold text-blue-400">{metrics.overallScore}/100</span>
+            <span className="text-xl font-bold text-blue-400">
+              {metrics.overallScore}/100
+            </span>
           </div>
           <div className="w-full bg-gray-700 rounded-full h-3">
-            <div 
+            <div
               className="h-3 rounded-full bg-blue-500 transition-all duration-500"
               style={{ width: `${metrics.overallScore}%` }}
             />
           </div>
         </div>
-        
+
         {/* Metrics Display Component */}
-        <MetricsDisplay metrics={metrics} />
-        
+        <MetricsDisplay 
+          metrics={metrics} 
+          enabledMetrics={enabledMetrics} 
+          toggleMetric={toggleMetric}
+        />
+
         {/* Feedback Panel Component */}
         <FeedbackPanel feedback={feedback} isRecording={isRecording} />
 
@@ -310,10 +429,21 @@ const GestureAnalysis: React.FC<Props> = ({
               onClick={toggleDevReportVisibility}
               className="w-full text-xs text-gray-400 hover:text-white py-1 transition-colors flex items-center justify-center"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4 mr-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+                />
               </svg>
-              {isDevReportVisible ? 'Hide' : 'Show'} Developer Report
+              {isDevReportVisible ? "Hide" : "Show"} Developer Report
             </button>
           </div>
         )}

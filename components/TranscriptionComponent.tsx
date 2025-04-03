@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -19,9 +19,9 @@ const FILLER_WORDS = new Set([
   "like",
 ]);
 
-function TranscriptionComponent({ 
-  onRecordingStateChange, 
-  onTranscriptUpdate 
+function TranscriptionComponent({
+  onRecordingStateChange,
+  onTranscriptUpdate,
 }: TranscriptionComponentProps) {
   const [microphone, setMicrophone] = useState<MediaRecorder | null>(null);
   const [transcript, setTranscript] = useState("");
@@ -29,14 +29,16 @@ function TranscriptionComponent({
   const [isConnecting, setIsConnecting] = useState(false);
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [fillerWordCount, setFillerWordCount] = useState(0);
-  const [fillerWordsStats, setFillerWordsStats] = useState<{ [word: string]: number }>({});
+  const [fillerWordsStats, setFillerWordsStats] = useState<{
+    [word: string]: number;
+  }>({});
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [startTime, setStartTime] = useState<number | null>(null);
   const [sessionWPM, setSessionWPM] = useState<number>(0);
   const [maxWPM, setMaxWPM] = useState<number | null>(null);
   const [minWPM, setMinWPM] = useState<number | null>(null);
   const { user } = useAuth0();
-  
+
   // Refs for stable references
   const socketRef = useRef<WebSocket | null>(null);
   const recordingRef = useRef(false);
@@ -44,16 +46,18 @@ function TranscriptionComponent({
 
   // Initialize audio stream on mount
   useEffect(() => {
-    async function initAudio() {  
+    async function initAudio() {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
         setAudioStream(stream);
       } catch (error) {
         console.error("Error accessing microphone:", error);
       }
     }
     initAudio();
-    
+
     // Cleanup on unmount
     return () => {
       if (socketRef.current) {
@@ -75,14 +79,14 @@ function TranscriptionComponent({
   // Update recording ref when state changes
   useEffect(() => {
     recordingRef.current = isRecording;
-    
+
     // Start or stop timer based on recording state
     if (isRecording) {
       // Reset and start timer
       setRecordingDuration(0);
       setStartTime(Date.now());
       timerIntervalRef.current = setInterval(() => {
-        setRecordingDuration(prev => prev + 1);
+        setRecordingDuration((prev) => prev + 1);
       }, 1000);
     } else {
       // Stop timer
@@ -91,7 +95,7 @@ function TranscriptionComponent({
         timerIntervalRef.current = null;
       }
     }
-    
+
     return () => {
       if (timerIntervalRef.current) {
         clearInterval(timerIntervalRef.current);
@@ -108,9 +112,13 @@ function TranscriptionComponent({
         const wordCount = transcript.trim().split(/\s+/).filter(Boolean).length;
         const currentWPM = wordCount / elapsedMinutes;
         setSessionWPM(currentWPM);
-  
-        setMaxWPM((prev) => (prev === null || currentWPM > prev ? currentWPM : prev));
-        setMinWPM((prev) => (prev === null || currentWPM < prev ? currentWPM : prev));
+
+        setMaxWPM((prev) =>
+          prev === null || currentWPM > prev ? currentWPM : prev
+        );
+        setMinWPM((prev) =>
+          prev === null || currentWPM < prev ? currentWPM : prev
+        );
       }
     }
   }, [transcript, startTime]);
@@ -119,14 +127,14 @@ function TranscriptionComponent({
   const formatTime = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
 
   // Create a new WebSocket connection
   const createWebSocketConnection = (): Promise<WebSocket> => {
     return new Promise((resolve, reject) => {
       setIsConnecting(true);
-      
+
       // Close any existing connection
       if (socketRef.current) {
         try {
@@ -135,15 +143,17 @@ function TranscriptionComponent({
           console.error("Error closing existing WebSocket:", e);
         }
       }
-      
-      const ws = new WebSocket("wss://transcriptionwebsocket-production.up.railway.app");
-      
+
+      const ws = new WebSocket(
+        "wss://transcriptionwebsocket-production.up.railway.app"
+      );
+
       // Set connection timeout
       const timeoutId = setTimeout(() => {
         setIsConnecting(false);
         reject(new Error("WebSocket connection timeout"));
       }, 5000);
-      
+
       ws.addEventListener("open", () => {
         console.log("WebSocket connection established");
         clearTimeout(timeoutId);
@@ -151,30 +161,30 @@ function TranscriptionComponent({
         socketRef.current = ws;
         resolve(ws);
       });
-      
+
       ws.addEventListener("error", (error) => {
         console.error("WebSocket connection error:", error);
         clearTimeout(timeoutId);
         setIsConnecting(false);
         reject(error);
       });
-      
+
       ws.addEventListener("close", (event) => {
         console.log("WebSocket connection closed:", event.code, event.reason);
-        
+
         // If connection was closed while recording, stop recording
         if (recordingRef.current) {
           console.log("WebSocket closed during recording, stopping recording");
           stopRecording();
         }
       });
-      
+
       ws.addEventListener("message", (event) => {
         if (!recordingRef.current || !event.data) return;
-        
+
         try {
           const data = JSON.parse(event.data);
-          
+
           if (
             data &&
             data.channel &&
@@ -183,17 +193,17 @@ function TranscriptionComponent({
           ) {
             const newText = data.channel.alternatives[0].transcript;
             console.log("Received transcript chunk:", newText);
-            
+
             setTranscript((prev) => {
               const updated = prev + newText + " ";
               return updated;
             });
-  
+
             const words = newText
               .toLowerCase()
               .replace(/[.,?!]/g, "")
               .split(/\s+/);
-            
+
             setFillerWordsStats((prevStats) => {
               const newStats = { ...prevStats };
               words.forEach((word: string) => {
@@ -203,14 +213,14 @@ function TranscriptionComponent({
               });
               return newStats;
             });
-            
+
             let countInChunk = 0;
             words.forEach((word: string) => {
-              if (FILLER_WORDS.has(word)){
+              if (FILLER_WORDS.has(word)) {
                 countInChunk += 1;
               }
             });
-  
+
             setFillerWordCount((prevCount) => prevCount + countInChunk);
           }
         } catch (e) {
@@ -235,37 +245,36 @@ function TranscriptionComponent({
       setSessionWPM(0);
       setMaxWPM(null);
       setMinWPM(null);
-      
+
       console.log("Establishing WebSocket connection...");
       const ws = await createWebSocketConnection();
-      
+
       console.log("Creating microphone recorder...");
       const mic = await getMicrophone();
-      
+
       mic.onstart = () => {
         console.log("Recording started");
         document.body.classList.add("recording");
       };
-      
+
       mic.onstop = () => {
         console.log("Recording stopped");
         document.body.classList.remove("recording");
       };
-      
+
       mic.ondataavailable = (event) => {
         if (event.data.size > 0 && ws.readyState === WebSocket.OPEN) {
           console.log("Sending audio data to WebSocket");
           ws.send(event.data);
         }
       };
-      
+
       console.log("Starting microphone...");
       mic.start(1000);
-      
+
       setMicrophone(mic);
       setIsRecording(true);
       onRecordingStateChange(true);
-      
     } catch (error) {
       console.error("Error starting recording:", error);
       alert("Failed to start recording. Please try again.");
@@ -275,21 +284,21 @@ function TranscriptionComponent({
   const stopRecording = async () => {
     try {
       console.log("Stopping recording...");
-      
+
       if (microphone) {
         microphone.stop();
       }
-      
+
       // Close WebSocket connection
       if (socketRef.current) {
         socketRef.current.close(1000, "Recording finished");
         socketRef.current = null;
       }
-      
+
       setMicrophone(null);
       setIsRecording(false);
       onRecordingStateChange(false);
-      
+
       try {
         // Save the filler word stats
         const response = await fetch("/api/fillerwords", {
@@ -309,7 +318,6 @@ function TranscriptionComponent({
       } catch (error) {
         console.error("Error posting filler stats:", error);
       }
-      
     } catch (error) {
       console.error("Error stopping recording:", error);
     }
@@ -317,7 +325,7 @@ function TranscriptionComponent({
 
   const handleRecordButtonClick = () => {
     if (isConnecting) return; // Prevent clicking while connecting
-    
+
     if (!isRecording) {
       startRecording();
     } else {
@@ -334,21 +342,27 @@ function TranscriptionComponent({
           {transcript || "Speech will appear here..."}
         </p>
       </div> */}
-      
+
       {/* Recording controls */}
       <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-black/80 rounded-lg p-4 shadow-lg z-10 w-auto">
-        <button 
+        <button
           onClick={handleRecordButtonClick}
           disabled={isConnecting}
           className={`px-6 py-3 rounded-lg text-lg font-medium 
-            ${isConnecting ? 'bg-gray-500 cursor-wait' : 
-             isRecording ? 'bg-red-500 hover:bg-red-600' : 
-             'bg-[#936648] hover:bg-[#805946]'} 
+            ${
+              isConnecting
+                ? "bg-gray-500 cursor-wait"
+                : isRecording
+                ? "bg-red-500 hover:bg-red-600"
+                : "bg-[#936648] hover:bg-[#805946]"
+            } 
             text-white transition-colors`}
         >
-          {isConnecting ? "Connecting..." : 
-           isRecording ? "Stop Recording" : 
-           "Start Recording"}
+          {isConnecting
+            ? "Connecting..."
+            : isRecording
+            ? "Stop Recording"
+            : "Start Recording"}
         </button>
       </div>
 

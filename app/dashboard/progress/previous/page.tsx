@@ -3,12 +3,13 @@
 import * as React from "react";
 import Heading1 from "@/components/heading-1";
 import PageFormat from "@/components/page-format";
-import { useAuth0 } from "@auth0/auth0-react";
 import { ReportItemType } from "@/lib/types";
 import Recording from "@/components/recording";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import ProtectedRoute from "@/components/protected-route";
+import { useAuthUtils } from "@/hooks/useAuthUtils";
 import {
   Select,
   SelectContent,
@@ -18,11 +19,20 @@ import {
 } from "@/components/ui/select";
 
 export default function Page() {
-  const { user, isAuthenticated, isLoading } = useAuth0();
+  const { user, isAuthenticated, isLoading, error, refreshToken } =
+    useAuthUtils();
+
+  // If there's an auth error, try to refresh the token
+  React.useEffect(() => {
+    if (error) {
+      console.error("Auth error in dashboard:", error);
+      refreshToken();
+    }
+  }, [error, refreshToken]);
   const [reports, setReports] = React.useState<ReportItemType[]>([]);
   const [loadingReports, setLoadingReports] = React.useState(true);
 
-  // Add new state for filters
+  // New state for filters
   const [searchQuery, setSearchQuery] = React.useState("");
   const [dateRange, setDateRange] = React.useState("all");
   const [scoreRange, setScoreRange] = React.useState({ min: "", max: "" });
@@ -30,7 +40,7 @@ export default function Page() {
   const [filteredReports, setFilteredReports] =
     React.useState<ReportItemType[]>(reports);
 
-  // Add filter logic
+  // Filter logic
   const applyFilters = () => {
     let filtered = [...reports];
 
@@ -65,12 +75,16 @@ export default function Page() {
     // Score filter
     if (scoreRange.min !== "") {
       filtered = filtered.filter(
-        (report) => report.metrics.score >= Number(scoreRange.min)
+        (report) =>
+          report.metrics.filter((metric) => metric.name == "overallScore")[0]
+            .score >= Number(scoreRange.min)
       );
     }
     if (scoreRange.max !== "") {
       filtered = filtered.filter(
-        (report) => report.metrics.score <= Number(scoreRange.max)
+        (report) =>
+          report.metrics.filter((metric) => metric.name == "overallScore")[0]
+            .score <= Number(scoreRange.max)
       );
     }
 
@@ -86,9 +100,17 @@ export default function Page() {
             new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
           );
         case "score-desc":
-          return b.metrics.score - a.metrics.score;
+          return (
+            b.metrics.filter((metric) => metric.name == "overallScore")[0]
+              .score -
+            a.metrics.filter((metric) => metric.name == "overallScore")[0].score
+          );
         case "score-asc":
-          return a.metrics.score - b.metrics.score;
+          return (
+            a.metrics.filter((metric) => metric.name == "overallScore")[0]
+              .score -
+            b.metrics.filter((metric) => metric.name == "overallScore")[0].score
+          );
         default:
           return 0;
       }
@@ -102,7 +124,6 @@ export default function Page() {
   React.useEffect(() => {
     async function fetchReports() {
       try {
-        // Assumes your API returns report data for the user based on their email or Auth0 id.
         const res = await fetch(
           `/api/report?user=${encodeURIComponent(user?.sub || "")}`,
           { cache: "no-store" }
@@ -125,145 +146,156 @@ export default function Page() {
   }, [isAuthenticated, isLoading, user]);
 
   return (
-    <PageFormat
-      breadCrumbs={[
-        { url: "/dashboard/progress", name: "progress" },
-        { name: "previous" },
-      ]}
-    >
-      <Heading1 id="previous">Previous Sessions</Heading1>
+    <ProtectedRoute>
+      <PageFormat
+        breadCrumbs={[
+          { url: "/dashboard/progress", name: "progress" },
+          { name: "previous" },
+        ]}
+      >
+        <Heading1 id="previous">Previous Sessions</Heading1>
 
-      <div className="pt-8 flex flex-col sm:flex-row gap-8">
-        <div className="bg-lightLatte dark:bg-darkCoffee rounded-md p-4 h-[60vh] w-full sm:w-[20vw] flex flex-col gap-4">
-          <div className="space-y-4">
-            <input
-              type="text"
-              placeholder="Search by title..."
-              className="w-full px-3 py-2 border rounded-md"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+        <div className="pt-8 flex flex-col sm:flex-row gap-8">
+          <div className="bg-lightLatte dark:bg-darkCoffee rounded-md p-4 min-h-[60vh] w-full sm:w-[20vw] flex flex-col gap-4">
+            <div className="space-y-4">
+              <input
+                type="text"
+                placeholder="Search by title..."
+                className="w-full px-3 py-2 border rounded-md"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
 
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Date Range
-              </label>
-              <Select value={dateRange} onValueChange={setDateRange}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select date range" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Time</SelectItem>
-                  <SelectItem value="week">Past Week</SelectItem>
-                  <SelectItem value="month">Past Month</SelectItem>
-                  <SelectItem value="3months">Past 3 Months</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Score Range
-              </label>
-              <div className="flex gap-2">
-                <input
-                  type="number"
-                  placeholder="Min"
-                  className="w-1/2 px-3 py-2 border rounded-md"
-                  min="0"
-                  max="100"
-                  value={scoreRange.min}
-                  onChange={(e) =>
-                    setScoreRange((prev) => ({ ...prev, min: e.target.value }))
-                  }
-                />
-                <input
-                  type="number"
-                  placeholder="Max"
-                  className="w-1/2 px-3 py-2 border rounded-md"
-                  min="0"
-                  max="100"
-                  value={scoreRange.max}
-                  onChange={(e) =>
-                    setScoreRange((prev) => ({ ...prev, max: e.target.value }))
-                  }
-                />
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Date Range
+                </label>
+                <Select value={dateRange} onValueChange={setDateRange}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select date range" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Time</SelectItem>
+                    <SelectItem value="week">Past Week</SelectItem>
+                    <SelectItem value="month">Past Month</SelectItem>
+                    <SelectItem value="3months">Past 3 Months</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2">Sort By</label>
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select sorting" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="date-desc">Newest First</SelectItem>
-                  <SelectItem value="date-asc">Oldest First</SelectItem>
-                  <SelectItem value="score-desc">Highest Score</SelectItem>
-                  <SelectItem value="score-asc">Lowest Score</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Score Range
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    placeholder="Min"
+                    className="w-1/2 px-3 py-2 border rounded-md"
+                    min="0"
+                    max="100"
+                    value={scoreRange.min}
+                    onChange={(e) =>
+                      setScoreRange((prev) => ({
+                        ...prev,
+                        min: e.target.value,
+                      }))
+                    }
+                  />
+                  <input
+                    type="number"
+                    placeholder="Max"
+                    className="w-1/2 px-3 py-2 border rounded-md"
+                    min="0"
+                    max="100"
+                    value={scoreRange.max}
+                    onChange={(e) =>
+                      setScoreRange((prev) => ({
+                        ...prev,
+                        max: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+              </div>
 
-            <Button
-              className="w-full bg-lightCoffee text-white py-2 rounded-md hover:bg-[#805946]"
-              onClick={applyFilters}
-            >
-              Apply Filters
-            </Button>
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Sort By
+                </label>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select sorting" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="date-desc">Newest First</SelectItem>
+                    <SelectItem value="date-asc">Oldest First</SelectItem>
+                    <SelectItem value="score-desc">Highest Score</SelectItem>
+                    <SelectItem value="score-asc">Lowest Score</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <Button
+                className="w-full bg-lightCoffee text-white py-2 rounded-md hover:bg-[#805946]"
+                onClick={applyFilters}
+              >
+                Apply Filters
+              </Button>
+            </div>
           </div>
-        </div>
-        <div className="w-full">
-          {isLoading || loadingReports ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {loadingDelays.map((delay, i) => (
-                <Recording
-                  key={i}
-                  id={""}
-                  title={"blank"}
-                  thumbnail={"/example-thumbnail.png"}
-                  created_at={""}
-                  overallScore={0}
-                  loading={true}
-                  className={cn(`delay-${delay}`)}
-                />
-              ))}
-            </div>
-          ) : !isAuthenticated ? (
-            <div>Must be authenticated.</div>
-          ) : user && filteredReports.length === 0 ? (
-            <div className="w-full h-full flex flex-col gap-4 items-center justify-center">
-              <span className="text-stone-500 text-lg italic">
-                {reports.length === 0
-                  ? "No presentations evaluated yet."
-                  : "No presentations with selected filters found."}
-              </span>
-              <Image
-                src="/cup.svg"
-                width={100}
-                height={100}
-                alt=""
-                className="opacity-75"
-              ></Image>
-            </div>
-          ) : (
-            user && (
+          <div className="w-full">
+            {isLoading || loadingReports ? (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {filteredReports.map((report) => (
+                {loadingDelays.map((delay, i) => (
                   <Recording
-                    key={report.presentation_id}
+                    key={i}
                     id={""}
-                    thumbnail={"/example-thumbnail.png"}
-                    overallScore={report.metrics.score ?? 0}
-                    {...report}
+                    title={"blank"}
+                    created_at={""}
+                    metrics={[]}
+                    loading={true}
+                    className={cn(`delay-${delay}`)}
+                    video_url={""}
                   />
                 ))}
               </div>
-            )
-          )}
+            ) : !isAuthenticated ? (
+              <div>Must be authenticated.</div>
+            ) : user && filteredReports.length === 0 ? (
+              <div className="w-full h-full flex flex-col gap-4 items-center justify-center">
+                <span className="text-stone-500 text-lg italic">
+                  {reports.length === 0
+                    ? "No presentations evaluated yet."
+                    : "No presentations with selected filters found."}
+                </span>
+                <Image
+                  src="/cup.svg"
+                  width={100}
+                  height={100}
+                  alt=""
+                  className="opacity-75"
+                />
+              </div>
+            ) : (
+              user && (
+                <div
+                  className="grid grid-cols-2 md:grid-cols-4 gap-4"
+                  key="filtered"
+                >
+                  {filteredReports.map((report) => (
+                    <Recording
+                      key={report.presentation_id}
+                      id={report.presentation_id}
+                      {...report}
+                    />
+                  ))}
+                </div>
+              )
+            )}
+          </div>
         </div>
-      </div>
-    </PageFormat>
+      </PageFormat>
+    </ProtectedRoute>
   );
 }
