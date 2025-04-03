@@ -388,8 +388,8 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
       <canvas
         ref={canvasRef}
         className="absolute w-full h-full object-cover"
-        width={1200}
-        height={800}
+        width={1280}
+        height={720}
       />
     </>
   );
