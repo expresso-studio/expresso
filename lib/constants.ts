@@ -1,8 +1,14 @@
+import { CourseStatus, CourseType } from "./types";
 import { IconType } from "react-icons";
+
 import { MdOutlineWavingHand } from "react-icons/md";
 import { FaPersonFalling, FaHandSparkles } from "react-icons/fa6";
 import { LuPersonStanding, LuEye, LuSpeech, LuSmile } from "react-icons/lu";
 import { PiHandsPrayingFill } from "react-icons/pi";
+import { IoHandLeft } from "react-icons/io5";
+import { BiCheckDouble, BiSolidSmile } from "react-icons/bi";
+import { BsPersonRaisedHand } from "react-icons/bs";
+import { TbMessageChatbotFilled } from "react-icons/tb";
 
 export enum MetricNames {
   HandMovement = "handMovement",
@@ -13,6 +19,17 @@ export enum MetricNames {
   GestureVariety = "gestureVariety",
   EyeContact = "eyeContact",
   OverallScore = "overallScore",
+}
+
+export enum MetricDisplayNames {
+  HandMovement = "Hand Movement",
+  HeadMovement = "Head Movement",
+  BodyMovement = "Body Movement",
+  Posture = "Posture",
+  HandSymmetry = "Hand Symmetry",
+  GestureVariety = "Gesture Variety",
+  EyeContact = "Eye Contact",
+  OverallScore = "Overall Score",
 }
 
 export enum MetricIds {
@@ -58,6 +75,145 @@ export const MetricIdToName: Record<MetricIds, MetricNames> = {
   [MetricIds.EyeContact]: MetricNames.EyeContact,
   [MetricIds.OverallScore]: MetricNames.OverallScore,
 };
+
+export enum CourseNames {
+  Intro = "Public Speaking Basics",
+  HandLanguage = "How to use your Hands",
+  BodyLanguage = "Body Language",
+  HeadLanguage = "Use your Head!",
+  Gestures = "Gesturing",
+}
+
+export enum LessonNames {
+  Basics = "Basics",
+  HandMovement = MetricDisplayNames.HandMovement,
+  HandSymmetry = MetricDisplayNames.HandSymmetry,
+  BodyMovement = MetricDisplayNames.BodyMovement,
+  Posture = MetricDisplayNames.Posture,
+  HeadMovement = MetricDisplayNames.HeadMovement,
+  EyeContact = MetricDisplayNames.EyeContact,
+  GestureVariety = MetricDisplayNames.GestureVariety,
+}
+
+export const Courses: CourseType[] = [
+  {
+    id: 10,
+    icon: TbMessageChatbotFilled,
+    color: "#D5A585",
+    name: CourseNames.Intro,
+    lessons: [
+      {
+        id: 100,
+        icon: IoHandLeft,
+        name: LessonNames.Basics,
+        topics: ["basics", "general"],
+      },
+    ],
+    topics: ["basics", "general"],
+  },
+  {
+    id: 20,
+    icon: IoHandLeft,
+    color: "#936648",
+    name: CourseNames.HandLanguage,
+    lessons: [
+      {
+        id: 200,
+        icon: MetricNameToIcon.handMovement,
+        name: LessonNames.HandMovement,
+        topics: [MetricDisplayNames.HandMovement],
+      },
+      {
+        id: 201,
+        icon: MetricNameToIcon.handSymmetry,
+        name: LessonNames.HandSymmetry,
+        topics: [MetricDisplayNames.HandSymmetry],
+      },
+    ],
+    topics: [MetricDisplayNames.HandMovement, MetricDisplayNames.HandSymmetry],
+  },
+  {
+    id: 30,
+    icon: BsPersonRaisedHand,
+    color: "#C06C35",
+    name: CourseNames.BodyLanguage,
+    lessons: [
+      {
+        id: 300,
+        icon: MetricNameToIcon.posture,
+        name: LessonNames.Posture,
+        topics: [MetricDisplayNames.Posture],
+      },
+      {
+        id: 301,
+        icon: MetricNameToIcon.bodyMovement,
+        name: LessonNames.BodyMovement,
+        topics: [MetricDisplayNames.BodyMovement],
+      },
+    ],
+    topics: [MetricDisplayNames.Posture, MetricDisplayNames.BodyMovement],
+  },
+  {
+    id: 400,
+    icon: BiSolidSmile,
+    color: "#6d4b2e",
+    name: CourseNames.HeadLanguage,
+    lessons: [
+      {
+        id: 400,
+        icon: MetricNameToIcon.headMovement,
+        name: LessonNames.HeadMovement,
+        topics: [MetricDisplayNames.HeadMovement],
+      },
+      {
+        id: 401,
+        icon: MetricNameToIcon.eyeContact,
+        name: LessonNames.EyeContact,
+        topics: [MetricDisplayNames.EyeContact],
+      },
+    ],
+    topics: [MetricDisplayNames.HeadMovement, MetricDisplayNames.EyeContact],
+  },
+  {
+    id: 50,
+    icon: BiCheckDouble, // TODO(casey): change this
+    color: "#110C09",
+    name: CourseNames.Gestures,
+    lessons: [
+      {
+        id: 500,
+        icon: MetricNameToIcon.gestureVariety,
+        name: LessonNames.GestureVariety,
+        topics: [MetricDisplayNames.GestureVariety],
+      },
+    ],
+    topics: [MetricDisplayNames.GestureVariety],
+  },
+];
+
+// TODO(casey): replace this with stuff from DB
+export const CourseStatuses: CourseStatus[] = [
+  {
+    name: CourseNames.Intro,
+    status: 50,
+  },
+  {
+    name: CourseNames.HandLanguage,
+    status: 100,
+  },
+  {
+    name: CourseNames.BodyLanguage,
+    status: 75,
+  },
+  {
+    name: CourseNames.HeadLanguage,
+    status: 20,
+  },
+  {
+    name: CourseNames.Gestures,
+    status: 20,
+  },
+];
 
 // Buffer sizes and coefficients
 export const MOVEMENT_BUFFER_SIZE = 60; // 2 seconds at 30fps

@@ -1,4 +1,11 @@
-import { MetricNames, MetricIds } from "./constants";
+import { IconType } from "react-icons";
+import {
+  MetricNames,
+  MetricIds,
+  CourseNames,
+  MetricDisplayNames,
+  LessonNames,
+} from "./constants";
 
 export type StatisticType = {
   icon: React.ReactNode;
@@ -7,12 +14,24 @@ export type StatisticType = {
 };
 
 export type CourseType = {
-  id: string;
-  icon: React.ReactNode;
+  id: number;
+  icon: IconType;
   color: string;
-  text: string;
+  name: CourseNames;
+  topics: (string | MetricDisplayNames)[];
+  lessons: LessonType[];
+};
+
+export type CourseStatus = {
+  name: CourseNames;
   status: number;
-  nLessons: number;
+};
+
+export type LessonType = {
+  id: number;
+  icon: IconType;
+  name: LessonNames;
+  topics: (string | MetricDisplayNames)[];
 };
 
 export type MetricType = {

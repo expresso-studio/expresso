@@ -48,7 +48,10 @@ export default function Page() {
                 link={"/dashboard/eval-settings"}
                 className="sm:min-w-[300px] bg-lightCoffee dark:bg-darkCoffee group cursor-pointer"
               >
-                <Link href={"/dashboard/eval-settings"} className=" overflow-hidden">
+                <Link
+                  href={"/dashboard/eval-settings"}
+                  className=" overflow-hidden"
+                >
                   <div className="absolute z-20 flex flex-col gap-2 w-full">
                     <span className="text-6xl md:text-[5vw] font-black text-white uppercase group-hover:translate-x-1 duration-200">
                       Evaluate
@@ -59,7 +62,7 @@ export default function Page() {
                   </div>
                   <div className="h-[30vh] flex flex-col items-end justify-end">
                     <Image
-                      src={"./teapot.svg"}
+                      src={"/teapot.svg"}
                       alt={"a teapot"}
                       width="500"
                       height="500"
