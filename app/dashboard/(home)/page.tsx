@@ -13,9 +13,23 @@ import CourseList from "../learning/course-list";
 import LogoutButton from "@/components/logout-button";
 import ProtectedRoute from "@/components/protected-route";
 import { useAuthUtils } from "@/hooks/useAuthUtils";
+import { Courses, CourseStatuses } from "@/lib/constants";
 
 export default function Page() {
   const { user, isAuthenticated, error, refreshToken } = useAuthUtils();
+
+  // TODO(casey): replace with actual status
+  const coursesWithStatus = Courses.map((course) => {
+    const matchingCourse = CourseStatuses.find(
+      (courseStatus) => courseStatus.name === course.name
+    );
+
+    if (matchingCourse) {
+      return { ...course, ...matchingCourse };
+    }
+
+    return { ...course, status: 0 };
+  });
 
   // If there's an auth error, try to refresh the token
   React.useEffect(() => {
@@ -79,7 +93,7 @@ export default function Page() {
                 link={"/dashboard/learning"}
                 title="Learning"
               >
-                <CourseList />
+                <CourseList courses={coursesWithStatus} />
               </Section>
             </div>
             <div className="flex flex-col gap-16 w-full">

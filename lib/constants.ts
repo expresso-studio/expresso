@@ -11,14 +11,14 @@ import { BsPersonRaisedHand } from "react-icons/bs";
 import { TbMessageChatbotFilled } from "react-icons/tb";
 
 export enum MetricNames {
-  HandMovement = "handMovement",
-  HeadMovement = "headMovement",
-  BodyMovement = "bodyMovement",
-  Posture = "posture",
-  HandSymmetry = "handSymmetry",
-  GestureVariety = "gestureVariety",
-  EyeContact = "eyeContact",
-  OverallScore = "overallScore",
+  HandMovement = "HandMovement",
+  HeadMovement = "HeadMovement",
+  BodyMovement = "BodyMovement",
+  Posture = "Posture",
+  HandSymmetry = "HandSymmetry",
+  GestureVariety = "GestureVariety",
+  EyeContact = "EyeContact",
+  OverallScore = "OverallScore",
 }
 
 export enum MetricDisplayNames {
@@ -76,6 +76,17 @@ export const MetricIdToName: Record<MetricIds, MetricNames> = {
   [MetricIds.OverallScore]: MetricNames.OverallScore,
 };
 
+export const MetricNameToDisplay: Record<MetricNames, MetricDisplayNames> = {
+  [MetricNames.HandMovement]: MetricDisplayNames.HandMovement,
+  [MetricNames.HeadMovement]: MetricDisplayNames.HeadMovement,
+  [MetricNames.BodyMovement]: MetricDisplayNames.BodyMovement,
+  [MetricNames.Posture]: MetricDisplayNames.Posture,
+  [MetricNames.HandSymmetry]: MetricDisplayNames.HandSymmetry,
+  [MetricNames.GestureVariety]: MetricDisplayNames.GestureVariety,
+  [MetricNames.EyeContact]: MetricDisplayNames.EyeContact,
+  [MetricNames.OverallScore]: MetricDisplayNames.OverallScore,
+};
+
 export enum CourseNames {
   Intro = "Public Speaking Basics",
   HandLanguage = "How to use your Hands",
@@ -119,13 +130,13 @@ export const Courses: CourseType[] = [
     lessons: [
       {
         id: 200,
-        icon: MetricNameToIcon.handMovement,
+        icon: MetricNameToIcon.HandMovement,
         name: LessonNames.HandMovement,
         topics: [MetricDisplayNames.HandMovement],
       },
       {
         id: 201,
-        icon: MetricNameToIcon.handSymmetry,
+        icon: MetricNameToIcon.HandSymmetry,
         name: LessonNames.HandSymmetry,
         topics: [MetricDisplayNames.HandSymmetry],
       },
@@ -140,13 +151,13 @@ export const Courses: CourseType[] = [
     lessons: [
       {
         id: 300,
-        icon: MetricNameToIcon.posture,
+        icon: MetricNameToIcon.Posture,
         name: LessonNames.Posture,
         topics: [MetricDisplayNames.Posture],
       },
       {
         id: 301,
-        icon: MetricNameToIcon.bodyMovement,
+        icon: MetricNameToIcon.BodyMovement,
         name: LessonNames.BodyMovement,
         topics: [MetricDisplayNames.BodyMovement],
       },
@@ -161,13 +172,13 @@ export const Courses: CourseType[] = [
     lessons: [
       {
         id: 400,
-        icon: MetricNameToIcon.headMovement,
+        icon: MetricNameToIcon.HeadMovement,
         name: LessonNames.HeadMovement,
         topics: [MetricDisplayNames.HeadMovement],
       },
       {
         id: 401,
-        icon: MetricNameToIcon.eyeContact,
+        icon: MetricNameToIcon.EyeContact,
         name: LessonNames.EyeContact,
         topics: [MetricDisplayNames.EyeContact],
       },
@@ -182,7 +193,7 @@ export const Courses: CourseType[] = [
     lessons: [
       {
         id: 500,
-        icon: MetricNameToIcon.gestureVariety,
+        icon: MetricNameToIcon.GestureVariety,
         name: LessonNames.GestureVariety,
         topics: [MetricDisplayNames.GestureVariety],
       },

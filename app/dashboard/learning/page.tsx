@@ -11,6 +11,12 @@ import { Button } from "@/components/ui/button";
 import ProtectedRoute from "@/components/protected-route";
 import { useAuthUtils } from "@/hooks/useAuthUtils";
 import Recommendations from "./recommendations";
+import {
+  Courses,
+  CourseStatuses,
+  MetricNames,
+  MetricNameToId,
+} from "@/lib/constants";
 
 export default function Page() {
   const { user, isAuthenticated, isLoading, error, refreshToken } =
@@ -24,8 +30,57 @@ export default function Page() {
     }
   }, [error, refreshToken]);
   const [reports, setReports] = React.useState<ReportItemType[]>([]);
-  const [metrics, setMetrics] = React.useState<MetricType[]>([]);
+  const [avgMetrics, setAvgMetrics] = React.useState<MetricType[]>([]);
   const [loadingReports, setLoadingReports] = React.useState(true);
+
+  // TODO(casey): replace with actual status
+  const coursesWithStatus = Courses.map((course) => {
+    const matchingCourse = CourseStatuses.find(
+      (courseStatus) => courseStatus.name === course.name
+    );
+
+    if (matchingCourse) {
+      return { ...course, ...matchingCourse };
+    }
+
+    return { ...course, status: 0 };
+  });
+
+  function calculateAvgMetrics(reports: ReportItemType[]) {
+    // Create an object to hold the total sums and count for each category
+    const categorySums: { [index: string]: number } = {};
+    const categoryCounts: { [index: string]: number } = {};
+
+    // Iterate over each report
+    reports.forEach((report) => {
+      // Iterate over each metric in the report
+      report.metrics.forEach((metric) => {
+        // If this category hasn't been encountered yet, initialize sums and counts
+        if (!categorySums[metric.name]) {
+          categorySums[metric.name] = 0;
+          categoryCounts[metric.name] = 0;
+        }
+
+        // Add the metric value to the sum for this category
+        categorySums[metric.name] += metric.score;
+        categoryCounts[metric.name] += 1;
+      });
+    });
+
+    // Now calculate the average for each category
+    const avgScores = Object.keys(categorySums).map((category) => {
+      return {
+        metric_id: MetricNameToId[category as MetricNames],
+        name: category as MetricNames,
+        score: categorySums[category] / categoryCounts[category],
+        evaluated_at: "n/a",
+      };
+    });
+
+    console.log(avgScores);
+
+    return avgScores;
+  }
 
   React.useEffect(() => {
     async function fetchReports() {
@@ -39,7 +94,7 @@ export default function Page() {
         }
         const data = await res.json();
         setReports(data);
-        setMetrics(data.filter((report: ReportItemType) => report.metrics));
+        setAvgMetrics(calculateAvgMetrics(data));
       } catch (err) {
         console.error("Error fetching report data:", err);
       } finally {
@@ -58,8 +113,8 @@ export default function Page() {
         <div className="w-full flex">
           <Recommendations
             loading={loadingReports}
-            metrics={metrics}
-            courses={[]}
+            metrics={[]}
+            courses={coursesWithStatus}
           />
         </div>
       </PageFormat>
