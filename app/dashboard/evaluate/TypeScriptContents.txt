@@ -1,0 +1,2387 @@
+﻿
+
+===== FILE: C:\Users\rahif\Desktop\New folder\expresso\app\dashboard\evaluate\gesture-analysis\components\DeveloperReport.tsx =====
+
+
+"use client";
+
+import React, { useState } from 'react';
+import { PoseLandmark, GestureMetrics } from '@/lib/types';
+import { formatTime } from '../utils';
+
+interface DeveloperReportProps {
+  metrics: GestureMetrics;
+  poseLandmarks?: PoseLandmark[];
+  sessionDuration: number;
+  isVisible: boolean;
+  onToggleVisibility: () => void;
+}
+
+const DeveloperReport: React.FC<DeveloperReportProps> = ({
+  metrics,
+  poseLandmarks = [], // Default to empty array to avoid undefined errors
+  sessionDuration,
+  isVisible,
+  onToggleVisibility
+}) => {
+  const [selectedTab, setSelectedTab] = useState<'metrics' | 'landmarks' | 'raw'>('metrics');
+
+  if (!isVisible) {
+    return (
+      <div className="fixed bottom-4 left-4 bg-gray-900 p-3 rounded-lg border border-gray-700 shadow-lg z-40">
+        <button
+          onClick={onToggleVisibility}
+          className="flex items-center text-gray-300 hover:text-white transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+          <span>Show Developer Report</span>
+        </button>
+      </div>
+    );
+  }
+
+  // Calculate the number of valid landmarks
+  const validLandmarks = poseLandmarks.filter(landmark => 
+    landmark?.visibility !== undefined && landmark.visibility > 0.5
+  ).length;
+  
+  // Calculate the average visibility of all landmarks
+  const avgVisibility = poseLandmarks.length > 0 
+    ? poseLandmarks.reduce((sum, landmark) => 
+        sum + (landmark?.visibility ?? 0), 0) / poseLandmarks.length
+    : 0;
+
+  // Safely get a landmark with null check
+  const getLandmark = (index: number): PoseLandmark | undefined => {
+    return poseLandmarks && poseLandmarks.length > index ? poseLandmarks[index] : undefined;
+  };
+
+  return (
+    <div className="fixed bottom-4 left-4 w-[500px] max-h-[500px] overflow-auto bg-gray-900 rounded-lg border border-gray-700 shadow-lg z-40">
+      <div className="flex justify-between items-center border-b border-gray-700 p-3">
+        <h3 className="text-white font-medium">Developer Report</h3>
+        <div className="flex items-center space-x-2">
+          <span className="text-gray-400 text-xs">Session: {formatTime(sessionDuration)}</span>
+          <button 
+            onClick={onToggleVisibility}
+            className="text-gray-400 hover:text-white transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* Tab Navigation */}
+      <div className="flex border-b border-gray-700">
+        <button
+          onClick={() => setSelectedTab('metrics')}
+          className={`px-4 py-2 text-sm ${
+            selectedTab === 'metrics' ? 'bg-blue-900/30 text-blue-300 border-b-2 border-blue-500' : 'text-gray-400 hover:text-white'
+          }`}
+        >
+          Metrics
+        </button>
+        <button
+          onClick={() => setSelectedTab('landmarks')}
+          className={`px-4 py-2 text-sm ${
+            selectedTab === 'landmarks' ? 'bg-blue-900/30 text-blue-300 border-b-2 border-blue-500' : 'text-gray-400 hover:text-white'
+          }`}
+        >
+          Landmark Stats
+        </button>
+        <button
+          onClick={() => setSelectedTab('raw')}
+          className={`px-4 py-2 text-sm ${
+            selectedTab === 'raw' ? 'bg-blue-900/30 text-blue-300 border-b-2 border-blue-500' : 'text-gray-400 hover:text-white'
+          }`}
+        >
+          Raw Data
+        </button>
+      </div>
+
+      <div className="p-4">
+        {/* Metrics Tab */}
+        {selectedTab === 'metrics' && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <MetricCard 
+                title="Overall Score" 
+                value={metrics.overallScore.toFixed(2)} 
+                unit="/100" 
+                description="Weighted average of all metrics"
+              />
+              <MetricCard 
+                title="Hand Movement" 
+                value={(metrics.handMovement * 100).toFixed(2)} 
+                unit="%" 
+                description="Hand gesture activity level"
+              />
+              <MetricCard 
+                title="Head Movement" 
+                value={(metrics.headMovement * 100).toFixed(2)} 
+                unit="%" 
+                description="Head motion activity level"
+              />
+              <MetricCard 
+                title="Body Movement" 
+                value={(metrics.bodyMovement * 100).toFixed(2)} 
+                unit="%" 
+                description="Torso movement activity"
+              />
+              <MetricCard 
+                title="Posture" 
+                value={(metrics.posture * 100).toFixed(2)} 
+                unit="%" 
+                description="Alignment quality score"
+              />
+              <MetricCard 
+                title="Hand Symmetry" 
+                value={(metrics.handSymmetry * 100).toFixed(2)} 
+                unit="%" 
+                description="Balance between hands"
+              />
+              <MetricCard 
+                title="Gesture Variety" 
+                value={(metrics.gestureVariety * 100).toFixed(2)} 
+                unit="%" 
+                description="Diversity of gestures"
+              />
+              <MetricCard 
+                title="Eye Contact" 
+                value={(metrics.eyeContact * 100).toFixed(2)} 
+                unit="%" 
+                description="Camera gaze consistency"
+              />
+            </div>
+            
+            <div className="mt-4 px-4 py-3 bg-gray-800 rounded-lg">
+              <h4 className="text-sm font-medium text-gray-300 mb-2">Metric Correlations</h4>
+              <table className="w-full text-xs text-gray-400">
+                <tbody>
+                  <tr>
+                    <td className="py-1">Hand-Head Movement:</td>
+                    <td className="text-right">
+                      {calculateCorrelation(metrics.handMovement, metrics.headMovement).toFixed(2)}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-1">Body-Posture Quality:</td>
+                    <td className="text-right">
+                      {calculateCorrelation(metrics.bodyMovement, metrics.posture).toFixed(2)}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-1">Eye Contact-Posture:</td>
+                    <td className="text-right">
+                      {calculateCorrelation(metrics.eyeContact, metrics.posture).toFixed(2)}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Landmark Stats Tab */}
+        {selectedTab === 'landmarks' && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <MetricCard 
+                title="Valid Landmarks" 
+                value={validLandmarks.toString()} 
+                unit={`/${poseLandmarks.length}`}
+                description="Landmarks with visibility > 0.5"
+              />
+              <MetricCard 
+                title="Average Visibility" 
+                value={(avgVisibility * 100).toFixed(2)} 
+                unit="%" 
+                description="Mean visibility of all landmarks"
+              />
+            </div>
+
+            <div className="mt-4">
+              <h4 className="text-sm font-medium text-gray-300 mb-2">Key Points Visibility</h4>
+              <div className="space-y-2">
+                <LandmarkVisibility name="Nose" landmark={getLandmark(0)} />
+                <LandmarkVisibility name="Left Eye" landmark={getLandmark(2)} />
+                <LandmarkVisibility name="Right Eye" landmark={getLandmark(5)} />
+                <LandmarkVisibility name="Left Shoulder" landmark={getLandmark(11)} />
+                <LandmarkVisibility name="Right Shoulder" landmark={getLandmark(12)} />
+                <LandmarkVisibility name="Left Elbow" landmark={getLandmark(13)} />
+                <LandmarkVisibility name="Right Elbow" landmark={getLandmark(14)} />
+                <LandmarkVisibility name="Left Wrist" landmark={getLandmark(15)} />
+                <LandmarkVisibility name="Right Wrist" landmark={getLandmark(16)} />
+                <LandmarkVisibility name="Left Hip" landmark={getLandmark(23)} />
+                <LandmarkVisibility name="Right Hip" landmark={getLandmark(24)} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Raw Data Tab */}
+        {selectedTab === 'raw' && (
+          <div className="space-y-4">
+            <div className="bg-gray-800 p-3 rounded-lg">
+              <h4 className="text-sm font-medium text-gray-300 mb-2">Raw Metrics</h4>
+              <pre className="text-xs text-gray-400 overflow-x-auto">
+                {JSON.stringify(metrics, null, 2)}
+              </pre>
+            </div>
+            
+            <div className="bg-gray-800 p-3 rounded-lg">
+              <h4 className="text-sm font-medium text-gray-300 mb-2">
+                Pose Landmarks {poseLandmarks.length > 0 ? `(First 5 of ${poseLandmarks.length})` : '(None)'}
+              </h4>
+              <pre className="text-xs text-gray-400 overflow-x-auto">
+                {poseLandmarks.length > 0 
+                  ? JSON.stringify(poseLandmarks.slice(0, 5), null, 2)
+                  : "No landmark data available"}
+              </pre>
+            </div>
+            
+            <div className="text-xs text-gray-500 mt-2">
+              Note: Only showing first 5 landmarks to avoid overwhelming the display.
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Helper component for displaying a metric card
+const MetricCard: React.FC<{
+  title: string;
+  value: string;
+  unit: string;
+  description: string;
+}> = ({ title, value, unit, description }) => (
+  <div className="bg-gray-800 p-3 rounded-lg">
+    <div className="flex justify-between items-center mb-1">
+      <h4 className="text-sm font-medium text-gray-300">{title}</h4>
+      <span className="text-lg font-bold text-blue-400">
+        {value}<span className="text-xs ml-1 text-gray-400">{unit}</span>
+      </span>
+    </div>
+    <p className="text-xs text-gray-500">{description}</p>
+  </div>
+);
+
+// Helper component for landmark visibility
+const LandmarkVisibility: React.FC<{
+  name: string;
+  landmark?: PoseLandmark;
+}> = ({ name, landmark }) => {
+  const visibility = landmark?.visibility ?? 0;
+  
+  return (
+    <div className="flex items-center justify-between">
+      <span className="text-xs text-gray-400">{name}</span>
+      <div className="flex items-center">
+        <div className="w-32 bg-gray-700 rounded-full h-1.5 mr-2">
+          <div 
+            className={`h-1.5 rounded-full ${
+              visibility > 0.7 ? 'bg-green-500' :
+              visibility > 0.5 ? 'bg-yellow-500' :
+              'bg-red-500'
+            }`}
+            style={{ width: `${visibility * 100}%` }}
+          />
+        </div>
+        <span className="text-xs text-gray-400">{(visibility * 100).toFixed(0)}%</span>
+      </div>
+    </div>
+  );
+};
+
+// Helper function to calculate simple correlation between two metrics
+function calculateCorrelation(a: number, b: number): number {
+  // This is a very simplified version just for display purposes
+  // It returns a value between -1 and 1 based on whether the metrics
+  // are moving in the same direction or opposite directions
+  const normalizedA = a * 2 - 1; // Scale to [-1, 1]
+  const normalizedB = b * 2 - 1; // Scale to [-1, 1]
+  
+  return normalizedA * normalizedB;
+}
+
+export default DeveloperReport;
+
+
+===== FILE: C:\Users\rahif\Desktop\New folder\expresso\app\dashboard\evaluate\gesture-analysis\components\FeedbackPanel.tsx =====
+
+
+"use client";
+
+import React, { useState } from 'react';
+import { GestureFeedback } from '../types';
+
+interface FeedbackPanelProps {
+  feedback: GestureFeedback[];
+  isRecording: boolean;
+}
+
+const FeedbackPanel: React.FC<FeedbackPanelProps> = ({ feedback, isRecording }) => {
+  const [isVisible, setIsVisible] = useState(true);
+
+  if (!isRecording) return null;
+
+  const toggleVisibility = () => {
+    setIsVisible(!isVisible);
+  };
+
+  return (
+    <div className="mt-4">
+      <div className="flex justify-between items-center mb-2">
+        <h4 className="text-white text-sm font-medium">Real-time Feedback</h4>
+        <button 
+          onClick={toggleVisibility}
+          className="text-xs px-2 py-1 bg-gray-700 hover:bg-gray-600 text-gray-200 rounded transition-colors"
+        >
+          {isVisible ? 'Hide' : 'Show'} Feedback
+        </button>
+      </div>
+
+      {isVisible && (
+        <>
+          {feedback.length > 0 ? (
+            <div className="p-4 rounded-lg bg-gray-700/50 border border-gray-600 space-y-2">
+              {feedback.map((item, index) => (
+                <div 
+                  key={index}
+                  className={`text-sm p-2 rounded ${
+                    item.type === 'success' ? 'bg-green-800/30 text-green-300' :
+                    item.type === 'warning' ? 'bg-yellow-800/30 text-yellow-300' :
+                    item.type === 'error' ? 'bg-red-800/30 text-red-300' :
+                    'bg-blue-800/30 text-blue-300'
+                  }`}
+                >
+                  {item.message}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-4 rounded-lg bg-gray-700/50 border border-gray-600">
+              <p className="text-sm text-gray-400">No feedback available yet. Continue speaking...</p>
+            </div>
+          )}
+
+          <div className="mt-4 pt-2 border-t border-gray-700">
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-400">System Analysis</span>
+              <span className="text-xs text-blue-400">
+                {feedback.length > 0 ? 'Analyzing...' : 'Waiting for data...'}
+              </span>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+export default FeedbackPanel;
+
+
+===== FILE: C:\Users\rahif\Desktop\New folder\expresso\app\dashboard\evaluate\gesture-analysis\components\MetricsDisplay.tsx =====
+
+
+"use client";
+
+import React from 'react';
+import { GestureMetrics } from '../types';
+import { formatMetricName, getColorClass, getMetricStatus } from '../utils';
+
+interface MetricsDisplayProps {
+  metrics: GestureMetrics;
+}
+
+const MetricsDisplay: React.FC<MetricsDisplayProps> = ({ metrics }) => {
+  return (
+    <div className="space-y-3">
+      {Object.entries(metrics).map(([key, value]) => (
+        <div key={key} className="flex flex-col mb-2">
+          <div className="flex justify-between text-sm mb-1">
+            <span className="text-gray-300 capitalize">
+              {formatMetricName(key)}
+            </span>
+            <span className={
+              key === 'overallScore' ? 'text-white font-bold' : 
+              getColorClass(key, value) === 'bg-blue-500' ? 'text-blue-400' :
+              getColorClass(key, value) === 'bg-green-500' ? 'text-green-400' :
+              getColorClass(key, value) === 'bg-amber-500' ? 'text-amber-400' : 
+              'text-red-400'
+            }>
+              {key === 'overallScore' ? `${value}/100` : getMetricStatus(key, value)}
+            </span>
+          </div>
+          <div className="w-full bg-gray-700 rounded-full h-3">
+            <div
+              className={`h-3 rounded-full transition-all duration-300 ${
+                key === 'overallScore' ? 'bg-blue-500' : getColorClass(key, value)
+              }`}
+              style={{ width: `${key === 'overallScore' ? value : value * 100}%` }}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default MetricsDisplay;
+
+
+===== FILE: C:\Users\rahif\Desktop\New folder\expresso\app\dashboard\evaluate\gesture-analysis\analysisAlgorithms.ts =====
+
+
+// analysisAlgorithms.ts - Core algorithms for analyzing pose data
+
+import _ from 'lodash';
+import { PoseLandmark, GestureMetrics, GestureFeedback } from './types';
+import { calculateMovement } from './utils';
+import { OPTIMAL_RANGES } from './constants';
+
+// Analyze posture from landmarks - simplified to more boolean-like states
+export const analyzePosture = (landmarks?: PoseLandmark[]): number => {
+  if (!landmarks) return 0.5;
+
+  const nose = landmarks[0];
+  const leftShoulder = landmarks[11];
+  const rightShoulder = landmarks[12];
+  const leftHip = landmarks[23];
+  const rightHip = landmarks[24];
+
+  // Check visibility
+  if (!nose?.visibility || !leftShoulder?.visibility || !rightShoulder?.visibility || 
+      !leftHip?.visibility || !rightHip?.visibility ||
+      nose.visibility < 0.5 || leftShoulder.visibility < 0.5 || 
+      rightShoulder.visibility < 0.5 || leftHip.visibility < 0.5 || 
+      rightHip.visibility < 0.5) {
+    return 0.5;
+  }
+
+  // Shoulder alignment (horizontal)
+  const shoulderDiff = Math.abs(leftShoulder.y - rightShoulder.y);
+  // More boolean-like: good if under threshold
+  const shoulderAligned = shoulderDiff < 0.08;
+
+  // Spine straightness (vertical alignment)
+  const midShoulder = {
+    x: (leftShoulder.x + rightShoulder.x) / 2,
+    y: (leftShoulder.y + rightShoulder.y) / 2
+  };
+  const midHip = {
+    x: (leftHip.x + rightHip.x) / 2,
+    y: (leftHip.y + rightHip.y) / 2
+  };
+
+  const spineAngle = Math.abs(midShoulder.x - midHip.x);
+  // More boolean-like: good if under threshold
+  const spineAligned = spineAngle < 0.08;
+
+  // Head position relative to shoulders
+  const headOffset = Math.abs(nose.x - midShoulder.x);
+  // More boolean-like: good if under threshold
+  const headAligned = headOffset < 0.1;
+  
+  // Count how many posture aspects are good
+  let goodPostureCount = 0;
+  if (shoulderAligned) goodPostureCount++;
+  if (spineAligned) goodPostureCount++;
+  if (headAligned) goodPostureCount++;
+  
+  // Convert to three discrete levels: bad (0-0.33), medium (0.34-0.66), good (0.67-1.0)
+  if (goodPostureCount === 0) return 0.2; // Bad posture
+  if (goodPostureCount === 1) return 0.5; // Medium posture
+  if (goodPostureCount === 2) return 0.8; // Good posture
+  return 1.0; // Perfect posture (all 3 aspects good)
+};
+
+// Calculate body movement based on shoulders and hips
+export const calculateBodyMovement = (landmarks?: PoseLandmark[], prevLandmarks?: PoseLandmark[]): number => {
+  if (!landmarks || !prevLandmarks) return 0.5;
+  
+  const leftShoulder = landmarks[11];
+  const rightShoulder = landmarks[12];
+  const leftHip = landmarks[23];
+  const rightHip = landmarks[24];
+  
+  const prevLeftShoulder = prevLandmarks[11];
+  const prevRightShoulder = prevLandmarks[12];
+  const prevLeftHip = prevLandmarks[23];
+  const prevRightHip = prevLandmarks[24];
+  
+  if (!leftShoulder?.visibility || !rightShoulder?.visibility || 
+      !leftHip?.visibility || !rightHip?.visibility ||
+      !prevLeftShoulder?.visibility || !prevRightShoulder?.visibility || 
+      !prevLeftHip?.visibility || !prevRightHip?.visibility ||
+      leftShoulder.visibility < 0.5 || rightShoulder.visibility < 0.5 || 
+      leftHip.visibility < 0.5 || rightHip.visibility < 0.5 ||
+      prevLeftShoulder.visibility < 0.5 || prevRightShoulder.visibility < 0.5 || 
+      prevLeftHip.visibility < 0.5 || prevRightHip.visibility < 0.5) {
+    return 0.5;
+  }
+  
+  // Calculate torso center points
+  const torsoCenter = {
+    x: (leftShoulder.x + rightShoulder.x + leftHip.x + rightHip.x) / 4,
+    y: (leftShoulder.y + rightShoulder.y + leftHip.y + rightHip.y) / 4
+  };
+  
+  const prevTorsoCenter = {
+    x: (prevLeftShoulder.x + prevRightShoulder.x + prevLeftHip.x + prevRightHip.x) / 4,
+    y: (prevLeftShoulder.y + prevRightShoulder.y + prevLeftHip.y + prevRightHip.y) / 4
+  };
+  
+  // Calculate movement between frames
+  const movement = Math.sqrt(
+    Math.pow((torsoCenter.x - prevTorsoCenter.x) * 15, 2) +
+    Math.pow((torsoCenter.y - prevTorsoCenter.y) * 15, 2)
+  );
+  
+  // Scale the movement to be more sensitive to small changes
+  return Math.min(1, Math.pow(movement * 4, 1.2));
+};
+
+// Calculate hand symmetry (how similarly both hands are being used)
+export const calculateHandSymmetry = (
+  landmarks?: PoseLandmark[],
+  handPositionsBuffer?: {left: PoseLandmark, right: PoseLandmark}[]
+): number => {
+  if (!landmarks || !handPositionsBuffer || handPositionsBuffer.length < 5) return 0.5;
+  
+  const leftWrist = landmarks[15];
+  const rightWrist = landmarks[16];
+  const leftElbow = landmarks[13];
+  const rightElbow = landmarks[14];
+  const leftShoulder = landmarks[11];
+  const rightShoulder = landmarks[12];
+  
+  if (!leftWrist?.visibility || !rightWrist?.visibility || 
+      !leftElbow?.visibility || !rightElbow?.visibility ||
+      !leftShoulder?.visibility || !rightShoulder?.visibility ||
+      leftWrist.visibility < 0.5 || rightWrist.visibility < 0.5 ||
+      leftElbow.visibility < 0.5 || rightElbow.visibility < 0.5 ||
+      leftShoulder.visibility < 0.5 || rightShoulder.visibility < 0.5) {
+    return 0.5;
+  }
+  
+  // Calculate movement for each hand over the buffer (last 10 frames)
+  const leftMovements: number[] = [];
+  const rightMovements: number[] = [];
+  
+  const recentFrames = handPositionsBuffer.slice(-10);
+  
+  for (let i = 1; i < recentFrames.length; i++) {
+    const prevFrame = recentFrames[i-1];
+    const currFrame = recentFrames[i];
+    
+    leftMovements.push(calculateMovement(currFrame.left, prevFrame.left, 1));
+    rightMovements.push(calculateMovement(currFrame.right, prevFrame.right, 1));
+  }
+  
+  const leftTotal = _.sum(leftMovements);
+  const rightTotal = _.sum(rightMovements);
+  
+  // Check current arm positions
+  const leftArmExtension = Math.sqrt(
+    Math.pow(leftWrist.x - leftShoulder.x, 2) + 
+    Math.pow(leftWrist.y - leftShoulder.y, 2)
+  );
+  
+  const rightArmExtension = Math.sqrt(
+    Math.pow(rightWrist.x - rightShoulder.x, 2) + 
+    Math.pow(rightWrist.y - rightShoulder.y, 2)
+  );
+  
+  // If both arms are close to body, symmetry is less relevant
+  const armsExtended = Math.max(leftArmExtension, rightArmExtension) > 0.2;
+  
+  // If both hands are very still, check position symmetry instead of movement
+  if (leftTotal < 0.01 && rightTotal < 0.01) {
+    if (!armsExtended) {
+      return 0.5; // Both arms at rest, considered neutral symmetry
+    }
+    
+    // Check if hands are at similar heights (y-coordinate)
+    const heightDifference = Math.abs(leftWrist.y - rightWrist.y);
+    return Math.max(0, 1 - heightDifference * 5);
+  }
+  
+  // If one hand is moving significantly more than the other
+  if (leftTotal > 0.1 || rightTotal > 0.1) {
+    // Calculate the ratio between the more active and less active hand
+    const max = Math.max(leftTotal, rightTotal);
+    const min = Math.min(leftTotal, rightTotal);
+    
+    return min / max;
+  }
+  
+  // Default case - moderate symmetry
+  return 0.5;
+};
+
+// Calculate gesture variety (are they using the same gestures repeatedly)
+export const calculateGestureVariety = (
+  landmarks?: PoseLandmark[],
+  handPositionsBuffer?: {left: PoseLandmark, right: PoseLandmark}[]
+): number => {
+  if (!landmarks || !handPositionsBuffer || handPositionsBuffer.length < 10) return 0.5;
+  
+  // Use the positions from the hand symmetry calculation
+  // Calculate the different regions where the hands have been
+  const regions = new Set<string>();
+  const gridSize = 5; // 5x5 grid for hand positions
+  
+  handPositionsBuffer.forEach(frame => {
+    // Quantize positions to grid cells
+    const leftRegion = `${Math.floor(frame.left.x * gridSize)}_${Math.floor(frame.left.y * gridSize)}`;
+    const rightRegion = `${Math.floor(frame.right.x * gridSize)}_${Math.floor(frame.right.y * gridSize)}`;
+    
+    regions.add(leftRegion);
+    regions.add(rightRegion);
+  });
+  
+  // More unique regions = more variety
+  // Scale to 0-1 range (max would be 2 * gridSize^2 if using every region)
+  const maxPossibleRegions = Math.min(2 * Math.pow(gridSize, 2), 30);
+  return Math.min(1, regions.size / maxPossibleRegions);
+};
+
+// Calculate eye contact (based on head position and orientation)
+export const calculateEyeContact = (landmarks?: PoseLandmark[]): number => {
+  if (!landmarks) return 0.5;
+  
+  const nose = landmarks[0];
+  const leftEye = landmarks[2];
+  const rightEye = landmarks[5];
+  const leftShoulder = landmarks[11];
+  const rightShoulder = landmarks[12];
+  
+  if (!nose?.visibility || !leftEye?.visibility || !rightEye?.visibility || 
+      !leftShoulder?.visibility || !rightShoulder?.visibility ||
+      nose.visibility < 0.5 || leftEye.visibility < 0.5 || rightEye.visibility < 0.5 ||
+      leftShoulder.visibility < 0.5 || rightShoulder.visibility < 0.5) {
+    return 0.5;
+  }
+  
+  // Calculate midpoint of shoulders
+  const shoulderMidpoint = {
+    x: (leftShoulder.x + rightShoulder.x) / 2,
+    y: (leftShoulder.y + rightShoulder.y) / 2
+  };
+  
+  // Check if nose is aligned with shoulder midpoint (horizontal alignment)
+  const horizontalAlignment = 1 - Math.min(1, Math.abs(nose.x - shoulderMidpoint.x) * 10);
+  
+  // Check eye horizontal alignment (how level the eyes are)
+  const eyeHorizontalAlignment = 1 - Math.min(1, Math.abs(leftEye.y - rightEye.y) * 10);
+  
+  // Calculate distance between eyes (for perspective/facing detection)
+  const eyeDistance = Math.sqrt(
+    Math.pow(rightEye.x - leftEye.x, 2) + 
+    Math.pow(rightEye.y - leftEye.y, 2)
+  );
+  
+  // When looking directly at camera, eyes should be more separated
+  // Scale to normalize the value
+  const facingScore = Math.min(1, eyeDistance * 10);
+  
+  // Combine metrics with appropriate weights
+  return Math.max(0, Math.min(1, 
+    horizontalAlignment * 0.4 + 
+    eyeHorizontalAlignment * 0.3 + 
+    facingScore * 0.3
+  ));
+};
+
+// Generate feedback messages based on current metrics
+export const generateFeedback = (metrics: GestureMetrics): GestureFeedback[] => {
+  const feedback: GestureFeedback[] = [];
+  
+  // Use a random number to occasionally skip feedback to reduce distraction
+  if (Math.random() > 0.7) {
+    return feedback;
+  }
+  
+  // Check each metric against optimal ranges
+  Object.entries(OPTIMAL_RANGES).forEach(([key, range]) => {
+    const metricKey = key as keyof typeof OPTIMAL_RANGES;
+    const value = metrics[metricKey];
+    
+    if (value < range.min) {
+      // Low value
+      switch(metricKey) {
+        case 'handMovement':
+          feedback.push({ 
+            message: 'Consider using more hand gestures', 
+            type: 'warning' 
+          });
+          break;
+        case 'headMovement':
+          feedback.push({ 
+            message: 'Slight head movement recommended', 
+            type: 'info' 
+          });
+          break;
+        case 'posture':
+          feedback.push({ 
+            message: 'Check posture alignment', 
+            type: 'warning' 
+          });
+          break;
+        case 'handSymmetry':
+          feedback.push({ 
+            message: 'Balance hand usage', 
+            type: 'info' 
+          });
+          break;
+        case 'gestureVariety':
+          feedback.push({ 
+            message: 'Vary gestures for engagement', 
+            type: 'info' 
+          });
+          break;
+        case 'eyeContact':
+          feedback.push({ 
+            message: 'Maintain eye contact', 
+            type: 'info' 
+          });
+          break;
+      }
+    } else if (value > range.max) {
+      // High value
+      switch(metricKey) {
+        case 'handMovement':
+          feedback.push({ 
+            message: 'Hand movements above normal range', 
+            type: 'info' 
+          });
+          break;
+        case 'headMovement':
+          feedback.push({ 
+            message: 'Head movement above normal range', 
+            type: 'info' 
+          });
+          break;
+        case 'posture': 
+          // Usually not an issue to have extremely good posture
+          break;
+        case 'handSymmetry':
+          // Usually not an issue to have perfect symmetry
+          break;
+        case 'gestureVariety':
+          feedback.push({ 
+            message: 'Consider more consistent gestures', 
+            type: 'info' 
+          });
+          break;
+        case 'eyeContact':
+          // Usually not an issue to have perfect eye contact
+          break;
+      }
+    }
+  });
+  
+  // Limit to 1 feedback item at a time to reduce distraction
+  return feedback.slice(0, 1);
+};
+
+
+===== FILE: C:\Users\rahif\Desktop\New folder\expresso\app\dashboard\evaluate\gesture-analysis\constants.ts =====
+
+
+// constants.ts - Configuration values for analysis algorithms
+
+// Buffer sizes and coefficients
+export const MOVEMENT_BUFFER_SIZE = 60; // 2 seconds at 30fps
+export const POSTURE_COEFFICIENT = 0.25;
+export const HAND_MOVEMENT_COEFFICIENT = 0.2;
+export const HEAD_MOVEMENT_COEFFICIENT = 0.15;
+export const BODY_MOVEMENT_COEFFICIENT = 0.15;
+export const HAND_SYMMETRY_COEFFICIENT = 0.1;
+export const GESTURE_VARIETY_COEFFICIENT = 0.05;
+export const EYE_CONTACT_COEFFICIENT = 0.1;
+
+// Optimal value ranges for public speaking - with wider ranges for easier achievement
+export const OPTIMAL_RANGES = {
+  handMovement: { min: 0.08, max: 0.7 },  // Even wider range for hand movement
+  headMovement: { min: 0.01, max: 0.5 },  // Wider range for head movement
+  bodyMovement: { min: 0.02, max: 0.6 },  // New parameter with wide range
+  posture: { min: 0.4, max: 1.0 },  // Lower threshold for good posture
+  handSymmetry: { min: 0.2, max: 0.9 },   // Even lower minimum threshold
+  gestureVariety: { min: 0.15, max: 0.9 },  // Lower minimum threshold
+  eyeContact: { min: 0.3, max: 0.9 }      // Lower minimum threshold
+};
+
+
+===== FILE: C:\Users\rahif\Desktop\New folder\expresso\app\dashboard\evaluate\gesture-analysis\GestureAnalysis.tsx =====
+
+
+"use client";
+
+import React, { useEffect, useRef, useState } from 'react';
+import _ from 'lodash';
+import { PoseLandmark, GestureMetrics, GestureFeedback } from './types';
+import { MOVEMENT_BUFFER_SIZE } from './constants';
+import { formatTime, smoothUpdate } from './utils';
+import {
+  analyzePosture,
+  calculateBodyMovement,
+  calculateEyeContact,
+  calculateGestureVariety,
+  calculateHandSymmetry,
+  generateFeedback
+} from './analysisAlgorithms';
+import { calculateMovement } from './utils';
+import MetricsDisplay from './components/MetricsDisplay';
+import FeedbackPanel from './components/FeedbackPanel';
+import DeveloperReport from './components/DeveloperReport';
+import { 
+  HAND_MOVEMENT_COEFFICIENT, 
+  HEAD_MOVEMENT_COEFFICIENT, 
+  BODY_MOVEMENT_COEFFICIENT,
+  POSTURE_COEFFICIENT,
+  HAND_SYMMETRY_COEFFICIENT,
+  GESTURE_VARIETY_COEFFICIENT,
+  EYE_CONTACT_COEFFICIENT
+} from './constants';
+
+interface Props {
+  poseLandmarks?: PoseLandmark[];
+  isRecording: boolean;
+  onMetricsUpdate?: (metrics: GestureMetrics) => void;
+  developerMode?: boolean; // Add this prop to control developer mode
+}
+
+const GestureAnalysis: React.FC<Props> = ({ 
+  poseLandmarks, 
+  isRecording,
+  onMetricsUpdate,
+  developerMode = true // Default to false
+}) => {
+  // State
+  const [metrics, setMetrics] = useState<GestureMetrics>({
+    handMovement: 0.5,
+    headMovement: 0.5,
+    bodyMovement: 0.5,
+    posture: 0.5,
+    handSymmetry: 0.5,
+    gestureVariety: 0.5,
+    eyeContact: 0.5,
+    overallScore: 50
+  });
+  const [feedback, setFeedback] = useState<GestureFeedback[]>([]);
+  const [sessionDuration, setSessionDuration] = useState(0);
+  const [isPanelVisible, setIsPanelVisible] = useState(true);
+  const [isDevReportVisible, setIsDevReportVisible] = useState(false);
+  
+  // Refs for tracking movement and analysis data
+  const prevLandmarksRef = useRef<PoseLandmark[]>([]);
+  const handMovementBufferRef = useRef<number[]>(Array(MOVEMENT_BUFFER_SIZE).fill(0.5));
+  const headMovementBufferRef = useRef<number[]>(Array(MOVEMENT_BUFFER_SIZE).fill(0.5));
+  const bodyMovementBufferRef = useRef<number[]>(Array(MOVEMENT_BUFFER_SIZE).fill(0.5));
+  const handPositionsBufferRef = useRef<{left: PoseLandmark, right: PoseLandmark}[]>([]);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const frameCountRef = useRef(0);
+
+  // Call onMetricsUpdate whenever metrics change
+  useEffect(() => {
+    if (onMetricsUpdate) {
+      onMetricsUpdate(metrics);
+    }
+  }, [metrics, onMetricsUpdate]);
+
+  // Start/stop session timer
+  useEffect(() => {
+    if (isRecording) {
+      timerRef.current = setInterval(() => {
+        setSessionDuration(prev => prev + 1);
+      }, 1000);
+    } else {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+      setSessionDuration(0);
+    }
+    
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [isRecording]);
+
+  // Main analysis effect
+  useEffect(() => {
+    if (!isRecording || !poseLandmarks?.length) return;
+
+    try {
+      if (!prevLandmarksRef.current.length) {
+        prevLandmarksRef.current = poseLandmarks;
+        return;
+      }
+
+      // Only update every nth frame to reduce computation load (effectively every ~200ms at 30fps)
+      frameCountRef.current += 1;
+      if (frameCountRef.current % 6 !== 0) {
+        prevLandmarksRef.current = poseLandmarks;
+        return;
+      }
+
+      // Calculate all metrics
+      const postureScore = analyzePosture(poseLandmarks);
+      
+      // Hand movements - more balanced sensitivity for middle zone
+      const leftHandMove = calculateMovement(poseLandmarks[15], prevLandmarksRef.current[15], 8);
+      const rightHandMove = calculateMovement(poseLandmarks[16], prevLandmarksRef.current[16], 8);
+      const handScore = Math.max(leftHandMove, rightHandMove);
+      
+      // Head movement - more balanced sensitivity for middle zone
+      const headMove = calculateMovement(poseLandmarks[0], prevLandmarksRef.current[0], 15);
+      
+      // Body movement - track torso movement
+      const bodyMove = calculateBodyMovement(poseLandmarks, prevLandmarksRef.current);
+      
+      // Update movement buffers
+      handMovementBufferRef.current = [...handMovementBufferRef.current.slice(1), handScore];
+      headMovementBufferRef.current = [...headMovementBufferRef.current.slice(1), headMove];
+      bodyMovementBufferRef.current = [...bodyMovementBufferRef.current.slice(1), bodyMove];
+      
+      // Update hand positions buffer for symmetry and variety calculations
+      if (handPositionsBufferRef.current.length >= 30) {
+        handPositionsBufferRef.current.shift();
+      }
+      
+      if (poseLandmarks[15] && poseLandmarks[16]) {
+        handPositionsBufferRef.current.push({
+          left: { ...poseLandmarks[15] },
+          right: { ...poseLandmarks[16] }
+        });
+      }
+      
+      // Calculate averages from buffers for stability
+      const recentHandBuffer = handMovementBufferRef.current.slice(-30);
+      const recentHeadBuffer = headMovementBufferRef.current.slice(-30);
+      const recentBodyBuffer = bodyMovementBufferRef.current.slice(-30);
+      
+      const averageHandMovement = _.mean(recentHandBuffer);
+      const averageHeadMovement = _.mean(recentHeadBuffer);
+      const averageBodyMovement = _.mean(recentBodyBuffer);
+      
+      // Calculate advanced metrics
+      const handSymmetry = calculateHandSymmetry(poseLandmarks, handPositionsBufferRef.current);
+      const gestureVariety = calculateGestureVariety(poseLandmarks, handPositionsBufferRef.current);
+      const eyeContact = calculateEyeContact(poseLandmarks);
+
+      // Update metrics using functional update with slower update rate
+      setMetrics(prevMetrics => {
+        const newMetrics = {
+          handMovement: smoothUpdate(prevMetrics.handMovement, averageHandMovement, 0.05),
+          headMovement: smoothUpdate(prevMetrics.headMovement, averageHeadMovement, 0.05),
+          bodyMovement: smoothUpdate(prevMetrics.bodyMovement, averageBodyMovement, 0.05),
+          posture: postureScore, // Directly use posture score (already discrete)
+          handSymmetry: smoothUpdate(prevMetrics.handSymmetry, handSymmetry, 0.05),
+          gestureVariety: smoothUpdate(prevMetrics.gestureVariety, gestureVariety, 0.05),
+          eyeContact: smoothUpdate(prevMetrics.eyeContact, eyeContact, 0.05),
+          overallScore: 0
+        };
+
+        // Calculate overall score (weighted average) with a boost to improve user experience
+        const rawScore = (
+          (newMetrics.handMovement * HAND_MOVEMENT_COEFFICIENT +
+           newMetrics.headMovement * HEAD_MOVEMENT_COEFFICIENT +
+           newMetrics.bodyMovement * BODY_MOVEMENT_COEFFICIENT +
+           newMetrics.posture * POSTURE_COEFFICIENT +
+           newMetrics.handSymmetry * HAND_SYMMETRY_COEFFICIENT +
+           newMetrics.gestureVariety * GESTURE_VARIETY_COEFFICIENT +
+           newMetrics.eyeContact * EYE_CONTACT_COEFFICIENT) * 100 /
+          (HAND_MOVEMENT_COEFFICIENT + HEAD_MOVEMENT_COEFFICIENT + BODY_MOVEMENT_COEFFICIENT + 
+           POSTURE_COEFFICIENT + HAND_SYMMETRY_COEFFICIENT + GESTURE_VARIETY_COEFFICIENT + 
+           EYE_CONTACT_COEFFICIENT)
+        );
+        
+        // Apply curve to make scores higher - this gives a 10-15 point boost to mid-range scores
+        const curvedScore = Math.round(Math.min(100, rawScore * 1.15));
+        newMetrics.overallScore = curvedScore;
+
+        return newMetrics;
+      });
+
+      // Generate new feedback occasionally based on current metrics state
+      const shouldUpdateFeedback = sessionDuration % 5 === 0;
+      if (shouldUpdateFeedback) {
+        // Get metrics first to ensure we have the latest values
+        setMetrics(currentMetrics => {
+          // Generate feedback based on current metrics
+          const newFeedback = generateFeedback(currentMetrics);
+          // Update feedback in a separate state update to avoid triggering rerenders
+          setTimeout(() => setFeedback(newFeedback), 0);
+          // Return unchanged metrics to avoid unnecessary update
+          return currentMetrics;
+        });
+      }
+
+      // Update reference for next frame
+      prevLandmarksRef.current = poseLandmarks;
+
+    } catch (error) {
+      console.error('Error analyzing gestures:', error);
+    }
+  }, [poseLandmarks, isRecording, sessionDuration]);
+
+  // Toggle panel visibility
+  const togglePanelVisibility = () => {
+    setIsPanelVisible(!isPanelVisible);
+  };
+
+  // Toggle developer report visibility
+  const toggleDevReportVisibility = () => {
+    setIsDevReportVisible(!isDevReportVisible);
+  };
+
+  // Activate developer mode on double-click of the header (Easter egg)
+  const handleHeaderDoubleClick = () => {
+    if (!developerMode) {
+      setIsDevReportVisible(true);
+    }
+  };
+
+  // Minimized view when panel is hidden
+  if (!isPanelVisible) {
+    return (
+      <>
+        <div className="fixed top-4 right-4 bg-black/80 p-3 rounded-lg shadow-lg">
+          <button 
+            onClick={togglePanelVisibility}
+            className="flex items-center text-white text-sm hover:text-blue-300 transition-colors"
+          >
+            <span className="mr-2">Show Analysis</span>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Developer Report - always show if visible, even when main panel is hidden */}
+        {developerMode && (
+          <DeveloperReport
+            metrics={metrics}
+            poseLandmarks={poseLandmarks}
+            sessionDuration={sessionDuration}
+            isVisible={isDevReportVisible}
+            onToggleVisibility={toggleDevReportVisibility}
+          />
+        )}
+      </>
+    );
+  }
+
+  return (
+    <>
+      <div className="fixed top-4 right-4 space-y-4 bg-black/80 p-4 rounded-lg w-96 shadow-lg">
+        <div 
+          className="flex justify-between items-center"
+          onDoubleClick={handleHeaderDoubleClick}
+        >
+          <h3 className="text-white font-semibold">Gesture Analysis</h3>
+          <div className="flex items-center space-x-3">
+            {isRecording && (
+              <div className="flex items-center">
+                <span className="animate-pulse mr-2 h-3 w-3 rounded-full bg-red-500"></span>
+                <span className="text-white text-sm">{formatTime(sessionDuration)}</span>
+              </div>
+            )}
+            <button 
+              onClick={togglePanelVisibility}
+              className="text-gray-400 hover:text-white transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        
+        {/* Overall Score */}
+        <div className="bg-gray-900/50 p-3 rounded-lg border border-gray-700">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-gray-300">Overall Score</span>
+            <span className="text-xl font-bold text-blue-400">{metrics.overallScore}/100</span>
+          </div>
+          <div className="w-full bg-gray-700 rounded-full h-3">
+            <div 
+              className="h-3 rounded-full bg-blue-500 transition-all duration-500"
+              style={{ width: `${metrics.overallScore}%` }}
+            />
+          </div>
+        </div>
+        
+        {/* Metrics Display Component */}
+        <MetricsDisplay metrics={metrics} />
+        
+        {/* Feedback Panel Component */}
+        <FeedbackPanel feedback={feedback} isRecording={isRecording} />
+
+        {/* Developer Mode Toggle (if enabled) */}
+        {developerMode && (
+          <div className="mt-2 pt-2 border-t border-gray-700">
+            <button
+              onClick={toggleDevReportVisibility}
+              className="w-full text-xs text-gray-400 hover:text-white py-1 transition-colors flex items-center justify-center"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+              </svg>
+              {isDevReportVisible ? 'Hide' : 'Show'} Developer Report
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Developer Report */}
+      {developerMode && (
+        <DeveloperReport
+          metrics={metrics}
+          poseLandmarks={poseLandmarks}
+          sessionDuration={sessionDuration}
+          isVisible={isDevReportVisible}
+          onToggleVisibility={toggleDevReportVisibility}
+        />
+      )}
+    </>
+  );
+};
+
+export default GestureAnalysis;
+
+
+===== FILE: C:\Users\rahif\Desktop\New folder\expresso\app\dashboard\evaluate\gesture-analysis\index.ts =====
+
+
+// index.ts - Export all components and utilities for easy importing
+
+// Export types
+export * from './types';
+
+// Export constants
+export * from './constants';
+
+// Export utilities
+export * from './utils';
+
+// Export analysis algorithms
+export * from './analysisAlgorithms';
+
+// Export components
+export { default as GestureAnalysis } from './GestureAnalysis';
+export { default as MetricsDisplay } from './components/MetricsDisplay';
+export { default as FeedbackPanel } from './components/FeedbackPanel';
+
+
+===== FILE: C:\Users\rahif\Desktop\New folder\expresso\app\dashboard\evaluate\gesture-analysis\types.ts =====
+
+
+// types.ts - Shared types for the gesture analysis system
+
+export interface PoseLandmark {
+    x: number;
+    y: number;
+    z: number;
+    visibility?: number;
+  }
+  
+  export interface GestureMetrics {
+    handMovement: number;
+    headMovement: number;
+    bodyMovement: number;
+    posture: number;
+    handSymmetry: number;
+    gestureVariety: number;
+    eyeContact: number;
+    overallScore: number;
+  }
+  
+  export interface GestureFeedback {
+    message: string;
+    type: 'success' | 'warning' | 'error' | 'info';
+  }
+  
+  export interface MetricData {
+    value: number;
+    status: string;
+  }
+  
+  export interface AnalysisData {
+    handMovement: MetricData;
+    headMovement: MetricData;
+    bodyMovement: MetricData;
+    posture: MetricData;
+    handSymmetry: MetricData;
+    gestureVariety: MetricData;
+    eyeContact: MetricData;
+    overallScore: number;
+    sessionDuration: number;
+    transcript: string;
+  }
+
+
+===== FILE: C:\Users\rahif\Desktop\New folder\expresso\app\dashboard\evaluate\gesture-analysis\utils.ts =====
+
+
+// utils.ts - Utility functions for gesture analysis
+
+import { PoseLandmark } from './types';
+import { OPTIMAL_RANGES } from './constants';
+
+// Format time for display
+export const formatTime = (seconds: number): string => {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+};
+
+// Smoothly update a metric value to prevent jarring UI changes
+export const smoothUpdate = (currentValue: number, newValue: number, sensitivity: number = 0.05): number => {
+  const delta = newValue - currentValue;
+  const maxChange = sensitivity;
+  const change = Math.max(-maxChange, Math.min(maxChange, delta));
+  return currentValue + change;
+};
+
+// Calculate movement between two landmarks
+export const calculateMovement = (
+  current?: PoseLandmark,
+  previous?: PoseLandmark,
+  sensitivity: number = 1
+): number => {
+  if (!current?.visibility || !previous?.visibility || 
+      current.visibility < 0.5 || previous.visibility < 0.5) {
+    return 0;
+  }
+
+  // Calculate distance moved (scaled by sensitivity)
+  const movement = Math.sqrt(
+    Math.pow((current.x - previous.x) * sensitivity, 2) +
+    Math.pow((current.y - previous.y) * sensitivity, 2)
+  );
+  
+  // Apply a more balanced scaling to keep movements in the middle range more often
+  // This makes it easier to stay in the "optimal" zone with normal movement
+  return Math.min(1, Math.pow(movement * 3, 1.2));
+};
+
+// Get color class based on value and optimal range
+export const getColorClass = (key: string, value: number): string => {
+  const metricKey = key as keyof typeof OPTIMAL_RANGES;
+  if (!OPTIMAL_RANGES[metricKey]) return 'bg-blue-500';
+  
+  // For posture, use categorical colors
+  if (key === 'posture') {
+    if (value < 0.33) return 'bg-red-500';
+    if (value < 0.67) return 'bg-yellow-500';
+    return 'bg-green-500';
+  }
+  
+  // For other metrics - use Trek-like colors
+  if (value < OPTIMAL_RANGES[metricKey].min) return 'bg-red-500';
+  if (value > OPTIMAL_RANGES[metricKey].max) return 'bg-amber-500';
+  return 'bg-blue-500'; // Normal/optimal in Trek style is often blue
+};
+
+// Get text for metric status
+export const getMetricStatus = (key: string, value: number): string => {
+  const metricKey = key as keyof typeof OPTIMAL_RANGES;
+  if (!OPTIMAL_RANGES[metricKey]) return 'N/A';
+  
+  // For posture, use categorical labels
+  if (key === 'posture') {
+    if (value < 0.33) return 'Poor';
+    if (value < 0.67) return 'Fair';
+    return 'Good';
+  }
+  
+  // For other metrics
+  if (value < OPTIMAL_RANGES[metricKey].min) return 'Low';
+  if (value > OPTIMAL_RANGES[metricKey].max) return 'High';
+  return 'Normal';
+};
+
+// Function to format metric name for display
+export const formatMetricName = (key: string): string => {
+  return key === 'overallScore' ? 'Overall Score' : 
+    key.replace(/([A-Z])/g, ' $1').trim();
+};
+
+
+===== FILE: C:\Users\rahif\Desktop\New folder\expresso\app\dashboard\evaluate\AnalysisReport.tsx =====
+
+
+"use client";
+
+import React from 'react';
+import VideoPlayback from './VideoPlayback';
+
+interface MetricData {
+  value: number;
+  status: string;
+}
+
+export interface AnalysisData {
+  handMovement: MetricData;
+  headMovement: MetricData;
+  bodyMovement: MetricData;
+  posture: MetricData;
+  handSymmetry: MetricData;
+  gestureVariety: MetricData;
+  eyeContact: MetricData;
+  overallScore: number;
+  sessionDuration: number;
+  transcript: string;
+}
+
+interface AnalysisReportProps {
+  isOpen: boolean;
+  onClose: () => void;
+  analysisData: AnalysisData | null;
+  recordedVideo: Blob | null;
+}
+
+const AnalysisReport: React.FC<AnalysisReportProps> = ({ 
+  isOpen, 
+  onClose, 
+  analysisData,
+  recordedVideo
+}) => {
+  if (!isOpen || !analysisData) return null;
+
+  // Format time for display
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Function to get color class based on status
+  const getColorClass = (status: string): string => {
+    switch (status) {
+      case 'Low':
+        return 'text-red-500';
+      case 'High':
+        return 'text-amber-500';
+      case 'Normal':
+        return 'text-blue-500';
+      case 'Good':
+        return 'text-green-500';
+      case 'Fair':
+        return 'text-yellow-500';
+      case 'Poor':
+        return 'text-red-500';
+      default:
+        return 'text-gray-500';
+    }
+  };
+
+  // Generate recommendations based on metrics
+  const generateRecommendations = (): string[] => {
+    const recommendations: string[] = [];
+
+    if (analysisData.handMovement.status === 'Low') {
+      recommendations.push('Use more hand gestures to emphasize key points and engage your audience.');
+    } else if (analysisData.handMovement.status === 'High') {
+      recommendations.push('Try to reduce excessive hand movements as they may distract from your message.');
+    }
+
+    if (analysisData.posture.status === 'Poor' || analysisData.posture.status === 'Fair') {
+      recommendations.push('Work on maintaining better posture by keeping your back straight and shoulders level.');
+    }
+
+    if (analysisData.eyeContact.status === 'Low') {
+      recommendations.push('Maintain more consistent eye contact with the camera to better connect with your audience.');
+    }
+
+    if (analysisData.handSymmetry.status === 'Low') {
+      recommendations.push('Try to use both hands more equally for a balanced presentation style.');
+    }
+
+    if (analysisData.gestureVariety.status === 'Low') {
+      recommendations.push('Incorporate a wider variety of gestures to keep your presentation engaging.');
+    }
+
+    if (recommendations.length === 0) {
+      recommendations.push('Your presentation skills are solid! Continue practicing to maintain consistency.');
+    }
+
+    return recommendations;
+  };
+
+  const recommendations = generateRecommendations();
+
+  return (
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <div className="p-6">
+          <div className="flex justify-between items-center border-b pb-4 mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Presentation Analysis Report</h2>
+            <button 
+              onClick={onClose}
+              className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Video Recording */}
+          <div className="mb-6 border rounded-lg p-4 dark:border-gray-700">
+            <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Presentation Recording</h3>
+            <VideoPlayback videoBlob={recordedVideo} />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Session Overview */}
+            <div className="border rounded-lg p-4 dark:border-gray-700">
+              <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">Session Overview</h3>
+              <div className="space-y-2">
+                <p className="text-gray-700 dark:text-gray-300">
+                  <span className="font-medium">Duration:</span> {formatTime(analysisData.sessionDuration)}
+                </p>
+                <p className="text-gray-700 dark:text-gray-300">
+                  <span className="font-medium">Overall Score:</span>{' '}
+                  <span className="text-xl font-bold text-blue-600">{analysisData.overallScore}/100</span>
+                </p>
+              </div>
+            </div>
+
+            {/* Recommendations */}
+            <div className="border rounded-lg p-4 dark:border-gray-700">
+              <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">Key Recommendations</h3>
+              <ul className="list-disc pl-5 space-y-1 text-gray-700 dark:text-gray-300">
+                {recommendations.map((rec, index) => (
+                  <li key={index}>{rec}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Detailed Metrics */}
+          <div className="mt-6 border rounded-lg p-4 dark:border-gray-700">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Detailed Metrics</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {Object.entries(analysisData).map(([key, value]) => {
+                // Skip non-metric fields and overall score (already displayed)
+                if (key === 'sessionDuration' || key === 'transcript' || key === 'overallScore') return null;
+                
+                const metric = value as MetricData;
+                const formattedKey = key.replace(/([A-Z])/g, ' $1').trim();
+                
+                return (
+                  <div key={key} className="border rounded-lg p-3 dark:border-gray-700">
+                    <div className="flex justify-between items-center">
+                      <h4 className="font-medium text-gray-900 dark:text-white">{formattedKey}</h4>
+                      <span className={`font-medium ${getColorClass(metric.status)}`}>
+                        {metric.status}
+                      </span>
+                    </div>
+                    <div className="mt-2 w-full bg-gray-300 dark:bg-gray-700 rounded-full h-2.5">
+                      <div
+                        className={`h-2.5 rounded-full ${
+                          getColorClass(metric.status).replace('text-', 'bg-')
+                        }`}
+                        style={{ width: `${metric.value * 100}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Transcript */}
+          <div className="mt-6 border rounded-lg p-4 dark:border-gray-700">
+            <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">Transcript</h3>
+            <div className="max-h-60 overflow-y-auto p-3 bg-gray-100 dark:bg-gray-900 rounded text-gray-800 dark:text-gray-300">
+              {analysisData.transcript || "No transcript available."}
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="mt-6 flex justify-end space-x-3">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 dark:text-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
+              Close
+            </button>
+            <button
+              onClick={() => window.print()}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              Download Report
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AnalysisReport;
+
+
+===== FILE: C:\Users\rahif\Desktop\New folder\expresso\app\dashboard\evaluate\EvaluateVideo.tsx =====
+
+
+/**
+ * Component responsible for video capture, pose detection, and video recording.
+ */
+"use client";
+
+import React, { useEffect, useRef, useState } from "react";
+
+interface PoseLandmark {
+  x: number;
+  y: number;
+  z: number;
+  visibility?: number;
+}
+
+interface PoseResults {
+  poseLandmarks?: PoseLandmark[];
+}
+
+interface MediaPipePose {
+  close(): void;
+  onResults(callback: (results: PoseResults) => void): void;
+  send(config: { image: HTMLVideoElement }): Promise<void>;
+  setOptions(options: {
+    modelComplexity: number;
+    smoothLandmarks: boolean;
+    minDetectionConfidence: number;
+    minTrackingConfidence: number;
+  }): void;
+}
+
+declare global {
+  interface Window {
+    Pose: new (config: {
+      locateFile: (file: string) => string;
+    }) => MediaPipePose;
+  }
+}
+
+interface EvaluateVideoProps {
+  loading: boolean;
+  onPoseResults: (results: PoseResults) => void;
+  onError: (error: string) => void;
+  isRecording: boolean;
+  onVideoRecorded: (videoBlob: Blob) => void;
+}
+
+export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
+  loading,
+  onPoseResults,
+  onError,
+  isRecording,
+  onVideoRecorded
+}) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const audioStreamRef = useRef<MediaStream | null>(null);
+  const poseRef = useRef<MediaPipePose | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
+  const lastProcessedTimeRef = useRef<number>(0);
+  const [isClient, setIsClient] = useState(false);
+  
+  // Recording state
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const recordedChunksRef = useRef<BlobPart[]>([]);
+
+  // Set isClient to true once component mounts
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Setup camera
+  useEffect(() => {
+    if (!isClient) return;
+
+    const setupCamera = async () => {
+      if (!videoRef.current) return;
+
+      try {
+        // Get video stream
+        const videoStream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            width: 1280,
+            height: 720,
+            frameRate: { ideal: 30 },
+          },
+        });
+        
+        // Store the video stream reference
+        streamRef.current = videoStream;
+        
+        // Set the video source
+        videoRef.current.srcObject = videoStream;
+        videoRef.current.muted = true; // Mute the video element to prevent feedback
+        
+        // Get separate audio stream (will be used only for recording)
+        try {
+          const audioStream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+              echoCancellation: true,
+              noiseSuppression: true,
+              autoGainControl: true
+            }
+          });
+          audioStreamRef.current = audioStream;
+        } catch (audioErr) {
+          console.warn("Could not access microphone:", audioErr);
+        }
+      } catch (err) {
+        onError(
+          `Failed to access webcam: ${
+            err instanceof Error ? err.message : String(err)
+          }`
+        );
+      }
+    };
+
+    setupCamera();
+
+    return () => {
+      // Clean up all streams
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+        streamRef.current = null;
+      }
+      if (audioStreamRef.current) {
+        audioStreamRef.current.getTracks().forEach((track) => track.stop());
+        audioStreamRef.current = null;
+      }
+    };
+  }, [isClient, onError]);
+
+  // Handle recording state changes
+  useEffect(() => {
+    if (!streamRef.current) return;
+    
+    if (isRecording) {
+      startRecording();
+    } else {
+      stopRecording();
+    }
+  }, [isRecording]);
+
+  // Start recording function
+  const startRecording = () => {
+    if (!streamRef.current) return;
+    
+    try {
+      recordedChunksRef.current = [];
+      
+      // Create a combined stream with video and audio tracks
+      const combinedTracks = [];
+      
+      // Add video track
+      const videoTrack = streamRef.current.getVideoTracks()[0];
+      if (videoTrack) {
+        combinedTracks.push(videoTrack);
+      } else {
+        console.error("No video track available");
+        return;
+      }
+      
+      // Add audio track if available
+      if (audioStreamRef.current && audioStreamRef.current.getAudioTracks().length > 0) {
+        const audioTrack = audioStreamRef.current.getAudioTracks()[0];
+        combinedTracks.push(audioTrack);
+      }
+      
+      // Create combined stream
+      const combinedStream = new MediaStream(combinedTracks);
+      
+      // Create media recorder
+      const options = { mimeType: 'video/webm' };
+      mediaRecorderRef.current = new MediaRecorder(combinedStream, options);
+      
+      // Handle data available
+      mediaRecorderRef.current.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          recordedChunksRef.current.push(event.data);
+        }
+      };
+      
+      // Start recording
+      mediaRecorderRef.current.start(1000);
+      console.log("Recording started with audio");
+    } catch (error) {
+      console.error("Error starting recording:", error);
+    }
+  };
+
+  // Stop recording function
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.onstop = () => {
+        const videoBlob = new Blob(recordedChunksRef.current, { type: 'video/mp4' });
+        onVideoRecorded(videoBlob);
+        console.log("Recording stopped and saved");
+      };
+      
+      mediaRecorderRef.current.stop();
+    }
+  };
+
+  // Initialize pose detection
+  useEffect(() => {
+    if (!isClient || loading || !videoRef.current || !canvasRef.current) return;
+
+    const ctx = canvasRef.current.getContext("2d");
+    if (!ctx) return;
+
+    // Function to draw pose landmarks on canvas
+    const drawPoseLandmarks = (
+      ctx: CanvasRenderingContext2D,
+      landmarks: PoseLandmark[]
+    ) => {
+      // Draw points for each landmark
+      landmarks.forEach((landmark: PoseLandmark) => {
+        if (landmark.visibility && landmark.visibility > 0.5) {
+          ctx.beginPath();
+          ctx.arc(
+            landmark.x * ctx.canvas.width,
+            landmark.y * ctx.canvas.height,
+            4,
+            0,
+            2 * Math.PI
+          );
+          ctx.fillStyle = "#00ff00";
+          ctx.fill();
+        }
+      });
+
+      // Define and draw connections between landmarks
+      const connections = [
+        [0, 1],
+        [1, 2],
+        [2, 3],
+        [3, 7],
+        [0, 4],
+        [4, 5],
+        [5, 6],
+        [6, 8],
+        [9, 10],
+        [11, 12],
+        [11, 13],
+        [13, 15],
+        [15, 17],
+        [15, 19],
+        [15, 21],
+        [12, 14],
+        [14, 16],
+        [16, 18],
+        [16, 20],
+        [16, 22],
+        [11, 23],
+        [12, 24],
+        [23, 24],
+        [23, 25],
+        [25, 27],
+        [27, 29],
+        [27, 31],
+        [24, 26],
+        [26, 28],
+        [28, 30],
+        [28, 32],
+      ] as const;
+
+      ctx.strokeStyle = "#00ff00";
+      ctx.lineWidth = 2;
+
+      connections.forEach(([i, j]) => {
+        const start = landmarks[i];
+        const end = landmarks[j];
+
+        if (
+          start?.visibility &&
+          end?.visibility &&
+          start.visibility > 0.5 &&
+          end.visibility > 0.5
+        ) {
+          ctx.beginPath();
+          ctx.moveTo(start.x * ctx.canvas.width, start.y * ctx.canvas.height);
+          ctx.lineTo(end.x * ctx.canvas.width, end.y * ctx.canvas.height);
+          ctx.stroke();
+        }
+      });
+    };
+
+    const initializePose = async () => {
+      try {
+        // Initialize MediaPipe Pose
+        poseRef.current = new window.Pose({
+          locateFile: (file: string) => {
+            return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+          },
+        });
+
+        // Configure pose detection settings
+        poseRef.current.setOptions({
+          modelComplexity: 1,
+          smoothLandmarks: true,
+          minDetectionConfidence: 0.5,
+          minTrackingConfidence: 0.5,
+        });
+
+        // Handle pose detection results
+        poseRef.current.onResults((results: PoseResults) => {
+          const now = performance.now();
+          if (now - lastProcessedTimeRef.current < 33) return; // Limit to ~30fps
+          lastProcessedTimeRef.current = now;
+
+          ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+          if (!videoRef.current) return;
+
+          ctx.drawImage(
+            videoRef.current,
+            0,
+            0,
+            ctx.canvas.width,
+            ctx.canvas.height
+          );
+
+          if (results.poseLandmarks) {
+            drawPoseLandmarks(ctx, results.poseLandmarks);
+          }
+
+          onPoseResults(results);
+        });
+
+        // Start pose detection loop
+        const detectPose = async () => {
+          if (videoRef.current?.readyState === 4 && poseRef.current) {
+            await poseRef.current.send({ image: videoRef.current });
+          }
+          animationFrameRef.current = requestAnimationFrame(detectPose);
+        };
+
+        detectPose();
+      } catch (err) {
+        onError(
+          `Error initializing pose detection: ${
+            err instanceof Error ? err.message : String(err)
+          }`
+        );
+      }
+    };
+
+    initializePose();
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      if (poseRef.current) {
+        poseRef.current.close();
+      }
+    };
+  }, [isClient, loading, onError, onPoseResults]);
+
+  // Don't render anything during SSR
+  if (!isClient) return null;
+
+  return (
+    <>
+      <video
+        ref={videoRef}
+        className="absolute w-full h-full object-cover"
+        autoPlay
+        playsInline
+        muted
+      />
+      <canvas
+        ref={canvasRef}
+        className="absolute w-full h-full object-cover"
+        width={1200}
+        height={800}
+      />
+    </>
+  );
+};
+
+export type { PoseLandmark, PoseResults, MediaPipePose };
+export default EvaluateVideo;
+
+
+===== FILE: C:\Users\rahif\Desktop\New folder\expresso\app\dashboard\evaluate\GestureAnalyzer.tsx =====
+
+
+"use client";
+
+import React, { useEffect, useState } from 'react';
+import EvaluateVideo, { PoseResults } from './EvaluateVideo';
+import GestureAnalysis from './gesture-analysis/GestureAnalysis';
+import AnalysisReport, { AnalysisData } from './AnalysisReport';
+
+interface GestureAnalyzerProps {
+  isRecording: boolean;
+  onStopRecording: () => void;
+  transcript: string;
+  developerMode?: boolean;
+}
+
+const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({ 
+  isRecording, 
+  onStopRecording,
+  transcript,
+  developerMode = true
+}) => {
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [poseResults, setPoseResults] = useState<PoseResults | null>(null);
+  const [isClient, setIsClient] = useState(false);
+  const [sessionDuration, setSessionDuration] = useState(0);
+  const [showReport, setShowReport] = useState(false);
+  const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
+  const [currentMetrics, setCurrentMetrics] = useState<any>(null);
+  const [recordedVideo, setRecordedVideo] = useState<Blob | null>(null);
+  
+  // Timer ref for tracking session duration
+  const timerRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  // Set isClient to true once component mounts to prevent hydration mismatch
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Handle recording state changes and timer
+  useEffect(() => {
+    if (isRecording) {
+      // Start the timer when recording begins
+      timerRef.current = setInterval(() => {
+        setSessionDuration(prev => prev + 1);
+      }, 1000);
+    } else {
+      // Clear timer when recording stops
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    }
+    
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [isRecording]);
+
+  // Callback function to receive metrics from GestureAnalysis
+  const handleMetricsUpdate = (metrics: any) => {
+    setCurrentMetrics(metrics);
+  };
+
+  // Function to handle the recorded video blob
+  const handleVideoRecorded = (videoBlob: Blob) => {
+    setRecordedVideo(videoBlob);
+  };
+
+  // Function to finish recording and show the report
+  const handleFinishRecording = () => {
+    // Stop the recording
+    onStopRecording();
+    
+    // Prepare analysis data for the report
+    if (currentMetrics) {
+      const metricsData: AnalysisData = {
+        handMovement: {
+          value: currentMetrics.handMovement,
+          status: getMetricStatus('handMovement', currentMetrics.handMovement)
+        },
+        headMovement: {
+          value: currentMetrics.headMovement,
+          status: getMetricStatus('headMovement', currentMetrics.headMovement)
+        },
+        bodyMovement: {
+          value: currentMetrics.bodyMovement,
+          status: getMetricStatus('bodyMovement', currentMetrics.bodyMovement)
+        },
+        posture: {
+          value: currentMetrics.posture,
+          status: getMetricStatus('posture', currentMetrics.posture)
+        },
+        handSymmetry: {
+          value: currentMetrics.handSymmetry,
+          status: getMetricStatus('handSymmetry', currentMetrics.handSymmetry)
+        },
+        gestureVariety: {
+          value: currentMetrics.gestureVariety,
+          status: getMetricStatus('gestureVariety', currentMetrics.gestureVariety)
+        },
+        eyeContact: {
+          value: currentMetrics.eyeContact,
+          status: getMetricStatus('eyeContact', currentMetrics.eyeContact)
+        },
+        overallScore: currentMetrics.overallScore,
+        sessionDuration,
+        transcript
+      };
+      
+      setAnalysisData(metricsData);
+      setShowReport(true);
+    }
+  };
+
+  // Helper function to get metric status
+  const getMetricStatus = (key: string, value: number): string => {
+    // Define optimal ranges - copied from GestureAnalysis.tsx
+    const OPTIMAL_RANGES = {
+      handMovement: { min: 0.08, max: 0.7 },
+      headMovement: { min: 0.01, max: 0.5 },
+      bodyMovement: { min: 0.02, max: 0.6 },
+      posture: { min: 0.4, max: 1.0 },
+      handSymmetry: { min: 0.2, max: 0.9 },
+      gestureVariety: { min: 0.15, max: 0.9 },
+      eyeContact: { min: 0.3, max: 0.9 }
+    };
+    
+    // For posture, use categorical labels
+    if (key === 'posture') {
+      if (value < 0.33) return 'Poor';
+      if (value < 0.67) return 'Fair';
+      return 'Good';
+    }
+    
+    // For other metrics
+    if (value < OPTIMAL_RANGES[key as keyof typeof OPTIMAL_RANGES].min) return 'Low';
+    if (value > OPTIMAL_RANGES[key as keyof typeof OPTIMAL_RANGES].max) return 'High';
+    return 'Normal';
+  };
+
+  // Initialize MediaPipe script
+  useEffect(() => {
+    if (!isClient) return;
+    
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js';
+    script.crossOrigin = 'anonymous';
+    document.body.appendChild(script);
+    
+    script.onload = () => setLoading(false);
+    script.onerror = () => {
+      setError('Failed to load pose detection model');
+      setLoading(false);
+    };
+    
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, [isClient]);
+
+  // Don't render anything during SSR
+  if (!isClient) return null;
+
+  return (
+    <div className="w-[900px] h-[600px] relative mx-auto my-4 overflow-hidden border">
+      <EvaluateVideo
+        loading={loading}
+        onPoseResults={setPoseResults}
+        onError={setError}
+        isRecording={isRecording}
+        onVideoRecorded={handleVideoRecorded}
+      />
+      
+      {loading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/70 text-white text-xl">
+          Loading pose detection...
+        </div>
+      )}
+      
+      {error && (
+        <div className="absolute top-5 left-5 p-4 bg-red-100 border border-red-500 rounded text-red-600">
+          {error}
+        </div>
+      )}
+      
+      {/* Finish Recording Button */}
+      {isRecording && (
+        <div className="absolute top-5 right-5 z-50">
+          <button
+            onClick={handleFinishRecording}
+            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+          >
+            Finish Recording & Analyze
+          </button>
+        </div>
+      )}
+      
+      {poseResults && (
+        <div className="absolute inset-0">
+          <GestureAnalysis
+            poseLandmarks={poseResults.poseLandmarks}
+            isRecording={isRecording}
+            onMetricsUpdate={handleMetricsUpdate}
+            developerMode={developerMode}
+          />
+        </div>
+      )}
+      
+      {/* Analysis Report Popup with video data */}
+      <AnalysisReport
+        isOpen={showReport}
+        onClose={() => setShowReport(false)}
+        analysisData={analysisData}
+        recordedVideo={recordedVideo}
+      />
+    </div>
+  );
+};
+
+export default GestureAnalyzer;
+
+
+===== FILE: C:\Users\rahif\Desktop\New folder\expresso\app\dashboard\evaluate\page.tsx =====
+
+
+"use client"
+
+import React, { Suspense, useState } from 'react';
+import GestureAnalyzer from './GestureAnalyzer';
+import TranscriptionComponent from '@/components/TranscriptionComponent';
+
+export default function Page() {
+  const [isRecording, setIsRecording] = useState(false);
+  const [transcript, setTranscript] = useState("");
+  const [isDeveloperMode, setIsDeveloperMode] = useState(true); // Default to true for developer
+  
+  // Handle recording state changes from the TranscriptionComponent
+  const handleRecordingStateChange = (recording: boolean) => {
+    setIsRecording(recording);
+  };
+  
+  // Handle transcript updates from the TranscriptionComponent  
+  const handleTranscriptUpdate = (newTranscript: string) => {
+    setTranscript(newTranscript);
+  };
+  
+  // Handle stop recording request from the GestureAnalyzer
+  const handleStopRecording = () => {
+    setIsRecording(false);
+  };
+  
+  // Toggle developer mode
+  const toggleDeveloperMode = () => {
+    setIsDeveloperMode(!isDeveloperMode);
+  };
+
+  return (
+    <div className="relative flex flex-col items-center p-4">
+      <div className="w-full flex justify-between items-center mb-6">
+        
+        <button
+          onClick={toggleDeveloperMode}
+          className={`px-3 py-1 rounded text-sm ${
+            isDeveloperMode 
+              ? 'bg-blue-600 text-white hover:bg-blue-700' 
+              : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
+          } transition-colors`}
+        >
+          {isDeveloperMode ? 'Developer Mode: ON' : 'Developer Mode: OFF'}
+        </button>
+      </div>
+      
+      <Suspense fallback={<div className="text-center p-8">Loading pose detection...</div>}>
+        <GestureAnalyzer 
+          isRecording={isRecording}
+          onStopRecording={handleStopRecording}
+          transcript={transcript}
+          developerMode={isDeveloperMode}
+        />
+      </Suspense>
+      
+      <div className="w-full max-w-[1200px] mt-8">
+        <TranscriptionComponent 
+          onRecordingStateChange={handleRecordingStateChange}
+          onTranscriptUpdate={handleTranscriptUpdate}
+        />
+      </div>
+    </div>
+  );
+}
+
+
+===== FILE: C:\Users\rahif\Desktop\New folder\expresso\app\dashboard\evaluate\ScreenRecorder.tsx =====
+
+
+"use client";
+
+import React, { useRef, useEffect, useState } from 'react';
+
+interface ScreenRecorderProps {
+  isRecording: boolean;
+  onVideoSaved: (videoBlob: Blob) => void;
+}
+
+const ScreenRecorder: React.FC<ScreenRecorderProps> = ({ 
+  isRecording,
+  onVideoSaved
+}) => {
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<BlobPart[]>([]);
+  const [recordingStatus, setRecordingStatus] = useState<'inactive' | 'recording' | 'processing'>('inactive');
+
+  // Handle recording state changes
+  useEffect(() => {
+    if (isRecording && recordingStatus === 'inactive') {
+      startRecording();
+    } else if (!isRecording && recordingStatus === 'recording') {
+      stopRecording();
+    }
+  }, [isRecording, recordingStatus]);
+
+  const startRecording = async () => {
+    try {
+      // Reset chunks array
+      chunksRef.current = [];
+      
+      // Use displayMedia to capture the screen
+      const displayStream = await navigator.mediaDevices.getDisplayMedia({
+        video: { 
+          displaySurface: "browser",
+      //    cursor: "always" 
+        }
+      });
+      
+      // Create recorder with just the display stream (no audio to avoid reverb)
+      const options = { mimeType: 'video/webm; codecs=vp9' };
+      mediaRecorderRef.current = new MediaRecorder(displayStream, options);
+      
+      // Handle data available event
+      mediaRecorderRef.current.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) {
+          chunksRef.current.push(e.data);
+        }
+      };
+      
+      // Handle recording stop
+      mediaRecorderRef.current.onstop = () => {
+        setRecordingStatus('processing');
+        
+        // Stop all tracks
+        displayStream.getTracks().forEach(track => track.stop());
+        
+        // Create video blob and notify parent
+        const videoBlob = new Blob(chunksRef.current, { type: 'video/mp4' });
+        onVideoSaved(videoBlob);
+        setRecordingStatus('inactive');
+      };
+      
+      // Start recording
+      mediaRecorderRef.current.start(1000);
+      setRecordingStatus('recording');
+      
+      // Alert the user to select the browser tab containing the app
+      console.log("Please select the browser tab containing your app in the screen selection dialog");
+      
+    } catch (error) {
+      console.error("Error starting screen recording:", error);
+      setRecordingStatus('inactive');
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && recordingStatus === 'recording') {
+      mediaRecorderRef.current.stop();
+    }
+  };
+
+  // This component doesn't render anything visible
+  return null;
+};
+
+export default ScreenRecorder;
+
+
+===== FILE: C:\Users\rahif\Desktop\New folder\expresso\app\dashboard\evaluate\VideoPlayback.tsx =====
+
+
+"use client";
+
+import React, { useRef, useEffect } from 'react';
+
+interface VideoPlaybackProps {
+  videoBlob: Blob | null;
+  onDownload?: () => void;
+}
+
+const VideoPlayback: React.FC<VideoPlaybackProps> = ({ 
+  videoBlob,
+  onDownload
+}) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  
+  useEffect(() => {
+    if (videoBlob && videoRef.current) {
+      // Create object URL from the blob
+      const videoUrl = URL.createObjectURL(videoBlob);
+      
+      // Set the video source
+      videoRef.current.src = videoUrl;
+      
+      // Clean up the object URL when component unmounts
+      return () => {
+        URL.revokeObjectURL(videoUrl);
+      };
+    }
+  }, [videoBlob]);
+  
+  if (!videoBlob) {
+    return (
+      <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-8 bg-gray-50 dark:bg-gray-900">
+        <div className="text-center text-gray-500 dark:text-gray-400">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          </svg>
+          <p className="text-sm font-medium">No video recording available</p>
+        </div>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="flex flex-col">
+      <video 
+        ref={videoRef} 
+        className="w-full rounded-lg border dark:border-gray-700"
+        controls
+        playsInline
+      />
+      <div className="mt-2 flex justify-end">
+        <a
+          href={URL.createObjectURL(videoBlob)}
+          download="presentation-recording.mp4"
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
+          onClick={() => onDownload && onDownload()}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          Download Video
+        </a>
+      </div>
+    </div>
+  );
+};
+
+export default VideoPlayback;
