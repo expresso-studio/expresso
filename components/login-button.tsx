@@ -2,6 +2,7 @@
 
 import { useAuth0 } from "@auth0/auth0-react";
 import LoginButtonUI from "./ui/loginbutton-ui";
+import { ChevronRight } from "lucide-react";
 
 export default function LoginButton() {
   const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
@@ -15,7 +16,7 @@ export default function LoginButton() {
       <span className = "text-2xl">
         Start Here
       </span>
-      <img src="/right-arrow.svg" alt = "Right Arrow" className = "w-6 h-6" />
+      <ChevronRight />
     </LoginButtonUI>
   );
 }

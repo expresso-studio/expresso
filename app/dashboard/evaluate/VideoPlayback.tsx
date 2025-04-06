@@ -2,6 +2,7 @@
 
 import React, { useRef, useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useScript } from "@/context/ScriptContext";
 import { MetricData, MetricInput } from "@/lib/types";
 import { MetricNames } from "@/lib/constants";
 
@@ -34,6 +35,7 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [showTitleDialog, setShowTitleDialog] = useState(false);
   const [title, setTitle] = useState("");
+  const { script } = useScript();
 
   useEffect(() => {
     if (videoBlob && videoRef.current) {
@@ -91,6 +93,34 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({
 
       const { videoUrl, presentationId } = await videoRes.json();
 
+      // save script
+      console.log("Script and presentationId:", { script, presentationId });
+
+      if (typeof script === "string" && script.trim() !== "" && presentationId) {
+        const scriptRes = await fetch("/api/save-script", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: user.sub,
+            presentationId,
+            script,
+          }),
+        });
+      
+        if (!scriptRes.ok) {
+          throw new Error("Script upload failed");
+        }
+      
+        const { scriptId } = await scriptRes.json();
+        console.log("Script saved successfully. ID:", scriptId);
+      } else {
+        console.warn("Script not saved. Missing script or presentationId:", {
+          script,
+          presentationId,
+        });
+      }
       // Upload transcript if available
       if (metrics?.transcript && presentationId) {
         const transcriptRes = await fetch("/api/upload-transcript", {

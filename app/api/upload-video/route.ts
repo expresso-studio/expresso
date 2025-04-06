@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 export const config = {
   api: {
     bodyParser: {
-      sizeLimit: '50mb',
+      sizeLimit: '10000mb',
     },
   },
 };

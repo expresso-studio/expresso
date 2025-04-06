@@ -5,6 +5,7 @@ import { useState, ChangeEvent } from "react";
 import { useRouter } from 'next/navigation';
 import FooterWave from "@/components/ui/footer-wave";
 import { ImageUp, Camera, ArrowRight, CircleAlert, Upload, Laptop, PersonStanding, Presentation, Users, X } from "lucide-react";
+import { useScript } from "@/context/ScriptContext";
  
 type FormData = {
     topic: string
@@ -22,6 +23,7 @@ type FormData = {
 
 export default function Page() {
     const router = useRouter();
+    const { script, setScript } = useScript();
 
     const [formData, setFormData] = useState<FormData>({
         topic: '',
@@ -337,18 +339,30 @@ export default function Page() {
                     </div>
 
                     <div className = "mb-4">
-                        Upload Optional Material:
-                        <div className ="mb-4 p-1 flex flex-row bg-[#D5A585] dark:bg-[#C06C35] text-black dark:text-white rounded-lg">
+                        Enter Script:
+                        <div className ="mb-4 p-1 flex flex-row bg-[#84d3fa] dark:bg-[#1e3a8a] text-black dark:text-white rounded-lg">
                             <CircleAlert className = "w-5 h-5 mx-2 mt-0.5"/>
                             {getTipSentence(selectedPersona || '')}
-                        </div>
-                        <div className = "w-full max-w-100">
-                            <button type = "button" className = {`flex flex-row px-4 py-2 bg-lightCaramel text-black hover:bg-[#F8AC78]
-                                dark:bg-darkCoffee dark: text-white rounded-lg dark:hover:bg-[#D5A585]`}
+                            <div className="w-full max-w-100 mb-4">
+                            <textarea
+                                value={script}
+                                onChange={(e) => setScript(e.target.value)}
+                                className="w-full p-2 border rounded-lg"
+                                placeholder="Paste your presentation script here..."
+                                rows={10}
+                            />
+                            </div>
+                            <div>
+                            <button
+                                type="button"
+                                className="flex flex-row items-center px-4 py-2 bg-gray-200 text-black dark:bg-[#311E13] dark:text-white rounded-lg"
+                                // This button could trigger additional client-side actions, such as previewing or saving to state.
+                                onClick={() => console.log("Script saved in context:", script)}
                             >
-                                <Upload className = "mr-1"/>
-                                Upload
+                                <Upload className="mr-1" />
+                                Save Script
                             </button>
+                            </div>
                         </div>
                     </div>
 
