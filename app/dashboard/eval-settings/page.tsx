@@ -45,7 +45,7 @@ export default function Page() {
     const getTipSentence = (persona: string) => {
         switch (persona) {
             case 'class-presentation':
-                return 'Tip: Upload your script and presentation slides';
+                return 'Tip: Upload your script and presentation slides.';
             case 'in-person-meeting':
                 return 'Tip: Upload your meeting notes and any relevant documents';
             case 'online-presentation':
@@ -120,18 +120,6 @@ export default function Page() {
                 gestureVariety: true,
                 eyeContact: true,
             }));
-        } else if (persona === 'custom') {
-            setFormData(prev => ({
-                ...prev,
-                location:"",
-                handMovement: false,
-                headMovement: false,
-                bodyMovement: false,
-                posture: false,
-                handSymmetry: false,
-                gestureVariety: false,
-                eyeContact: false,
-            }));
         } 
     };
     
@@ -159,16 +147,17 @@ export default function Page() {
     const isFormValid = () => {
         return (
             !!selectedOption && 
-            !!formData.topic &&
-            !!formData.location &&
-            !!formData.attendees &&
-            !!formData.duration
+            !!formData.topic 
         );
     };
 
     const handleStart = () => {
-        if(!selectedOption) {
-            alert('Please select an option');
+        if (!isFormValid()) {
+            if(!selectedOption) {
+                alert("Please Select Practice Now or Upload Video");
+            } else {
+                alert("Please Provide Presentation Topic")
+            }
             return;
         }
 
@@ -191,40 +180,46 @@ export default function Page() {
         <PageFormat breadCrumbs={[{ name: "Evaluation Settings" }]}>
             <div className = "flex flex-col min-h-screen px-4 items-center">                    
                 <form className="w-full max-w-[800px] p-8 rounded-lg">
+                    <div className ="flex flex-col gap-4 mt-6 mb-4">
+                        <p className="text-lg font-medium">
+                            Select Option: <span className="text-red-500">*</span>
+                        </p>
+                        <button 
+                            type="button"
+                            onClick={() => handleOptionSelect('practice')}
+                            className={`p-4 rounded-lg flex flex-row items-center justify-start 
+                                transition ${
+                                selectedOption === 'practice'
+                                    ? 'bg-[#F8AC78] text-black dark:bg-[#CA773F] dark:text-white' 
+                                    : 'bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white dark:hover:bg-[#CA773F]'
+                            } hover:bg-[#F8AC78]`}
+                        > 
+                            <ImageUp className = "mr-4 ml-2"/>
+                            Practice Now
+                        </button>
+                        <button 
+                            type="button"
+                            onClick={() => handleOptionSelect('upload')}
+                            className={`p-4 rounded-lg flex flex-row items-center justify-start
+                                transition ${
+                                selectedOption === 'upload' 
+                                    ? 'bg-[#F8AC78] text-black dark:bg-[#CA773F] dark:text-white' 
+                                    : 'bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white dark:hover:bg-[#CA773F]'
+                            } hover:bg-[#F8AC78]`}
+                        >
+                            <Camera className = "mr-4 ml-2"/>
+                            Upload Video
+                        </button>
+                    </div>
+                    
                     <div className = "mb-4">
                         <label>
-                            Presenting about...
+                            Presenting Topic: <span className="text-red-500">*</span>
                             <Textarea
                                 name ="topic" 
                                 value = {formData.topic} 
                                 onChange={handleChange} 
                                 required 
-                            />
-                        </label>
-                    </div>
-
-                    <div className="mb-4">
-                        <label>
-                            Number of Attendees:
-                            <Input
-                                type="number"
-                                name="attendees"
-                                value={formData.attendees}
-                                onChange={handleChange}
-                                required
-                            />
-                        </label>
-                    </div>
-
-                    <div className="mb-4">
-                        <label>
-                            Duration (in minutes):
-                            <Input
-                                type="number"
-                                name="duration"
-                                value={formData.duration}
-                                onChange={handleChange}
-                                required
                             />
                         </label>
                     </div>
@@ -238,8 +233,8 @@ export default function Page() {
                             onClick={() => handlePersonaSelect('class-presentation')}
                             className ={`px-3 py-6 rounded-lg flex items-center justify-center text-lg font-medium ${
                                 selectedPersona === 'class-presentation'
-                                    ? 'bg-[#F8AC78] text-black dark:bg-[#311E13] dark:text-white' 
-                                    : 'bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white dark:hover:bg-[#311E13]'
+                                    ? 'bg-[#F8AC78] text-black dark:bg-[#CA773F] dark:text-white' 
+                                    : 'bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white dark:hover:bg-[#CA773F]'
                                 } hover:bg-[#F8AC78]`}
                             >
                             <PersonStanding className = "w-10 h-10 mx-2"/>
@@ -250,8 +245,8 @@ export default function Page() {
                             onClick={() => handlePersonaSelect('meeting')}
                             className ={`px-3 py-6 rounded-lg flex items-center justify-center text-lg font-medium ${
                                 selectedPersona === 'meeting'
-                                    ? 'bg-[#F8AC78] text-black dark:bg-[#311E13] dark:text-white' 
-                                    : 'bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white dark:hover:bg-[#311E13]'
+                                    ? 'bg-[#F8AC78] text-black dark:bg-[#CA773F] dark:text-white' 
+                                    : 'bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white dark:hover:bg-[#CA773F]'
                                 } hover:bg-[#F8AC78]`}
                             >
                             <Users className = "w-10 h-10 mx-2"/>
@@ -262,8 +257,8 @@ export default function Page() {
                             onClick={() => handlePersonaSelect('online')}
                             className ={`px-3 py-6 rounded-lg flex items-center justify-center text-lg font-medium ${
                                 selectedPersona === 'online'
-                                    ? 'bg-[#F8AC78] text-black dark:bg-[#311E13] dark:text-white' 
-                                    : 'bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white dark:hover:bg-[#311E13]'
+                                    ? 'bg-[#F8AC78] text-black dark:bg-[#CA773F] dark:text-white' 
+                                    : 'bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white dark:hover:bg-[#CA773F]'
                                 } hover:bg-[#F8AC78]`}
                             >
                             <Laptop className = "w-10 h-10 mx-2"/>
@@ -274,8 +269,8 @@ export default function Page() {
                             onClick={() => handlePersonaSelect('lecture')}
                             className ={`px-3 py-6 rounded-lg flex items-center justify-center text-lg font-medium ${
                                 selectedPersona === 'lecture'
-                                    ? 'bg-[#F8AC78] text-black dark:bg-[#311E13] dark:text-white' 
-                                    : 'bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white dark:hover:bg-[#311E13]'
+                                    ? 'bg-[#F8AC78] text-black dark:bg-[#CA773F] dark:text-white' 
+                                    : 'bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white dark:hover:bg-[#CA773F]'
                                 } hover:bg-[#F8AC78]`}
                             >
                             <Presentation className = "w-10 h-10 mx-2"/>
@@ -283,23 +278,11 @@ export default function Page() {
                         </button>
                         <button
                             type="button"
-                            onClick={() => handlePersonaSelect('custom')}
-                            className ={`px-3 py-6 rounded-lg flex items-center justify-center text-lg font-medium ${
-                                selectedPersona === 'custom'
-                                    ? 'bg-[#F8AC78] text-black dark:bg-[#311E13] dark:text-white' 
-                                    : 'bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white dark:hover:bg-[#311E13]'
-                                } hover:bg-[#F8AC78]`}
-                            >
-                            <UserCog className = "w-10 h-10 mx-2"/>
-                            Custom (from profile)
-                        </button>
-                        <button
-                            type="button"
                             onClick={() => handlePersonaSelect('none')}
                             className ={`px-3 py-6 rounded-lg flex items-center justify-center text-lg font-medium ${
                                 selectedPersona === 'none'
-                                    ? 'bg-[#F8AC78] text-black dark:bg-[#311E13] dark:text-white' 
-                                    : 'bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white dark:hover:bg-[#311E13]'
+                                    ? 'bg-[#F8AC78] text-black dark:bg-[#CA773F] dark:text-white' 
+                                    : 'bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white dark:hover:bg-[#CA773F]'
                                 } hover:bg-[#F8AC78]`}
                             >
                             <X className = "w-10 h-10 mx-2"/>
@@ -356,53 +339,23 @@ export default function Page() {
 
                     <div className = "mb-4">
                         Upload Optional Material:
-                        <div className ="mb-4 p-1 flex flex-row bg-[#84d3fa] dark:bg-[#1e3a8a] text-black dark:text-white rounded-lg">
+                        <div className ="mb-4 p-1 flex flex-row bg-[#D5A585] dark:bg-[#C06C35] text-black dark:text-white rounded-lg">
                             <CircleAlert className = "w-5 h-5 mx-2 mt-0.5"/>
                             {getTipSentence(selectedPersona || '')}
                         </div>
                         <div className = "w-full max-w-100">
-                            <button type = "button" className = "flex flex-row px-4 py-2 bg-gray-200 text-black dark:bg-[#311E13] dark: text-white rounded-lg">
+                            <button type = "button" className = {`flex flex-row px-4 py-2 bg-lightCaramel text-black hover:bg-[#F8AC78]
+                                dark:bg-darkCoffee dark: text-white rounded-lg dark:hover:bg-[#D5A585]`}
+                            >
                                 <Upload className = "mr-1"/>
                                 Upload
                             </button>
                         </div>
                     </div>
 
-                    
-                    <div style = {{display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1.5rem'}}>
-                        Select
-                        <button 
-                            type="button"
-                            onClick={() => handleOptionSelect('practice')}
-                            className={`p-4 rounded-lg flex flex-row items-center justify-start 
-                                transition ${
-                                selectedOption === 'practice'
-                                    ? 'bg-[#F8AC78] text-black dark:bg-[#311E13] dark:text-white' 
-                                    : 'bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white dark:hover:bg-[#311E13]'
-                            } hover:bg-[#F8AC78]`}
-                        > 
-                            <ImageUp className = "mr-4 ml-2"/>
-                            Practice Now
-                        </button>
-                        <button 
-                            type="button"
-                            onClick={() => handleOptionSelect('upload')}
-                            className={`p-4 rounded-lg flex flex-row items-center justify-start
-                                transition ${
-                                selectedOption === 'upload' 
-                                    ? 'bg-[#F8AC78] text-black dark:bg-[#311E13] dark:text-white' 
-                                    : 'bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white dark:hover:bg-[#311E13]'
-                            } hover:bg-[#F8AC78]`}
-                        >
-                            <Camera className = "mr-4 ml-2"/>
-                            Upload Video
-                        </button>
-                    </div>
-
-                    
-                    <div style={{ marginTop: '1.5rem' }}>
+                    <div className = "mt-6">
                         <div className = "p-2 rounded-lg space-y-4 justify-self-end">
-                            <button type = "button" onClick = {handleStart} disabled = {!Boolean(isFormValid())}
+                            <button type = "button" onClick = {handleStart}
                                 className ={`px-4 py-2 rounded-lg flex row bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white
                                     hover:bg-[#F8AC78] dark:hover:bg-[#CA773F]
                                     disabled:opacity-50 disabled:cursor-not-allowed
