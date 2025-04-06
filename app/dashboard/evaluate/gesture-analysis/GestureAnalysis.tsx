@@ -78,7 +78,7 @@ const GestureAnalysis: React.FC<Props> = ({
       }
     });
     setEnabledMetrics(newEnabled);
-  }, []);
+  }, [enabledMetrics, searchParams]);
 
   // Refs for tracking movement and analysis data
   const prevLandmarksRef = useRef<PoseLandmark[]>([]);
