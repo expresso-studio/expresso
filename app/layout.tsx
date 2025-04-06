@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 import { atkins } from "./fonts";
 import AuthProvider from "./auth0-provider";
+import { ScriptProvider } from "@/context/ScriptContext";
 
 export const metadata: Metadata = {
   title: "expresso",
@@ -59,7 +60,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
+            <ScriptProvider>
           {children}
+          </ScriptProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>
