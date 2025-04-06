@@ -1,11 +1,10 @@
 "use client"
 import PageFormat from "@/components/page-format";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, ChangeEvent } from "react";
 import { useRouter } from 'next/navigation';
 import FooterWave from "@/components/ui/footer-wave";
-import { ImageUp, Camera, ArrowRight, CircleAlert, Upload, Laptop, PersonStanding, Presentation, Users, X, UserCog } from "lucide-react";
+import { ImageUp, Camera, ArrowRight, CircleAlert, Upload, Laptop, PersonStanding, Presentation, Users, X } from "lucide-react";
  
 type FormData = {
     topic: string
