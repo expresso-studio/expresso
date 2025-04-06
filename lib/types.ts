@@ -86,14 +86,14 @@ export interface PoseLandmark {
 }
 
 export interface GestureMetrics {
-  handMovement: number;
-  headMovement: number;
-  bodyMovement: number;
-  posture: number;
-  handSymmetry: number;
-  gestureVariety: number;
-  eyeContact: number;
-  overallScore: number;
+  HandMovement: number;
+  HeadMovement: number;
+  BodyMovement: number;
+  Posture: number;
+  HandSymmetry: number;
+  GestureVariety: number;
+  EyeContact: number;
+  OverallScore: number;
 }
 
 export interface GestureFeedback {
@@ -112,14 +112,14 @@ export interface MetricData {
 }
 
 export interface AnalysisData {
-  handMovement: MetricData;
-  headMovement: MetricData;
-  bodyMovement: MetricData;
-  posture: MetricData;
-  handSymmetry: MetricData;
-  gestureVariety: MetricData;
-  eyeContact: MetricData;
-  overallScore: number;
+  HandMovement: MetricData;
+  HeadMovement: MetricData;
+  BodyMovement: MetricData;
+  Posture: MetricData;
+  HandSymmetry: MetricData;
+  GestureVariety: MetricData;
+  EyeContact: MetricData;
+  OverallScore: number;
   sessionDuration: number;
   transcript: string;
 }

@@ -18,12 +18,12 @@ const Course = React.memo<Props>(function Course({
   const Icon = icon;
 
   return (
-    <div className="flex gap-4 p-4 hover:bg-[#f1eae5] dark:hover:bg-stone-900 rounded-md w-full">
+    <div className="flex gap-4 p-4 hover:bg-[#f1eae5] dark:hover:bg-stone-900 rounded-md w-full group cursor-pointer">
       <div
         style={{ background: color }}
         className={cn(`min-w-[55px] h-[55px] rounded-md overflow-hidden`)}
       >
-        <div className="text-white text-5xl -rotate-12 translate-x-2 translate-y-2">
+        <div className="text-white text-5xl -rotate-12 translate-x-2 translate-y-2 group-hover:-rotate-0 duration-300">
           <Icon />
         </div>
       </div>

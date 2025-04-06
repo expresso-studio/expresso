@@ -17,6 +17,9 @@ import {
   MetricNames,
   MetricNameToId,
 } from "@/lib/constants";
+import CourseList from "./course-list";
+import { outfit } from "@/app/fonts";
+import PracticeButton from "./practice-button";
 
 export default function Page() {
   const { user, isAuthenticated, isLoading, error, refreshToken } =
@@ -110,12 +113,21 @@ export default function Page() {
     <ProtectedRoute>
       <PageFormat breadCrumbs={[{ name: "learning" }]}>
         <Heading1 id="learning">Learning</Heading1>
-        <div className="w-full flex">
-          <Recommendations
-            loading={loadingReports}
-            metrics={[]}
-            courses={coursesWithStatus}
-          />
+        <div className="w-full flex flex-col sm:flex-row gap-8">
+          <div className="w-full">
+            <Recommendations
+              loading={loadingReports}
+              metrics={avgMetrics}
+              courses={coursesWithStatus}
+            />
+          </div>
+          <div className="min-w-[500px] flex flex-col gap-6">
+            <PracticeButton />
+            <h3 className="text-xl font-bold pb-2" style={outfit.style}>
+              All Courses
+            </h3>
+            <CourseList courses={coursesWithStatus} />
+          </div>
         </div>
       </PageFormat>
     </ProtectedRoute>
