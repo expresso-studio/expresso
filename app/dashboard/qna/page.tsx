@@ -21,12 +21,8 @@ export default function Page() {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
    
-    const searchParams = useSearchParams();
-    if(!searchParams) {
-        return <div>Missing presentation ID</div>;
-    }
+    const searchParams = useSearchParams()!;
     const presentationID = searchParams.get("id");
-
 
     useEffect(() => {
 
@@ -60,6 +56,7 @@ export default function Page() {
                 //     } else {
                 //         setQuestions([]);
                 // }
+                setQuestions([]);
             } catch (err) {
                 console.error("Error fetching transcript and scipt:", err);
                 setError(`Failed to fetch transcripts: ${err instanceof Error ? err.message : String(err)}`);
@@ -68,7 +65,7 @@ export default function Page() {
             } 
         };
         fetchData();
-    }, [isLoading, isAuthenticated, user?.sub, presentationID]);
+    }, [isLoading, isAuthenticated, user?.sub, presentationID, searchParams]);
 
     if (loading || isLoading) {
         return <Loading />;
@@ -105,6 +102,11 @@ export default function Page() {
             <p>Transcript: {transcript}</p>
             <p>Script: {script}</p>
             <p>Question: {questions[currentIndex]}</p>
+            {error && (
+                <p className="text-red-500 text-sm mt-2">
+                    {error}
+                </p>
+            )}
             <div className = "flex justify-between w-full max-w-md mx-auto">
                 <Button onClick={prevQuestion} disabled = {currentIndex <= 0}>
                     Last Question

@@ -144,12 +144,15 @@ export default function Page() {
             return;
         }
 
+        const { topic, ...rest } = formData;
+
+
         // topic + script into one, save to context
-        const finalScript = `Topic:${formData.topic}\n\nScript:${localScript}`.trim();
+        const finalScript = `Topic:${topic}\n\nScript:${localScript}`.trim();
         setScript(finalScript);
 
         console.log("sending final: ", finalScript);
-        const { topic, ...rest } = formData;
+
 
         // Builds URL with all true metrics
         const query = new URLSearchParams(
