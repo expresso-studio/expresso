@@ -198,7 +198,7 @@ export default function PresentationPage({
               <Tooltip>
                 <TooltipTrigger className="group">
                   <Link
-                    href="/dashboard/qna"
+                    href={`/dashboard/qna?id=${params.id}`}
                     className="flex items-center gap-1 px-2 py-1 rounded-md bg-darkCoffee group-hover:bg-lightCoffee"
                   >
                     <MessagesSquare size={14} />

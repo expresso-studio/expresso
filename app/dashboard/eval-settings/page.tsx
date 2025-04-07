@@ -4,13 +4,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState, ChangeEvent } from "react";
 import { useRouter } from 'next/navigation';
 import FooterWave from "@/components/ui/footer-wave";
-import { ImageUp, Camera, ArrowRight, CircleAlert, Upload, Laptop, PersonStanding, Presentation, Users, X } from "lucide-react";
+import { ImageUp, Camera, ArrowRight, Laptop, PersonStanding, Presentation, Users, X } from "lucide-react";
 import { useScript } from "@/context/ScriptContext";
  
 type FormData = {
     topic: string
-    duration: string
-    attendees: string
     location: string
     handMovement: boolean
     headMovement: boolean
@@ -23,12 +21,11 @@ type FormData = {
 
 export default function Page() {
     const router = useRouter();
-    const { script, setScript } = useScript();
+    const [localScript, setLocalScript] = useState('');
+    const { setScript } = useScript();
 
     const [formData, setFormData] = useState<FormData>({
         topic: '',
-        attendees: '',
-        duration: '',
         location: '',
         handMovement: false,
         headMovement: false,
@@ -42,21 +39,6 @@ export default function Page() {
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
     const [selectedPersona, setSelectedPersona] = useState<string | null>(null);
-
-    const getTipSentence = (persona: string) => {
-        switch (persona) {
-            case 'class-presentation':
-                return 'Tip: Upload your script and presentation slides.';
-            case 'in-person-meeting':
-                return 'Tip: Upload your meeting notes and any relevant documents';
-            case 'online-presentation':
-                return 'Tip: Upload your script and slides';
-            case 'lecture':
-                return 'Tip: Upload your lecture notes and presentation materials';
-            default:
-                return 'Tip: Upload script and presentation materials';
-        }
-    };
 
     const handlePersonaSelect = (persona: string) => {
         setSelectedPersona(persona)
@@ -162,9 +144,19 @@ export default function Page() {
             return;
         }
 
+        const { topic, ...rest } = formData;
+
+
+        // topic + script into one, save to context
+        const finalScript = `Topic:${topic}\n\nScript:${localScript}`.trim();
+        setScript(finalScript);
+
+        console.log("sending final: ", finalScript);
+
+
         // Builds URL with all true metrics
         const query = new URLSearchParams(
-            Object.entries(formData)
+            Object.entries(rest)
               .filter(([, v]) => v !== '')
               .map(([key, value]) => [key, String(value)]) 
         ).toString();
@@ -180,8 +172,8 @@ export default function Page() {
     return(
         <PageFormat breadCrumbs={[{ name: "Evaluation Settings" }]}>
             <div className = "flex flex-col min-h-screen px-4 items-center">                    
-                <form className="w-full max-w-[800px] p-8 rounded-lg">
-                    <div className ="flex flex-col gap-4 mt-6 mb-4">
+                <form className="w-full max-w-[800px] px-8 pb-8 pt-0 rounded-lg">
+                    <div className ="flex flex-col gap-4 mb-4">
                         <p className="text-lg font-medium">
                             Select Option: <span className="text-red-500">*</span>
                         </p>
@@ -195,7 +187,7 @@ export default function Page() {
                                     : 'bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white dark:hover:bg-[#CA773F]'
                             } hover:bg-[#F8AC78]`}
                         > 
-                            <ImageUp className = "mr-4 ml-2"/>
+                            <Camera className = "mr-4 ml-2"/>
                             Practice Now
                         </button>
                         <button 
@@ -208,7 +200,7 @@ export default function Page() {
                                     : 'bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white dark:hover:bg-[#CA773F]'
                             } hover:bg-[#F8AC78]`}
                         >
-                            <Camera className = "mr-4 ml-2"/>
+                            <ImageUp className = "mr-4 ml-2"/>
                             Upload Video
                         </button>
                     </div>
@@ -220,6 +212,7 @@ export default function Page() {
                                 name ="topic" 
                                 value = {formData.topic} 
                                 onChange={handleChange} 
+                                placeholder="Enter a topic, keywords, or description in any format you want."
                                 required 
                             />
                         </label>
@@ -340,30 +333,26 @@ export default function Page() {
 
                     <div className = "mb-4">
                         Enter Script:
-                        <div className ="mb-4 p-1 flex flex-row bg-[#84d3fa] dark:bg-[#1e3a8a] text-black dark:text-white rounded-lg">
-                            <CircleAlert className = "w-5 h-5 mx-2 mt-0.5"/>
-                            {getTipSentence(selectedPersona || '')}
-                            <div className="w-full max-w-100 mb-4">
-                            <textarea
-                                value={script}
-                                onChange={(e) => setScript(e.target.value)}
-                                className="w-full p-2 border rounded-lg"
-                                placeholder="Paste your presentation script here..."
-                                rows={10}
-                            />
-                            </div>
-                            <div>
-                            <button
-                                type="button"
-                                className="flex flex-row items-center px-4 py-2 bg-gray-200 text-black dark:bg-[#311E13] dark:text-white rounded-lg"
-                                // This button could trigger additional client-side actions, such as previewing or saving to state.
-                                onClick={() => console.log("Script saved in context:", script)}
-                            >
-                                <Upload className="mr-1" />
-                                Save Script
-                            </button>
-                            </div>
+                        <div className="w-full max-w-100 mb-4">
+                        <textarea
+                            value={localScript}
+                            onChange={(e) => setLocalScript(e.target.value)}
+                            className="w-full p-2 border rounded-lg"
+                            placeholder="Paste your presentation script here..."
+                            rows={10}
+                        />
                         </div>
+                            {/* <div>
+                                <button
+                                    type="button"
+                                    className="flex flex-row items-center px-4 py-2 bg-gray-200 text-black dark:bg-[#311E13] dark:text-white rounded-lg"
+                                    // This button could trigger additional client-side actions, such as previewing or saving to state.
+                                    onClick={() => console.log("Script saved in context:", script)}
+                                >
+                                    <Upload className="mr-1" />
+                                    Save Script
+                                </button>
+                            </div> */}
                     </div>
 
                     <div className = "mt-6">
