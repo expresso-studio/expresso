@@ -34,6 +34,11 @@ export type LessonType = {
   topics: (string | MetricDisplayNames)[];
 };
 
+export type LessonStatus = {
+  name: LessonNames;
+  status: boolean;
+};
+
 export type MetricType = {
   metric_id: MetricIds;
   name: MetricNames;

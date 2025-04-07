@@ -1,4 +1,4 @@
-import { CourseStatus, CourseType } from "./types";
+import { CourseStatus, CourseType, LessonStatus } from "./types";
 import { IconType } from "react-icons";
 
 import { MdOutlineWavingHand } from "react-icons/md";
@@ -261,6 +261,42 @@ export const CourseStatuses: CourseStatus[] = [
   {
     name: CourseNames.Gestures,
     status: 20,
+  },
+];
+
+// TODO(casey): replace this with stuff from DB
+export const LessonStatuses: LessonStatus[] = [
+  {
+    name: LessonNames.Basics,
+    status: true,
+  },
+  {
+    name: LessonNames.HandMovement,
+    status: false,
+  },
+  {
+    name: LessonNames.HandSymmetry,
+    status: true,
+  },
+  {
+    name: LessonNames.Posture,
+    status: true,
+  },
+  {
+    name: LessonNames.BodyMovement,
+    status: false,
+  },
+  {
+    name: LessonNames.HeadMovement,
+    status: false,
+  },
+  {
+    name: LessonNames.EyeContact,
+    status: true,
+  },
+  {
+    name: LessonNames.GestureVariety,
+    status: false,
   },
 ];
 

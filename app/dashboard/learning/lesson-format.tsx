@@ -1,26 +1,34 @@
 import * as React from "react";
 import Heading1 from "@/components/heading-1";
 import PageFormat from "@/components/page-format";
-import { CourseNames, CourseNameToLink } from "@/lib/constants";
-import { CourseType } from "@/lib/types";
+import {
+  CourseNames,
+  CourseNameToLink,
+  LessonNameToLink,
+} from "@/lib/constants";
+import { LessonType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import Lesson from "@/components/lesson";
 import { outfit } from "@/app/fonts";
-import { Slider } from "@/components/ui/slider";
 import CourseProgress from "./course-progress";
+import { Check, X } from "lucide-react";
 
-interface Props extends CourseType {
-  status: number;
+interface Props extends LessonType {
+  status: boolean;
+  courseName: CourseNames;
+  color: string;
+  children: React.ReactNode;
 }
 
-export default function CourseFormat({
+export default function LessonFormat({
   id,
   icon,
   color,
+  courseName,
   name,
   topics,
   status,
-  lessons,
+  children,
 }: Props) {
   const Icon = icon;
   const rotates = [
@@ -36,7 +44,11 @@ export default function CourseFormat({
       breadCrumbs={[
         { url: "/dashboard/learning", name: "learning" },
         { url: "/dashboard/learning/courses", name: "courses" },
-        { name: CourseNameToLink[name] },
+        {
+          url: `/dashboard/learning/courses/${CourseNameToLink[courseName]}`,
+          name: CourseNameToLink[courseName],
+        },
+        { name: LessonNameToLink[name] },
       ]}
     >
       <div
@@ -44,17 +56,20 @@ export default function CourseFormat({
         className="w-full h-[100px] flex items-center justify-center rounded-md overflow-hidden"
       >
         <div className="flex gap-4">
-          {rotates.map((rotate, i) => (
-            <div key={i} className="text-white text-5xl">
+          {rotates.map((rotate) => (
+            <div className="text-white text-5xl">
               <Icon />
             </div>
           ))}
         </div>
       </div>
-      <div className="flex gap-8 justify-between">
-        <div className="min-w-[400px] flex flex-col gap-8 p-8 bg-white/50 dark:bg-darkBurnt rounded-lg">
+      <div className="flex flex-col gap-8">
+        <div className="flex justify-between">
           <div>
+            <span>Lesson</span>
             <Heading1 id="intro">{name}</Heading1>
+          </div>
+          <div className="flex flex-col items-end">
             <div className="w-full flex gap-2 flex-wrap mt-2">
               {topics.map((topic) => (
                 <div
@@ -66,29 +81,13 @@ export default function CourseFormat({
                 </div>
               ))}
             </div>
-          </div>
-          <CourseProgress status={status} color={color} />
-        </div>
-        <div className="w-full sm:mt-4">
-          <div className="flex justify-between">
-            <h2 className="font-bold text-xl" style={outfit.style}>
-              Lessons
-            </h2>
-            <span className="text-sm">
-              {lessons.length} lesson{lessons.length > 1 ? "s" : ""}
-            </span>
-          </div>
-          <div className="flex flex-col p-4 bg-lightCoffee/10 dark:bg-black/75 rounded-lg">
-            {lessons.map((lesson, i) => (
-              <Lesson
-                {...lesson}
-                status={i % 2 == 0}
-                color={color}
-                courseName={name}
-              />
-            ))}
+            <div className="flex gap-2">
+              Complete: {status ? <Check /> : <X />}
+            </div>
           </div>
         </div>
+        <div className="h-[1px] w-full bg-lightGray dark:bg-darkGray"></div>
+        {children}
       </div>
     </PageFormat>
   );
