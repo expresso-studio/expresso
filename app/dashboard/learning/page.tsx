@@ -123,10 +123,12 @@ export default function Page() {
           </div>
           <div className="min-w-[500px] flex flex-col gap-6">
             <PracticeButton />
-            <h3 className="text-xl font-bold pb-2" style={outfit.style}>
-              All Courses
-            </h3>
-            <CourseList courses={coursesWithStatus} />
+            <div>
+              <h3 className="text-xl font-bold pb-2" style={outfit.style}>
+                All Courses
+              </h3>
+              <CourseList courses={coursesWithStatus} />
+            </div>
           </div>
         </div>
       </PageFormat>

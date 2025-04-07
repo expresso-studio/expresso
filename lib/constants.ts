@@ -95,6 +95,22 @@ export enum CourseNames {
   Gestures = "Gesturing",
 }
 
+export enum CourseLinks {
+  Intro = "intro",
+  HandLanguage = "head-language",
+  BodyLanguage = "body-language",
+  HeadLanguage = "head-language",
+  Gestures = "gestures",
+}
+
+export const CourseNameToLink: Record<CourseNames, CourseLinks> = {
+  [CourseNames.Intro]: CourseLinks.Intro,
+  [CourseNames.HandLanguage]: CourseLinks.HandLanguage,
+  [CourseNames.BodyLanguage]: CourseLinks.BodyLanguage,
+  [CourseNames.HeadLanguage]: CourseLinks.HeadLanguage,
+  [CourseNames.Gestures]: CourseLinks.Gestures,
+};
+
 export enum LessonNames {
   Basics = "Basics",
   HandMovement = MetricDisplayNames.HandMovement,
@@ -105,6 +121,28 @@ export enum LessonNames {
   EyeContact = MetricDisplayNames.EyeContact,
   GestureVariety = MetricDisplayNames.GestureVariety,
 }
+
+export enum LessonLinks {
+  Basics = "basics",
+  HandMovement = "hand-movement",
+  HandSymmetry = "hand-symmetry",
+  BodyMovement = "body-movement",
+  Posture = "posture",
+  HeadMovement = "head-movement",
+  EyeContact = "eye-contact",
+  GestureVariety = "gesture-variety",
+}
+
+export const LessonNameToLink: Record<LessonNames, LessonLinks> = {
+  [LessonNames.Basics]: LessonLinks.Basics,
+  [LessonNames.HandMovement]: LessonLinks.HandMovement,
+  [LessonNames.HandSymmetry]: LessonLinks.HandSymmetry,
+  [LessonNames.BodyMovement]: LessonLinks.BodyMovement,
+  [LessonNames.Posture]: LessonLinks.Posture,
+  [LessonNames.HeadMovement]: LessonLinks.HeadMovement,
+  [LessonNames.EyeContact]: LessonLinks.EyeContact,
+  [LessonNames.GestureVariety]: LessonLinks.GestureVariety,
+};
 
 export const Courses: CourseType[] = [
   {
