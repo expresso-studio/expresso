@@ -267,29 +267,29 @@ export default function PresentationPage({
               </Tooltip>
             </TooltipProvider>
           </div>
-          <div className="bg-stone-100 dark:bg-stone-900 py-6 px-4 rounded-lg flex items-center justify-between">
+          <div className="bg-white dark:bg-black py-6 px-4 rounded-lg flex items-center justify-between mb-2">
             <p>Practice a QnA session with this presentation!</p>
             <Link
               href={`/dashboard/qna?id=${params.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 p-2 rounded-md bg-darkCoffee group-hover:bg-lightCoffee"
+              className="text-white flex items-center gap-1 p-2 rounded-md bg-darkCoffee group-hover:bg-lightCoffee"
             >
               <MessagesSquare className="mr-2 w-6 h-6" />
               Launch in New Tab
             </Link>
           </div>
-          <div className="bg-stone-100 dark:bg-stone-900 py-6 px-4 rounded-lg">
+          <div className="bg-white dark:bg-black py-6 px-4 rounded-lg">
             <h2 className={cn("text-xl font-semibold mb-4", outfit.className)}>
               Coverage Score
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
-                    <Info className="ml-2" />
+                    <Info className="ml-2 -translate-y-1" size={12} />
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>
-                      Scored by comparing trascript and the provided script.
+                      Scored by comparing transcript and the provided script.
                     </p>
                   </TooltipContent>
                 </Tooltip>
@@ -302,7 +302,7 @@ export default function PresentationPage({
                 <p className="whitespace-pre-wrap">Score: {score}%</p>
                 <div className="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
                   <div
-                    className={`h-3 rounded-full transition-all duration-300 bg-green-500`}
+                    className={`h-3 rounded-full transition-all duration-300 bg-[#98aa57]`}
                     style={{ width: `${score}%` }}
                   />
                 </div>
