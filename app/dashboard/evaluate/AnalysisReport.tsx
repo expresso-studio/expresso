@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from 'react'; // Import useState and useEffect
-import VideoPlayback from './VideoPlayback';
+import React, { useState, useEffect } from "react"; // Import useState and useEffect
+import VideoPlayback from "./VideoPlayback";
 import { AnalysisData, MetricData } from "@/lib/types";
 
 // Define interface for Emotion data if needed, based on API response
@@ -33,37 +33,39 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
 
   useEffect(() => {
     if (isOpen && analysisData?.transcript) {
-      const fetchToneAnalysis = async () => { // Rename function
+      const fetchToneAnalysis = async () => {
+        // Rename function
         setIsLoadingAnalysis(true);
         setAnalysisError(null);
         setEmotionData(null); // Reset previous data
         setSentimentScore(null); // Reset sentiment score
 
         try {
-          const response = await fetch('/api/tone-analyzer', {
-            method: 'POST',
+          const response = await fetch("/api/tone-analyzer", {
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({ text: analysisData.transcript }),
           });
 
           if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+            throw new Error(
+              errorData.error || `HTTP error! status: ${response.status}`
+            );
           }
 
           const result = await response.json();
           setEmotionData(result.emotion);
           setSentimentScore(result.sentiment); // Store sentiment score
-
         } catch (error: unknown) {
           console.error("Failed to fetch tone analysis:", error);
           if (error instanceof Error) {
             setAnalysisError(error.message || "Failed to load tone analysis.");
           } else {
             setAnalysisError("An unknown error occurred.");
-          }        
+          }
         } finally {
           setIsLoadingAnalysis(false);
         }
@@ -106,38 +108,38 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
   const generateRecommendations = (): string[] => {
     const recommendations: string[] = [];
 
-    if (analysisData.handMovement.status === "Low") {
+    if (analysisData.HandMovement.status === "Low") {
       recommendations.push(
         "Use more hand gestures to emphasize key points and engage your audience."
       );
-    } else if (analysisData.handMovement.status === "High") {
+    } else if (analysisData.HandMovement.status === "High") {
       recommendations.push(
         "Try to reduce excessive hand movements as they may distract from your message."
       );
     }
 
     if (
-      analysisData.posture.status === "Poor" ||
-      analysisData.posture.status === "Fair"
+      analysisData.Posture.status === "Poor" ||
+      analysisData.Posture.status === "Fair"
     ) {
       recommendations.push(
-        "Work on maintaining better posture by keeping your back straight and shoulders level."
+        "Work on maintaining better Posture by keeping your back straight and shoulders level."
       );
     }
 
-    if (analysisData.eyeContact.status === "Low") {
+    if (analysisData.EyeContact.status === "Low") {
       recommendations.push(
-        "Maintain more consistent eye contact with the camera to better connect with your audience."
+        "Maintain more consistent Eye contact with the camera to better connect with your audience."
       );
     }
 
-    if (analysisData.handSymmetry.status === "Low") {
+    if (analysisData.HandSymmetry.status === "Low") {
       recommendations.push(
         "Try to use both hands more equally for a balanced presentation style."
       );
     }
 
-    if (analysisData.gestureVariety.status === "Low") {
+    if (analysisData.GestureVariety.status === "Low") {
       recommendations.push(
         "Incorporate a wider variety of gestures to keep your presentation engaging."
       );
@@ -155,9 +157,10 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
   const recommendations = generateRecommendations();
 
   // Truncate or format transcript if it's too long
-  const formattedTranscript = analysisData.transcript.length > 500 
-    ? analysisData.transcript.substring(0, 500) + "..." 
-    : analysisData.transcript || "No transcript available.";
+  const formattedTranscript =
+    analysisData.transcript.length > 500
+      ? analysisData.transcript.substring(0, 500) + "..."
+      : analysisData.transcript || "No transcript available.";
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
@@ -210,7 +213,7 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
                 <p className="text-gray-700 dark:text-gray-300">
                   <span className="font-medium">Overall Score:</span>{" "}
                   <span className="text-xl font-bold text-blue-600">
-                    {analysisData.overallScore}/100
+                    {analysisData.OverallScore}/100
                   </span>
                 </p>
               </div>
@@ -240,7 +243,7 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
                 if (
                   key === "sessionDuration" ||
                   key === "transcript" ||
-                  key === "overallScore"
+                  key === "OverallScore"
                 )
                   return null;
 
@@ -290,61 +293,95 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
 
           {/* Tone Analysis Section (Emotion & Sentiment) */}
           <div className="mt-6 border rounded-lg p-4 dark:border-gray-700">
-            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Tone Analysis (via IBM Watson)</h3>
-            {isLoadingAnalysis && <p className="text-gray-600 dark:text-gray-400">Loading analysis data...</p>}
-            {analysisError && <p className="text-red-500">Error: {analysisError}</p>}
+            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+              Tone Analysis (via IBM Watson)
+            </h3>
+            {isLoadingAnalysis && (
+              <p className="text-gray-600 dark:text-gray-400">
+                Loading analysis data...
+              </p>
+            )}
+            {analysisError && (
+              <p className="text-red-500">Error: {analysisError}</p>
+            )}
 
             {/* Sentiment Display */}
-            {sentimentScore !== null && !isLoadingAnalysis && !analysisError && (
-              <div className="mb-4 border rounded-lg p-3 dark:border-gray-700">
-                <div className="flex justify-between items-center mb-1">
-                  <h4 className="font-medium text-gray-900 dark:text-white">Overall Sentiment</h4>
-                  <span className={`font-semibold px-2 py-0.5 rounded text-sm ${
-                    sentimentScore > 0.3 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
-                    sentimentScore < -0.3 ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' :
-                    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                  }`}>
-                    {sentimentScore > 0.3 ? 'Positive' : sentimentScore < -0.3 ? 'Negative' : 'Neutral'} ({sentimentScore.toFixed(2)})
-                  </span>
+            {sentimentScore !== null &&
+              !isLoadingAnalysis &&
+              !analysisError && (
+                <div className="mb-4 border rounded-lg p-3 dark:border-gray-700">
+                  <div className="flex justify-between items-center mb-1">
+                    <h4 className="font-medium text-gray-900 dark:text-white">
+                      Overall Sentiment
+                    </h4>
+                    <span
+                      className={`font-semibold px-2 py-0.5 rounded text-sm ${
+                        sentimentScore > 0.3
+                          ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                          : sentimentScore < -0.3
+                          ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+                          : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                      }`}
+                    >
+                      {sentimentScore > 0.3
+                        ? "Positive"
+                        : sentimentScore < -0.3
+                        ? "Negative"
+                        : "Neutral"}{" "}
+                      ({sentimentScore.toFixed(2)})
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-300 dark:bg-gray-700 rounded-full h-2.5">
+                    {/* Represent score from -1 to 1 on a 0 to 100 scale */}
+                    <div
+                      className={`h-2.5 rounded-full ${
+                        sentimentScore > 0 ? "bg-green-500" : "bg-red-500"
+                      }`}
+                      style={{
+                        width: `${Math.abs(sentimentScore) * 50}%`,
+                        marginLeft: `${
+                          sentimentScore < 0
+                            ? 50 - Math.abs(sentimentScore) * 50
+                            : 50
+                        }%`,
+                        marginRight: `${
+                          sentimentScore >= 0 ? 50 - sentimentScore * 50 : 50
+                        }%`,
+                      }}
+                    ></div>
+                    {/* Add a marker for neutral */}
+                    <div className="relative bottom-1.5 h-full flex justify-center items-center">
+                      <div className="w-px h-4 bg-gray-500 dark:bg-gray-400"></div>
+                    </div>
+                  </div>
                 </div>
-                <div className="w-full bg-gray-300 dark:bg-gray-700 rounded-full h-2.5">
-                  {/* Represent score from -1 to 1 on a 0 to 100 scale */}
-                  <div
-                    className={`h-2.5 rounded-full ${
-                      sentimentScore > 0 ? 'bg-green-500' : 'bg-red-500'
-                    }`}
-                    style={{
-                      width: `${Math.abs(sentimentScore) * 50}%`,
-                      marginLeft: `${sentimentScore < 0 ? (50 - Math.abs(sentimentScore) * 50) : 50}%`,
-                      marginRight: `${sentimentScore >= 0 ? (50 - sentimentScore * 50) : 50}%`,
-                    }}
-                  ></div>
-                   {/* Add a marker for neutral */}
-                   <div className="relative bottom-1.5 h-full flex justify-center items-center">
-                     <div className="w-px h-4 bg-gray-500 dark:bg-gray-400"></div>
-                   </div>
-                </div>
-              </div>
-            )}
+              )}
 
             {/* Emotion Display */}
             {emotionData && !isLoadingAnalysis && !analysisError && (
               <div>
-                <h4 className="text-md font-semibold mb-2 text-gray-800 dark:text-gray-200">Emotion Breakdown</h4>
+                <h4 className="text-md font-semibold mb-2 text-gray-800 dark:text-gray-200">
+                  Emotion Breakdown
+                </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {Object.entries(emotionData).map(([emotion, score]) => (
-                    <div key={emotion} className="border rounded-lg p-3 dark:border-gray-700">
-                    <div className="flex justify-between items-center mb-1">
-                      <h4 className="font-medium text-gray-900 dark:text-white capitalize">{emotion}</h4>
-                      <span className="font-medium text-blue-600">
-                        {(score * 100).toFixed(1)}% 
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-300 dark:bg-gray-700 rounded-full h-2.5">
-                      <div
-                        className="bg-blue-500 h-2.5 rounded-full"
-                        style={{ width: `${score * 100}%` }}
-                      ></div>
+                    <div
+                      key={emotion}
+                      className="border rounded-lg p-3 dark:border-gray-700"
+                    >
+                      <div className="flex justify-between items-center mb-1">
+                        <h4 className="font-medium text-gray-900 dark:text-white capitalize">
+                          {emotion}
+                        </h4>
+                        <span className="font-medium text-blue-600">
+                          {(score * 100).toFixed(1)}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-300 dark:bg-gray-700 rounded-full h-2.5">
+                        <div
+                          className="bg-blue-500 h-2.5 rounded-full"
+                          style={{ width: `${score * 100}%` }}
+                        ></div>
                       </div>
                     </div>
                   ))}
@@ -352,11 +389,15 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
               </div>
             )}
             {/* Combined No Data Message */}
-            {!emotionData && sentimentScore === null && !isLoadingAnalysis && !analysisError && (
-                 <p className="text-gray-600 dark:text-gray-400">No tone analysis data available for this transcript.</p>
-             )}
+            {!emotionData &&
+              sentimentScore === null &&
+              !isLoadingAnalysis &&
+              !analysisError && (
+                <p className="text-gray-600 dark:text-gray-400">
+                  No tone analysis data available for this transcript.
+                </p>
+              )}
           </div>
-
 
           {/* Action Buttons */}
           <div className="mt-6 flex justify-end space-x-3">

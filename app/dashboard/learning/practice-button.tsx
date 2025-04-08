@@ -3,9 +3,7 @@ import Image from "next/image";
 import { outfit } from "@/app/fonts";
 import Link from "next/link";
 
-interface Props {}
-
-const PracticeButton = React.memo<Props>(function PracticeButton() {
+const PracticeButton = React.memo(function PracticeButton() {
   return (
     <Link href="/dashboard/eval-settings">
       <div className="flex items-center gap-2 group w-full h-[120px] rounded-lg bg-lightLatte hover:bg-lightLatte/50 dark:bg-darkCoffee dark:hover:bg-darkCoffee/50 relative overflow-hidden duration-200">

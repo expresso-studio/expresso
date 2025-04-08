@@ -76,14 +76,14 @@ export default function Page() {
     if (scoreRange.min !== "") {
       filtered = filtered.filter(
         (report) =>
-          report.metrics.filter((metric) => metric.name == "overallScore")[0]
+          report.metrics.filter((metric) => metric.name == "OverallScore")[0]
             .score >= Number(scoreRange.min)
       );
     }
     if (scoreRange.max !== "") {
       filtered = filtered.filter(
         (report) =>
-          report.metrics.filter((metric) => metric.name == "overallScore")[0]
+          report.metrics.filter((metric) => metric.name == "OverallScore")[0]
             .score <= Number(scoreRange.max)
       );
     }
@@ -101,15 +101,15 @@ export default function Page() {
           );
         case "score-desc":
           return (
-            b.metrics.filter((metric) => metric.name == "overallScore")[0]
+            b.metrics.filter((metric) => metric.name == "OverallScore")[0]
               .score -
-            a.metrics.filter((metric) => metric.name == "overallScore")[0].score
+            a.metrics.filter((metric) => metric.name == "OverallScore")[0].score
           );
         case "score-asc":
           return (
-            a.metrics.filter((metric) => metric.name == "overallScore")[0]
+            a.metrics.filter((metric) => metric.name == "OverallScore")[0]
               .score -
-            b.metrics.filter((metric) => metric.name == "overallScore")[0].score
+            b.metrics.filter((metric) => metric.name == "OverallScore")[0].score
           );
         default:
           return 0;

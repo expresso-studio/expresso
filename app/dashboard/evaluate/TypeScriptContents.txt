@@ -110,49 +110,49 @@ const DeveloperReport: React.FC<DeveloperReportProps> = ({
             <div className="grid grid-cols-2 gap-4">
               <MetricCard 
                 title="Overall Score" 
-                value={metrics.overallScore.toFixed(2)} 
+                value={metrics.OverallScore.toFixed(2)} 
                 unit="/100" 
                 description="Weighted average of all metrics"
               />
               <MetricCard 
                 title="Hand Movement" 
-                value={(metrics.handMovement * 100).toFixed(2)} 
+                value={(metrics.HandMovement * 100).toFixed(2)} 
                 unit="%" 
                 description="Hand gesture activity level"
               />
               <MetricCard 
                 title="Head Movement" 
-                value={(metrics.headMovement * 100).toFixed(2)} 
+                value={(metrics.HeadMovement * 100).toFixed(2)} 
                 unit="%" 
                 description="Head motion activity level"
               />
               <MetricCard 
                 title="Body Movement" 
-                value={(metrics.bodyMovement * 100).toFixed(2)} 
+                value={(metrics.BodyMovement * 100).toFixed(2)} 
                 unit="%" 
                 description="Torso movement activity"
               />
               <MetricCard 
                 title="Posture" 
-                value={(metrics.posture * 100).toFixed(2)} 
+                value={(metrics.Posture * 100).toFixed(2)} 
                 unit="%" 
                 description="Alignment quality score"
               />
               <MetricCard 
                 title="Hand Symmetry" 
-                value={(metrics.handSymmetry * 100).toFixed(2)} 
+                value={(metrics.HandSymmetry * 100).toFixed(2)} 
                 unit="%" 
                 description="Balance between hands"
               />
               <MetricCard 
                 title="Gesture Variety" 
-                value={(metrics.gestureVariety * 100).toFixed(2)} 
+                value={(metrics.GestureVariety * 100).toFixed(2)} 
                 unit="%" 
                 description="Diversity of gestures"
               />
               <MetricCard 
                 title="Eye Contact" 
-                value={(metrics.eyeContact * 100).toFixed(2)} 
+                value={(metrics.EyeContact * 100).toFixed(2)} 
                 unit="%" 
                 description="Camera gaze consistency"
               />
@@ -165,19 +165,19 @@ const DeveloperReport: React.FC<DeveloperReportProps> = ({
                   <tr>
                     <td className="py-1">Hand-Head Movement:</td>
                     <td className="text-right">
-                      {calculateCorrelation(metrics.handMovement, metrics.headMovement).toFixed(2)}
+                      {calculateCorrelation(metrics.HandMovement, metrics.HeadMovement).toFixed(2)}
                     </td>
                   </tr>
                   <tr>
                     <td className="py-1">Body-Posture Quality:</td>
                     <td className="text-right">
-                      {calculateCorrelation(metrics.bodyMovement, metrics.posture).toFixed(2)}
+                      {calculateCorrelation(metrics.BodyMovement, metrics.Posture).toFixed(2)}
                     </td>
                   </tr>
                   <tr>
                     <td className="py-1">Eye Contact-Posture:</td>
                     <td className="text-right">
-                      {calculateCorrelation(metrics.eyeContact, metrics.posture).toFixed(2)}
+                      {calculateCorrelation(metrics.EyeContact, metrics.Posture).toFixed(2)}
                     </td>
                   </tr>
                 </tbody>
@@ -411,21 +411,21 @@ const MetricsDisplay: React.FC<MetricsDisplayProps> = ({ metrics }) => {
               {formatMetricName(key)}
             </span>
             <span className={
-              key === 'overallScore' ? 'text-white font-bold' : 
+              key === 'OverallScore' ? 'text-white font-bold' : 
               getColorClass(key, value) === 'bg-blue-500' ? 'text-blue-400' :
               getColorClass(key, value) === 'bg-green-500' ? 'text-green-400' :
               getColorClass(key, value) === 'bg-amber-500' ? 'text-amber-400' : 
               'text-red-400'
             }>
-              {key === 'overallScore' ? `${value}/100` : getMetricStatus(key, value)}
+              {key === 'OverallScore' ? `${value}/100` : getMetricStatus(key, value)}
             </span>
           </div>
           <div className="w-full bg-gray-700 rounded-full h-3">
             <div
               className={`h-3 rounded-full transition-all duration-300 ${
-                key === 'overallScore' ? 'bg-blue-500' : getColorClass(key, value)
+                key === 'OverallScore' ? 'bg-blue-500' : getColorClass(key, value)
               }`}
-              style={{ width: `${key === 'overallScore' ? value : value * 100}%` }}
+              style={{ width: `${key === 'OverallScore' ? value : value * 100}%` }}
             />
           </div>
         </div>
@@ -447,7 +447,7 @@ import { PoseLandmark, GestureMetrics, GestureFeedback } from './types';
 import { calculateMovement } from './utils';
 import { OPTIMAL_RANGES } from './constants';
 
-// Analyze posture from landmarks - simplified to more boolean-like states
+// Analyze Posture from landmarks - simplified to more boolean-like states
 export const analyzePosture = (landmarks?: PoseLandmark[]): number => {
   if (!landmarks) return 0.5;
 
@@ -490,17 +490,17 @@ export const analyzePosture = (landmarks?: PoseLandmark[]): number => {
   // More boolean-like: good if under threshold
   const headAligned = headOffset < 0.1;
   
-  // Count how many posture aspects are good
+  // Count how many Posture aspects are good
   let goodPostureCount = 0;
   if (shoulderAligned) goodPostureCount++;
   if (spineAligned) goodPostureCount++;
   if (headAligned) goodPostureCount++;
   
   // Convert to three discrete levels: bad (0-0.33), medium (0.34-0.66), good (0.67-1.0)
-  if (goodPostureCount === 0) return 0.2; // Bad posture
-  if (goodPostureCount === 1) return 0.5; // Medium posture
-  if (goodPostureCount === 2) return 0.8; // Good posture
-  return 1.0; // Perfect posture (all 3 aspects good)
+  if (goodPostureCount === 0) return 0.2; // Bad Posture
+  if (goodPostureCount === 1) return 0.5; // Medium Posture
+  if (goodPostureCount === 2) return 0.8; // Good Posture
+  return 1.0; // Perfect Posture (all 3 aspects good)
 };
 
 // Calculate body movement based on shoulders and hips
@@ -718,37 +718,37 @@ export const generateFeedback = (metrics: GestureMetrics): GestureFeedback[] => 
     if (value < range.min) {
       // Low value
       switch(metricKey) {
-        case 'handMovement':
+        case 'HandMovement':
           feedback.push({ 
             message: 'Consider using more hand gestures', 
             type: 'warning' 
           });
           break;
-        case 'headMovement':
+        case 'HeadMovement':
           feedback.push({ 
             message: 'Slight head movement recommended', 
             type: 'info' 
           });
           break;
-        case 'posture':
+        case 'Posture':
           feedback.push({ 
-            message: 'Check posture alignment', 
+            message: 'Check Posture alignment', 
             type: 'warning' 
           });
           break;
-        case 'handSymmetry':
+        case 'HandSymmetry':
           feedback.push({ 
             message: 'Balance hand usage', 
             type: 'info' 
           });
           break;
-        case 'gestureVariety':
+        case 'GestureVariety':
           feedback.push({ 
             message: 'Vary gestures for engagement', 
             type: 'info' 
           });
           break;
-        case 'eyeContact':
+        case 'EyeContact':
           feedback.push({ 
             message: 'Maintain eye contact', 
             type: 'info' 
@@ -758,31 +758,31 @@ export const generateFeedback = (metrics: GestureMetrics): GestureFeedback[] => 
     } else if (value > range.max) {
       // High value
       switch(metricKey) {
-        case 'handMovement':
+        case 'HandMovement':
           feedback.push({ 
             message: 'Hand movements above normal range', 
             type: 'info' 
           });
           break;
-        case 'headMovement':
+        case 'HeadMovement':
           feedback.push({ 
             message: 'Head movement above normal range', 
             type: 'info' 
           });
           break;
-        case 'posture': 
-          // Usually not an issue to have extremely good posture
+        case 'Posture': 
+          // Usually not an issue to have extremely good Posture
           break;
-        case 'handSymmetry':
+        case 'HandSymmetry':
           // Usually not an issue to have perfect symmetry
           break;
-        case 'gestureVariety':
+        case 'GestureVariety':
           feedback.push({ 
             message: 'Consider more consistent gestures', 
             type: 'info' 
           });
           break;
-        case 'eyeContact':
+        case 'EyeContact':
           // Usually not an issue to have perfect eye contact
           break;
       }
@@ -811,13 +811,13 @@ export const EYE_CONTACT_COEFFICIENT = 0.1;
 
 // Optimal value ranges for public speaking - with wider ranges for easier achievement
 export const OPTIMAL_RANGES = {
-  handMovement: { min: 0.08, max: 0.7 },  // Even wider range for hand movement
-  headMovement: { min: 0.01, max: 0.5 },  // Wider range for head movement
-  bodyMovement: { min: 0.02, max: 0.6 },  // New parameter with wide range
-  posture: { min: 0.4, max: 1.0 },  // Lower threshold for good posture
-  handSymmetry: { min: 0.2, max: 0.9 },   // Even lower minimum threshold
-  gestureVariety: { min: 0.15, max: 0.9 },  // Lower minimum threshold
-  eyeContact: { min: 0.3, max: 0.9 }      // Lower minimum threshold
+  HandMovement: { min: 0.08, max: 0.7 },  // Even wider range for hand movement
+  HeadMovement: { min: 0.01, max: 0.5 },  // Wider range for head movement
+  BodyMovement: { min: 0.02, max: 0.6 },  // New parameter with wide range
+  Posture: { min: 0.4, max: 1.0 },  // Lower threshold for good Posture
+  HandSymmetry: { min: 0.2, max: 0.9 },   // Even lower minimum threshold
+  GestureVariety: { min: 0.15, max: 0.9 },  // Lower minimum threshold
+  EyeContact: { min: 0.3, max: 0.9 }      // Lower minimum threshold
 };
 
 
@@ -868,14 +868,14 @@ const GestureAnalysis: React.FC<Props> = ({
 }) => {
   // State
   const [metrics, setMetrics] = useState<GestureMetrics>({
-    handMovement: 0.5,
-    headMovement: 0.5,
-    bodyMovement: 0.5,
-    posture: 0.5,
-    handSymmetry: 0.5,
-    gestureVariety: 0.5,
-    eyeContact: 0.5,
-    overallScore: 50
+    HandMovement: 0.5,
+    HeadMovement: 0.5,
+    BodyMovement: 0.5,
+    Posture: 0.5,
+    HandSymmetry: 0.5,
+    GestureVariety: 0.5,
+    EyeContact: 0.5,
+    OverallScore: 50
   });
   const [feedback, setFeedback] = useState<GestureFeedback[]>([]);
   const [sessionDuration, setSessionDuration] = useState(0);
@@ -884,9 +884,9 @@ const GestureAnalysis: React.FC<Props> = ({
   
   // Refs for tracking movement and analysis data
   const prevLandmarksRef = useRef<PoseLandmark[]>([]);
-  const handMovementBufferRef = useRef<number[]>(Array(MOVEMENT_BUFFER_SIZE).fill(0.5));
-  const headMovementBufferRef = useRef<number[]>(Array(MOVEMENT_BUFFER_SIZE).fill(0.5));
-  const bodyMovementBufferRef = useRef<number[]>(Array(MOVEMENT_BUFFER_SIZE).fill(0.5));
+  const HandMovementBufferRef = useRef<number[]>(Array(MOVEMENT_BUFFER_SIZE).fill(0.5));
+  const HeadMovementBufferRef = useRef<number[]>(Array(MOVEMENT_BUFFER_SIZE).fill(0.5));
+  const BodyMovementBufferRef = useRef<number[]>(Array(MOVEMENT_BUFFER_SIZE).fill(0.5));
   const handPositionsBufferRef = useRef<{left: PoseLandmark, right: PoseLandmark}[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const frameCountRef = useRef(0);
@@ -936,7 +936,7 @@ const GestureAnalysis: React.FC<Props> = ({
       }
 
       // Calculate all metrics
-      const postureScore = analyzePosture(poseLandmarks);
+      const PostureScore = analyzePosture(poseLandmarks);
       
       // Hand movements - more balanced sensitivity for middle zone
       const leftHandMove = calculateMovement(poseLandmarks[15], prevLandmarksRef.current[15], 8);
@@ -950,9 +950,9 @@ const GestureAnalysis: React.FC<Props> = ({
       const bodyMove = calculateBodyMovement(poseLandmarks, prevLandmarksRef.current);
       
       // Update movement buffers
-      handMovementBufferRef.current = [...handMovementBufferRef.current.slice(1), handScore];
-      headMovementBufferRef.current = [...headMovementBufferRef.current.slice(1), headMove];
-      bodyMovementBufferRef.current = [...bodyMovementBufferRef.current.slice(1), bodyMove];
+      HandMovementBufferRef.current = [...HandMovementBufferRef.current.slice(1), handScore];
+      HeadMovementBufferRef.current = [...HeadMovementBufferRef.current.slice(1), headMove];
+      BodyMovementBufferRef.current = [...BodyMovementBufferRef.current.slice(1), bodyMove];
       
       // Update hand positions buffer for symmetry and variety calculations
       if (handPositionsBufferRef.current.length >= 30) {
@@ -967,41 +967,41 @@ const GestureAnalysis: React.FC<Props> = ({
       }
       
       // Calculate averages from buffers for stability
-      const recentHandBuffer = handMovementBufferRef.current.slice(-30);
-      const recentHeadBuffer = headMovementBufferRef.current.slice(-30);
-      const recentBodyBuffer = bodyMovementBufferRef.current.slice(-30);
+      const recentHandBuffer = HandMovementBufferRef.current.slice(-30);
+      const recentHeadBuffer = HeadMovementBufferRef.current.slice(-30);
+      const recentBodyBuffer = BodyMovementBufferRef.current.slice(-30);
       
       const averageHandMovement = _.mean(recentHandBuffer);
       const averageHeadMovement = _.mean(recentHeadBuffer);
       const averageBodyMovement = _.mean(recentBodyBuffer);
       
       // Calculate advanced metrics
-      const handSymmetry = calculateHandSymmetry(poseLandmarks, handPositionsBufferRef.current);
-      const gestureVariety = calculateGestureVariety(poseLandmarks, handPositionsBufferRef.current);
-      const eyeContact = calculateEyeContact(poseLandmarks);
+      const HandSymmetry = calculateHandSymmetry(poseLandmarks, handPositionsBufferRef.current);
+      const GestureVariety = calculateGestureVariety(poseLandmarks, handPositionsBufferRef.current);
+      const EyeContact = calculateEyeContact(poseLandmarks);
 
       // Update metrics using functional update with slower update rate
       setMetrics(prevMetrics => {
         const newMetrics = {
-          handMovement: smoothUpdate(prevMetrics.handMovement, averageHandMovement, 0.05),
-          headMovement: smoothUpdate(prevMetrics.headMovement, averageHeadMovement, 0.05),
-          bodyMovement: smoothUpdate(prevMetrics.bodyMovement, averageBodyMovement, 0.05),
-          posture: postureScore, // Directly use posture score (already discrete)
-          handSymmetry: smoothUpdate(prevMetrics.handSymmetry, handSymmetry, 0.05),
-          gestureVariety: smoothUpdate(prevMetrics.gestureVariety, gestureVariety, 0.05),
-          eyeContact: smoothUpdate(prevMetrics.eyeContact, eyeContact, 0.05),
-          overallScore: 0
+          HandMovement: smoothUpdate(prevMetrics.HandMovement, averageHandMovement, 0.05),
+          HeadMovement: smoothUpdate(prevMetrics.HeadMovement, averageHeadMovement, 0.05),
+          BodyMovement: smoothUpdate(prevMetrics.BodyMovement, averageBodyMovement, 0.05),
+          Posture: PostureScore, // Directly use Posture score (already discrete)
+          HandSymmetry: smoothUpdate(prevMetrics.HandSymmetry, HandSymmetry, 0.05),
+          GestureVariety: smoothUpdate(prevMetrics.GestureVariety, GestureVariety, 0.05),
+          EyeContact: smoothUpdate(prevMetrics.EyeContact, EyeContact, 0.05),
+          OverallScore: 0
         };
 
         // Calculate overall score (weighted average) with a boost to improve user experience
         const rawScore = (
-          (newMetrics.handMovement * HAND_MOVEMENT_COEFFICIENT +
-           newMetrics.headMovement * HEAD_MOVEMENT_COEFFICIENT +
-           newMetrics.bodyMovement * BODY_MOVEMENT_COEFFICIENT +
-           newMetrics.posture * POSTURE_COEFFICIENT +
-           newMetrics.handSymmetry * HAND_SYMMETRY_COEFFICIENT +
-           newMetrics.gestureVariety * GESTURE_VARIETY_COEFFICIENT +
-           newMetrics.eyeContact * EYE_CONTACT_COEFFICIENT) * 100 /
+          (newMetrics.HandMovement * HAND_MOVEMENT_COEFFICIENT +
+           newMetrics.HeadMovement * HEAD_MOVEMENT_COEFFICIENT +
+           newMetrics.BodyMovement * BODY_MOVEMENT_COEFFICIENT +
+           newMetrics.Posture * POSTURE_COEFFICIENT +
+           newMetrics.HandSymmetry * HAND_SYMMETRY_COEFFICIENT +
+           newMetrics.GestureVariety * GESTURE_VARIETY_COEFFICIENT +
+           newMetrics.EyeContact * EYE_CONTACT_COEFFICIENT) * 100 /
           (HAND_MOVEMENT_COEFFICIENT + HEAD_MOVEMENT_COEFFICIENT + BODY_MOVEMENT_COEFFICIENT + 
            POSTURE_COEFFICIENT + HAND_SYMMETRY_COEFFICIENT + GESTURE_VARIETY_COEFFICIENT + 
            EYE_CONTACT_COEFFICIENT)
@@ -1009,7 +1009,7 @@ const GestureAnalysis: React.FC<Props> = ({
         
         // Apply curve to make scores higher - this gives a 10-15 point boost to mid-range scores
         const curvedScore = Math.round(Math.min(100, rawScore * 1.15));
-        newMetrics.overallScore = curvedScore;
+        newMetrics.OverallScore = curvedScore;
 
         return newMetrics;
       });
@@ -1113,12 +1113,12 @@ const GestureAnalysis: React.FC<Props> = ({
         <div className="bg-gray-900/50 p-3 rounded-lg border border-gray-700">
           <div className="flex justify-between items-center mb-2">
             <span className="text-gray-300">Overall Score</span>
-            <span className="text-xl font-bold text-blue-400">{metrics.overallScore}/100</span>
+            <span className="text-xl font-bold text-blue-400">{metrics.OverallScore}/100</span>
           </div>
           <div className="w-full bg-gray-700 rounded-full h-3">
             <div 
               className="h-3 rounded-full bg-blue-500 transition-all duration-500"
-              style={{ width: `${metrics.overallScore}%` }}
+              style={{ width: `${metrics.OverallScore}%` }}
             />
           </div>
         </div>
@@ -1198,14 +1198,14 @@ export interface PoseLandmark {
   }
   
   export interface GestureMetrics {
-    handMovement: number;
-    headMovement: number;
-    bodyMovement: number;
-    posture: number;
-    handSymmetry: number;
-    gestureVariety: number;
-    eyeContact: number;
-    overallScore: number;
+    HandMovement: number;
+    HeadMovement: number;
+    BodyMovement: number;
+    Posture: number;
+    HandSymmetry: number;
+    GestureVariety: number;
+    EyeContact: number;
+    OverallScore: number;
   }
   
   export interface GestureFeedback {
@@ -1219,14 +1219,14 @@ export interface PoseLandmark {
   }
   
   export interface AnalysisData {
-    handMovement: MetricData;
-    headMovement: MetricData;
-    bodyMovement: MetricData;
-    posture: MetricData;
-    handSymmetry: MetricData;
-    gestureVariety: MetricData;
-    eyeContact: MetricData;
-    overallScore: number;
+    HandMovement: MetricData;
+    HeadMovement: MetricData;
+    BodyMovement: MetricData;
+    Posture: MetricData;
+    HandSymmetry: MetricData;
+    GestureVariety: MetricData;
+    EyeContact: MetricData;
+    OverallScore: number;
     sessionDuration: number;
     transcript: string;
   }
@@ -1282,8 +1282,8 @@ export const getColorClass = (key: string, value: number): string => {
   const metricKey = key as keyof typeof OPTIMAL_RANGES;
   if (!OPTIMAL_RANGES[metricKey]) return 'bg-blue-500';
   
-  // For posture, use categorical colors
-  if (key === 'posture') {
+  // For Posture, use categorical colors
+  if (key === 'Posture') {
     if (value < 0.33) return 'bg-red-500';
     if (value < 0.67) return 'bg-yellow-500';
     return 'bg-green-500';
@@ -1300,8 +1300,8 @@ export const getMetricStatus = (key: string, value: number): string => {
   const metricKey = key as keyof typeof OPTIMAL_RANGES;
   if (!OPTIMAL_RANGES[metricKey]) return 'N/A';
   
-  // For posture, use categorical labels
-  if (key === 'posture') {
+  // For Posture, use categorical labels
+  if (key === 'Posture') {
     if (value < 0.33) return 'Poor';
     if (value < 0.67) return 'Fair';
     return 'Good';
@@ -1315,7 +1315,7 @@ export const getMetricStatus = (key: string, value: number): string => {
 
 // Function to format metric name for display
 export const formatMetricName = (key: string): string => {
-  return key === 'overallScore' ? 'Overall Score' : 
+  return key === 'OverallScore' ? 'Overall Score' : 
     key.replace(/([A-Z])/g, ' $1').trim();
 };
 
@@ -1334,14 +1334,14 @@ interface MetricData {
 }
 
 export interface AnalysisData {
-  handMovement: MetricData;
-  headMovement: MetricData;
-  bodyMovement: MetricData;
-  posture: MetricData;
-  handSymmetry: MetricData;
-  gestureVariety: MetricData;
-  eyeContact: MetricData;
-  overallScore: number;
+  HandMovement: MetricData;
+  HeadMovement: MetricData;
+  BodyMovement: MetricData;
+  Posture: MetricData;
+  HandSymmetry: MetricData;
+  GestureVariety: MetricData;
+  EyeContact: MetricData;
+  OverallScore: number;
   sessionDuration: number;
   transcript: string;
 }
@@ -1392,25 +1392,25 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
   const generateRecommendations = (): string[] => {
     const recommendations: string[] = [];
 
-    if (analysisData.handMovement.status === 'Low') {
+    if (analysisData.HandMovement.status === 'Low') {
       recommendations.push('Use more hand gestures to emphasize key points and engage your audience.');
-    } else if (analysisData.handMovement.status === 'High') {
+    } else if (analysisData.HandMovement.status === 'High') {
       recommendations.push('Try to reduce excessive hand movements as they may distract from your message.');
     }
 
-    if (analysisData.posture.status === 'Poor' || analysisData.posture.status === 'Fair') {
-      recommendations.push('Work on maintaining better posture by keeping your back straight and shoulders level.');
+    if (analysisData.Posture.status === 'Poor' || analysisData.Posture.status === 'Fair') {
+      recommendations.push('Work on maintaining better Posture by keeping your back straight and shoulders level.');
     }
 
-    if (analysisData.eyeContact.status === 'Low') {
+    if (analysisData.EyeContact.status === 'Low') {
       recommendations.push('Maintain more consistent eye contact with the camera to better connect with your audience.');
     }
 
-    if (analysisData.handSymmetry.status === 'Low') {
+    if (analysisData.HandSymmetry.status === 'Low') {
       recommendations.push('Try to use both hands more equally for a balanced presentation style.');
     }
 
-    if (analysisData.gestureVariety.status === 'Low') {
+    if (analysisData.GestureVariety.status === 'Low') {
       recommendations.push('Incorporate a wider variety of gestures to keep your presentation engaging.');
     }
 
@@ -1455,7 +1455,7 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
                 </p>
                 <p className="text-gray-700 dark:text-gray-300">
                   <span className="font-medium">Overall Score:</span>{' '}
-                  <span className="text-xl font-bold text-blue-600">{analysisData.overallScore}/100</span>
+                  <span className="text-xl font-bold text-blue-600">{analysisData.OverallScore}/100</span>
                 </p>
               </div>
             </div>
@@ -1477,7 +1477,7 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {Object.entries(analysisData).map(([key, value]) => {
                 // Skip non-metric fields and overall score (already displayed)
-                if (key === 'sessionDuration' || key === 'transcript' || key === 'overallScore') return null;
+                if (key === 'sessionDuration' || key === 'transcript' || key === 'OverallScore') return null;
                 
                 const metric = value as MetricData;
                 const formattedKey = key.replace(/([A-Z])/g, ' $1').trim();
@@ -2005,35 +2005,35 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
     // Prepare analysis data for the report
     if (currentMetrics) {
       const metricsData: AnalysisData = {
-        handMovement: {
-          value: currentMetrics.handMovement,
-          status: getMetricStatus('handMovement', currentMetrics.handMovement)
+        HandMovement: {
+          value: currentMetrics.HandMovement,
+          status: getMetricStatus('HandMovement', currentMetrics.HandMovement)
         },
-        headMovement: {
-          value: currentMetrics.headMovement,
-          status: getMetricStatus('headMovement', currentMetrics.headMovement)
+        HeadMovement: {
+          value: currentMetrics.HeadMovement,
+          status: getMetricStatus('HeadMovement', currentMetrics.HeadMovement)
         },
-        bodyMovement: {
-          value: currentMetrics.bodyMovement,
-          status: getMetricStatus('bodyMovement', currentMetrics.bodyMovement)
+        BodyMovement: {
+          value: currentMetrics.BodyMovement,
+          status: getMetricStatus('BodyMovement', currentMetrics.BodyMovement)
         },
-        posture: {
-          value: currentMetrics.posture,
-          status: getMetricStatus('posture', currentMetrics.posture)
+        Posture: {
+          value: currentMetrics.Posture,
+          status: getMetricStatus('Posture', currentMetrics.Posture)
         },
-        handSymmetry: {
-          value: currentMetrics.handSymmetry,
-          status: getMetricStatus('handSymmetry', currentMetrics.handSymmetry)
+        HandSymmetry: {
+          value: currentMetrics.HandSymmetry,
+          status: getMetricStatus('HandSymmetry', currentMetrics.HandSymmetry)
         },
-        gestureVariety: {
-          value: currentMetrics.gestureVariety,
-          status: getMetricStatus('gestureVariety', currentMetrics.gestureVariety)
+        GestureVariety: {
+          value: currentMetrics.GestureVariety,
+          status: getMetricStatus('GestureVariety', currentMetrics.GestureVariety)
         },
-        eyeContact: {
-          value: currentMetrics.eyeContact,
-          status: getMetricStatus('eyeContact', currentMetrics.eyeContact)
+        EyeContact: {
+          value: currentMetrics.EyeContact,
+          status: getMetricStatus('EyeContact', currentMetrics.EyeContact)
         },
-        overallScore: currentMetrics.overallScore,
+        OverallScore: currentMetrics.OverallScore,
         sessionDuration,
         transcript
       };
@@ -2047,17 +2047,17 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
   const getMetricStatus = (key: string, value: number): string => {
     // Define optimal ranges - copied from GestureAnalysis.tsx
     const OPTIMAL_RANGES = {
-      handMovement: { min: 0.08, max: 0.7 },
-      headMovement: { min: 0.01, max: 0.5 },
-      bodyMovement: { min: 0.02, max: 0.6 },
-      posture: { min: 0.4, max: 1.0 },
-      handSymmetry: { min: 0.2, max: 0.9 },
-      gestureVariety: { min: 0.15, max: 0.9 },
-      eyeContact: { min: 0.3, max: 0.9 }
+      HandMovement: { min: 0.08, max: 0.7 },
+      HeadMovement: { min: 0.01, max: 0.5 },
+      BodyMovement: { min: 0.02, max: 0.6 },
+      Posture: { min: 0.4, max: 1.0 },
+      HandSymmetry: { min: 0.2, max: 0.9 },
+      GestureVariety: { min: 0.15, max: 0.9 },
+      EyeContact: { min: 0.3, max: 0.9 }
     };
     
-    // For posture, use categorical labels
-    if (key === 'posture') {
+    // For Posture, use categorical labels
+    if (key === 'Posture') {
       if (value < 0.33) return 'Poor';
       if (value < 0.67) return 'Fair';
       return 'Good';

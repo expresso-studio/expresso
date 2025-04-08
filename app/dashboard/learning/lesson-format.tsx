@@ -17,7 +17,6 @@ interface Props extends LessonType {
 }
 
 export default function LessonFormat({
-  id,
   icon,
   color,
   courseName,
@@ -53,7 +52,7 @@ export default function LessonFormat({
       >
         <div className="flex gap-4">
           {rotates.map((rotate) => (
-            <div className="text-white text-5xl">
+            <div className="text-white text-5xl" key={rotate}>
               <Icon />
             </div>
           ))}

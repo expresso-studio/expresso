@@ -23,7 +23,7 @@ type FillerWordStats = {
   max_wpm: string;
   min_wpm: string;
   session_wpm: string;
-}
+};
 
 const chartConfig = {
   desktop: {
@@ -43,12 +43,14 @@ export function WPMChart() {
   useEffect(() => {
     const fetchWPM = async () => {
       if (!isAuthenticated || !user?.sub) {
-        console.error('User not authenticated');
+        console.error("User not authenticated");
         return;
       }
-      
+
       try {
-        const response = await fetch(`/api/fillerwords/wpm?userId=${encodeURIComponent(user.sub)}`);
+        const response = await fetch(
+          `/api/fillerwords/wpm?userId=${encodeURIComponent(user.sub)}`
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch filler words");
         }
@@ -72,9 +74,9 @@ export function WPMChart() {
         console.error("Error fetching filler words:", error);
       }
     };
-  
+
     fetchWPM();
-  }, []);
+  }, [isAuthenticated, user?.sub]);
 
   return (
     <Card>

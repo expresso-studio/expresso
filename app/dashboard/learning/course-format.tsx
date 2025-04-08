@@ -12,7 +12,6 @@ interface Props extends CourseType {
 }
 
 export default function CourseFormat({
-  id,
   icon,
   color,
   name,
@@ -91,8 +90,13 @@ export default function CourseFormat({
           </div>
           <div className="flex flex-col p-4 bg-lightCoffee/10 dark:bg-black/75 rounded-lg">
             {lessonsWithStatus &&
-              lessonsWithStatus.map((lesson, i) => (
-                <Lesson {...lesson} color={color} courseName={name} />
+              lessonsWithStatus.map((lesson) => (
+                <Lesson
+                  {...lesson}
+                  color={color}
+                  courseName={name}
+                  key={lesson.id}
+                />
               ))}
           </div>
         </div>

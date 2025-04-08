@@ -24,11 +24,6 @@ interface CourseProgressProps {
   color: string;
 }
 
-const chartData = [
-  { name: "completed", value: 0, fill: "hsl(var(--chart-1))" },
-  { name: "remaining", value: 100, fill: "hsl(29 6% 69%)" },
-];
-
 const chartConfig = {
   completed: {
     label: "Completed",
@@ -46,7 +41,7 @@ export default function CourseProgress({ status, color }: CourseProgressProps) {
       { name: "completed", value: status, fill: color },
       { name: "remaining", value: 100 - status, fill: "hsl(29 6% 69%)" },
     ];
-  }, [status]);
+  }, [status, color]);
 
   return (
     <Card className="flex flex-col">

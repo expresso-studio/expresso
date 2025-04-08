@@ -132,17 +132,6 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
     };
   }, [isClient, onError]);
 
-  // Handle recording state changes
-  useEffect(() => {
-    if (!streamRef.current) return;
-
-    if (isRecording) {
-      startRecording();
-    } else {
-      stopRecording();
-    }
-  }, [isRecording]);
-
   // Start recording function
   const startRecording = () => {
     if (!streamRef.current) return;
@@ -193,23 +182,34 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
     }
   };
 
-  // Stop recording function
-  const stopRecording = () => {
-    if (
-      mediaRecorderRef.current &&
-      mediaRecorderRef.current.state !== "inactive"
-    ) {
-      mediaRecorderRef.current.onstop = () => {
-        const videoBlob = new Blob(recordedChunksRef.current, {
-          type: "video/mp4",
-        });
-        onVideoRecorded(videoBlob);
-        console.log("Recording stopped and saved");
-      };
+  // Handle recording state changes
+  useEffect(() => {
+    if (!streamRef.current) return;
 
-      mediaRecorderRef.current.stop();
+    // Stop recording function
+    const stopRecording = () => {
+      if (
+        mediaRecorderRef.current &&
+        mediaRecorderRef.current.state !== "inactive"
+      ) {
+        mediaRecorderRef.current.onstop = () => {
+          const videoBlob = new Blob(recordedChunksRef.current, {
+            type: "video/mp4",
+          });
+          onVideoRecorded(videoBlob);
+          console.log("Recording stopped and saved");
+        };
+
+        mediaRecorderRef.current.stop();
+      }
+    };
+
+    if (isRecording) {
+      startRecording();
+    } else {
+      stopRecording();
     }
-  };
+  }, [isRecording, onVideoRecorded]);
 
   // Initialize pose detection
   useEffect(() => {

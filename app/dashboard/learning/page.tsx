@@ -4,10 +4,6 @@ import * as React from "react";
 import Heading1 from "@/components/heading-1";
 import PageFormat from "@/components/page-format";
 import { MetricType, ReportItemType } from "@/lib/types";
-import Recording from "@/components/recording";
-import { cn } from "@/lib/utils";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import ProtectedRoute from "@/components/protected-route";
 import { useAuthUtils } from "@/hooks/useAuthUtils";
 import Recommendations from "./recommendations";
@@ -32,7 +28,6 @@ export default function Page() {
       refreshToken();
     }
   }, [error, refreshToken]);
-  const [reports, setReports] = React.useState<ReportItemType[]>([]);
   const [avgMetrics, setAvgMetrics] = React.useState<MetricType[]>([]);
   const [loadingReports, setLoadingReports] = React.useState(true);
 
@@ -96,7 +91,6 @@ export default function Page() {
           throw new Error("Failed to fetch report data");
         }
         const data = await res.json();
-        setReports(data);
         setAvgMetrics(calculateAvgMetrics(data));
       } catch (err) {
         console.error("Error fetching report data:", err);

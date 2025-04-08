@@ -78,7 +78,7 @@ export default function Recommendations({ loading, metrics, courses }: Props) {
           </h2>
           <div className="text-lg text-darkCoffee dark:text-darkLatte mt-2">
             <div>
-              It looks like you haven't made your first presentation yet!
+              {"It looks like you haven't made your first presentation yet!"}
             </div>
             <MakePresentationButton text="Make your first" />
           </div>
@@ -133,8 +133,9 @@ export default function Recommendations({ loading, metrics, courses }: Props) {
           ) : (
             <>
               <div>
-                Great job! You're making good progress in all areas. Maybe try
-                practicing some new presentations:
+                {
+                  "Great job! You're making good progress in all areas. Maybe try practicing some new presentations:"
+                }
               </div>
               <MakePresentationButton text="Make a new" />
             </>

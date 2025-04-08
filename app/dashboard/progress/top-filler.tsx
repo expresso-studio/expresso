@@ -9,25 +9,32 @@ interface Props {
 }
 
 const TopFiller = React.memo<Props>(function TopFiller({ short }) {
-  const [fillerWords, setFillerWords] = useState<string[]>(["um", "like", "but"]);
+  const [fillerWords, setFillerWords] = useState<string[]>([
+    "um",
+    "like",
+    "but",
+  ]);
   const { user, isAuthenticated } = useAuth0();
 
   useEffect(() => {
     const fetchTopFillerWords = async () => {
       if (!isAuthenticated || !user?.sub) {
-        console.error('User not authenticated');
+        console.error("User not authenticated");
         return;
       }
 
       try {
-        const response = await fetch(`/api/fillerwords/top?userId=${encodeURIComponent(user.sub)}`);
+        const response = await fetch(
+          `/api/fillerwords/top?userId=${encodeURIComponent(user.sub)}`
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch filler words");
         }
 
         const data = await response.json();
         const words = data.fillerWords.map(
-          (item: { filler_word: string; total_count: string }) => item.filler_word
+          (item: { filler_word: string; total_count: string }) =>
+            item.filler_word
         );
         setFillerWords(words.slice(0, 3));
       } catch (error) {
@@ -36,7 +43,7 @@ const TopFiller = React.memo<Props>(function TopFiller({ short }) {
     };
 
     fetchTopFillerWords();
-  }, []);
+  }, [isAuthenticated, user?.sub]);
 
   return (
     <div

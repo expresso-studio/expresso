@@ -11,12 +11,13 @@ interface MetricsDisplayProps {
   toggleMetric?: (metric: keyof GestureMetrics) => void;
 }
 
-const MetricsDisplay: React.FC<MetricsDisplayProps> = ({ 
-  metrics, 
+const MetricsDisplay: React.FC<MetricsDisplayProps> = ({
+  metrics,
   enabledMetrics = Object.fromEntries(
-    Object.keys(metrics).map(key => [key, true])
-  ) as Record<keyof GestureMetrics, boolean>, 
-  toggleMetric }) => {
+    Object.keys(metrics).map((key) => [key, true])
+  ) as Record<keyof GestureMetrics, boolean>,
+  toggleMetric,
+}) => {
   return (
     <div className="space-y-3">
       {Object.entries(metrics).map(([key, value]) => {
@@ -41,7 +42,7 @@ const MetricsDisplay: React.FC<MetricsDisplayProps> = ({
               {enabled && (
                 <span
                   className={
-                    key === "overallScore"
+                    key === "OverallScore"
                       ? "text-white font-bold"
                       : getColorClass(key, value) === "bg-blue-500"
                       ? "text-blue-400"
@@ -52,7 +53,7 @@ const MetricsDisplay: React.FC<MetricsDisplayProps> = ({
                       : "text-red-400"
                   }
                 >
-                  {key === "overallScore"
+                  {key === "OverallScore"
                     ? `${value}/100`
                     : getMetricStatus(key, value)}
                 </span>
@@ -62,12 +63,12 @@ const MetricsDisplay: React.FC<MetricsDisplayProps> = ({
               <div className="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
                 <div
                   className={`h-3 rounded-full transition-all duration-300 ${
-                    key === "overallScore"
+                    key === "OverallScore"
                       ? "bg-blue-500"
                       : getColorClass(key, value)
                   }`}
                   style={{
-                    width: `${key === "overallScore" ? value : value * 100}%`,
+                    width: `${key === "OverallScore" ? value : value * 100}%`,
                   }}
                 />
               </div>

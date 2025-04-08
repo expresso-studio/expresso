@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import EvaluateVideo, { PoseResults } from "./EvaluateVideo";
 import GestureAnalysis from "./gesture-analysis/GestureAnalysis";
 import AnalysisReport from "./AnalysisReport";
@@ -28,14 +28,14 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
   const [showReport, setShowReport] = useState(false);
   const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
   const [currentMetrics, setCurrentMetrics] = useState<GestureMetrics>({
-    handMovement: 0.5,
-    headMovement: 0.5,
-    bodyMovement: 0.5,
-    posture: 0.5,
-    handSymmetry: 0.5,
-    gestureVariety: 0.5,
-    eyeContact: 0.5,
-    overallScore: 50,
+    HandMovement: 0.5,
+    HeadMovement: 0.5,
+    BodyMovement: 0.5,
+    Posture: 0.5,
+    HandSymmetry: 0.5,
+    GestureVariety: 0.5,
+    EyeContact: 0.5,
+    OverallScore: 50,
   });
   const [recordedVideo, setRecordedVideo] = useState<Blob | null>(null);
   const [showSkeleton, setShowSkeleton] = useState(false);
@@ -47,6 +47,90 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
 
   // Timer ref for tracking session duration
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Helper function to get metric status
+  const getMetricStatus = useCallback((key: string, value: number): string => {
+    // Define optimal ranges
+    const OPTIMAL_RANGES = {
+      HandMovement: { min: 0.08, max: 0.7 },
+      HeadMovement: { min: 0.01, max: 0.5 },
+      BodyMovement: { min: 0.02, max: 0.6 },
+      Posture: { min: 0.4, max: 1.0 },
+      HandSymmetry: { min: 0.2, max: 0.9 },
+      GestureVariety: { min: 0.15, max: 0.9 },
+      EyeContact: { min: 0.3, max: 0.9 },
+    };
+
+    // For Posture, use categorical labels
+    if (key === "Posture") {
+      if (value < 0.33) return "Poor";
+      if (value < 0.67) return "Fair";
+      return "Good";
+    }
+
+    // For other metrics
+    if (value < OPTIMAL_RANGES[key as keyof typeof OPTIMAL_RANGES].min)
+      return "Low";
+    if (value > OPTIMAL_RANGES[key as keyof typeof OPTIMAL_RANGES].max)
+      return "High";
+    return "Normal";
+  }, []);
+
+  // Generate the analysis report
+  const generateAnalysisReport = useCallback(() => {
+    const metricsData: AnalysisData = {
+      HandMovement: {
+        value: currentMetrics.HandMovement,
+        status: getMetricStatus("HandMovement", currentMetrics.HandMovement),
+      },
+      HeadMovement: {
+        value: currentMetrics.HeadMovement,
+        status: getMetricStatus("HeadMovement", currentMetrics.HeadMovement),
+      },
+      BodyMovement: {
+        value: currentMetrics.BodyMovement,
+        status: getMetricStatus("BodyMovement", currentMetrics.BodyMovement),
+      },
+      Posture: {
+        value: currentMetrics.Posture,
+        status: getMetricStatus("Posture", currentMetrics.Posture),
+      },
+      HandSymmetry: {
+        value: currentMetrics.HandSymmetry,
+        status: getMetricStatus("HandSymmetry", currentMetrics.HandSymmetry),
+      },
+      GestureVariety: {
+        value: currentMetrics.GestureVariety,
+        status: getMetricStatus(
+          "GestureVariety",
+          currentMetrics.GestureVariety
+        ),
+      },
+      EyeContact: {
+        value: currentMetrics.EyeContact,
+        status: getMetricStatus("EyeContact", currentMetrics.EyeContact),
+      },
+      OverallScore: currentMetrics.OverallScore,
+      sessionDuration,
+      transcript: transcriptRef.current || "No transcript available.",
+    };
+
+    setAnalysisData(metricsData);
+    setShowReport(true);
+  }, [
+    setAnalysisData,
+    setShowReport,
+    getMetricStatus,
+    currentMetrics.BodyMovement,
+    currentMetrics.EyeContact,
+    currentMetrics.GestureVariety,
+    currentMetrics.HandMovement,
+    currentMetrics.HandSymmetry,
+    currentMetrics.HeadMovement,
+    currentMetrics.OverallScore,
+    currentMetrics.Posture,
+    sessionDuration,
+  ]);
 
   // Set isClient to true once component mounts to prevent hydration mismatch
   useEffect(() => {
@@ -90,88 +174,19 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
         timerRef.current = null;
       }
     };
-  }, [isRecording]);
-
-  // Generate the analysis report
-  const generateAnalysisReport = () => {
-    const metricsData: AnalysisData = {
-      handMovement: {
-        value: currentMetrics.handMovement,
-        status: getMetricStatus("handMovement", currentMetrics.handMovement),
-      },
-      headMovement: {
-        value: currentMetrics.headMovement,
-        status: getMetricStatus("headMovement", currentMetrics.headMovement),
-      },
-      bodyMovement: {
-        value: currentMetrics.bodyMovement,
-        status: getMetricStatus("bodyMovement", currentMetrics.bodyMovement),
-      },
-      posture: {
-        value: currentMetrics.posture,
-        status: getMetricStatus("posture", currentMetrics.posture),
-      },
-      handSymmetry: {
-        value: currentMetrics.handSymmetry,
-        status: getMetricStatus("handSymmetry", currentMetrics.handSymmetry),
-      },
-      gestureVariety: {
-        value: currentMetrics.gestureVariety,
-        status: getMetricStatus(
-          "gestureVariety",
-          currentMetrics.gestureVariety
-        ),
-      },
-      eyeContact: {
-        value: currentMetrics.eyeContact,
-        status: getMetricStatus("eyeContact", currentMetrics.eyeContact),
-      },
-      overallScore: currentMetrics.overallScore,
-      sessionDuration,
-      transcript: transcriptRef.current || "No transcript available.",
-    };
-
-    setAnalysisData(metricsData);
-    setShowReport(true);
-  };
+  }, [isRecording, generateAnalysisReport]);
 
   // Callback function to receive metrics from GestureAnalysis
-  const handleMetricsUpdate = (metrics: GestureMetrics) => {
-    setCurrentMetrics(metrics);
-  };
+  const handleMetricsUpdate = useCallback(
+    (metrics: GestureMetrics) => setCurrentMetrics(metrics),
+    [setCurrentMetrics]
+  );
 
   // Function to handle the recorded video blob
-  const handleVideoRecorded = (videoBlob: Blob) => {
-    setRecordedVideo(videoBlob);
-  };
-
-  // Helper function to get metric status
-  const getMetricStatus = (key: string, value: number): string => {
-    // Define optimal ranges
-    const OPTIMAL_RANGES = {
-      handMovement: { min: 0.08, max: 0.7 },
-      headMovement: { min: 0.01, max: 0.5 },
-      bodyMovement: { min: 0.02, max: 0.6 },
-      posture: { min: 0.4, max: 1.0 },
-      handSymmetry: { min: 0.2, max: 0.9 },
-      gestureVariety: { min: 0.15, max: 0.9 },
-      eyeContact: { min: 0.3, max: 0.9 },
-    };
-
-    // For posture, use categorical labels
-    if (key === "posture") {
-      if (value < 0.33) return "Poor";
-      if (value < 0.67) return "Fair";
-      return "Good";
-    }
-
-    // For other metrics
-    if (value < OPTIMAL_RANGES[key as keyof typeof OPTIMAL_RANGES].min)
-      return "Low";
-    if (value > OPTIMAL_RANGES[key as keyof typeof OPTIMAL_RANGES].max)
-      return "High";
-    return "Normal";
-  };
+  const handleVideoRecorded = useCallback(
+    (videoBlob: Blob) => setRecordedVideo(videoBlob),
+    [setRecordedVideo]
+  );
 
   // Initialize MediaPipe script
   useEffect(() => {

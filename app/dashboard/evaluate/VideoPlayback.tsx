@@ -3,24 +3,13 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useScript } from "@/context/ScriptContext";
-import { MetricData, MetricInput } from "@/lib/types";
+import { AnalysisData, MetricInput } from "@/lib/types";
 import { MetricNames } from "@/lib/constants";
 
 interface VideoPlaybackProps {
   videoBlob: Blob | null;
   onDownload?: () => void;
-  metrics: {
-    handMovement: MetricData;
-    headMovement: MetricData;
-    bodyMovement: MetricData;
-    posture: MetricData;
-    handSymmetry: MetricData;
-    gestureVariety: MetricData;
-    eyeContact: MetricData;
-    overallScore: number;
-    sessionDuration: number;
-    transcript: string;
-  };
+  metrics: AnalysisData;
 }
 
 const VideoPlayback: React.FC<VideoPlaybackProps> = ({
@@ -96,7 +85,11 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({
       // save script
       console.log("Script and presentationId:", { script, presentationId });
 
-      if (typeof script === "string" && script.trim() !== "" && presentationId) {
+      if (
+        typeof script === "string" &&
+        script.trim() !== "" &&
+        presentationId
+      ) {
         const scriptRes = await fetch("/api/save-script", {
           method: "POST",
           headers: {
@@ -108,11 +101,11 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({
             script,
           }),
         });
-      
+
         if (!scriptRes.ok) {
           throw new Error("Script upload failed");
         }
-      
+
         const { scriptId } = await scriptRes.json();
         console.log("Script saved successfully. ID:", scriptId);
       } else {
@@ -156,35 +149,35 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({
           const metricsToSend: MetricInput[] = [
             {
               name: MetricNames.HandSymmetry,
-              value: Math.min(1, Math.max(0, metrics.handMovement.value)),
+              value: Math.min(1, Math.max(0, metrics.HandMovement.value)),
             },
             {
               name: MetricNames.HeadMovement,
-              value: Math.min(1, Math.max(0, metrics.headMovement.value)),
+              value: Math.min(1, Math.max(0, metrics.HeadMovement.value)),
             },
             {
               name: MetricNames.BodyMovement,
-              value: Math.min(1, Math.max(0, metrics.bodyMovement.value)),
+              value: Math.min(1, Math.max(0, metrics.BodyMovement.value)),
             },
             {
               name: MetricNames.Posture,
-              value: Math.min(1, Math.max(0, metrics.posture.value)),
+              value: Math.min(1, Math.max(0, metrics.Posture.value)),
             },
             {
               name: MetricNames.HandSymmetry,
-              value: Math.min(1, Math.max(0, metrics.handSymmetry.value)),
+              value: Math.min(1, Math.max(0, metrics.HandSymmetry.value)),
             },
             {
               name: MetricNames.GestureVariety,
-              value: Math.min(1, Math.max(0, metrics.gestureVariety.value)),
+              value: Math.min(1, Math.max(0, metrics.GestureVariety.value)),
             },
             {
               name: MetricNames.EyeContact,
-              value: Math.min(1, Math.max(0, metrics.eyeContact.value)),
+              value: Math.min(1, Math.max(0, metrics.EyeContact.value)),
             },
             {
               name: MetricNames.OverallScore,
-              value: Math.min(1, Math.max(0, metrics.overallScore)),
+              value: Math.min(1, Math.max(0, metrics.OverallScore)),
             },
           ];
 

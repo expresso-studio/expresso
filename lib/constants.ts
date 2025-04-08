@@ -97,7 +97,7 @@ export enum CourseNames {
 
 export enum CourseLinks {
   Intro = "intro",
-  HandLanguage = "head-language",
+  HandLanguage = "hand-language",
   BodyLanguage = "body-language",
   HeadLanguage = "head-language",
   Gestures = "gestures",
@@ -127,7 +127,7 @@ export enum LessonLinks {
   HandMovement = "hand-movement",
   HandSymmetry = "hand-symmetry",
   BodyMovement = "body-movement",
-  Posture = "posture",
+  Posture = "Posture",
   HeadMovement = "head-movement",
   EyeContact = "eye-contact",
   GestureVariety = "gesture-variety",
@@ -312,11 +312,11 @@ export const EYE_CONTACT_COEFFICIENT = 0.1;
 
 // Optimal value ranges for public speaking - with wider ranges for easier achievement
 export const OPTIMAL_RANGES = {
-  handMovement: { min: 0.08, max: 0.7 }, // Even wider range for hand movement
-  headMovement: { min: 0.01, max: 0.5 }, // Wider range for head movement
-  bodyMovement: { min: 0.02, max: 0.6 }, // New parameter with wide range
-  posture: { min: 0.4, max: 1.0 }, // Lower threshold for good posture
-  handSymmetry: { min: 0.2, max: 0.9 }, // Even lower minimum threshold
-  gestureVariety: { min: 0.15, max: 0.9 }, // Lower minimum threshold
-  eyeContact: { min: 0.3, max: 0.9 }, // Lower minimum threshold
+  HandMovement: { min: 0.08, max: 0.7 }, // Even wider range for hand movement
+  HeadMovement: { min: 0.01, max: 0.5 }, // Wider range for head movement
+  BodyMovement: { min: 0.02, max: 0.6 }, // New parameter with wide range
+  Posture: { min: 0.4, max: 1.0 }, // Lower threshold for good Posture
+  HandSymmetry: { min: 0.2, max: 0.9 }, // Even lower minimum threshold
+  GestureVariety: { min: 0.15, max: 0.9 }, // Lower minimum threshold
+  EyeContact: { min: 0.3, max: 0.9 }, // Lower minimum threshold
 };
