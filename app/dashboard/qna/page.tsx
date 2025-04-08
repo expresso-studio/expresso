@@ -110,11 +110,11 @@ export default function Page() {
             </p>
             <p></p>
             <div className = "flex flex-col gap-4 h-screen">
-                <div className = {`flex items-center justify-center w-[min(100%,1000px)]
+                <div className = {`flex items-center justify-center w-[min(100%,800px)]
                     max-h-[50px] min-h-[50px] bg-lightCaramel dark:bg-darkCaramel mb-0 p-4 mx-auto text-xl`}>
                     <p>{title}</p>
                 </div>
-                <div className = {`w-[min(100%,1000px)] h-[min(100%,600px)] mx-auto p-16 
+                <div className = {`w-[min(100%,800px)] h-[min(100%,500px)] mx-auto p-16 
                     bg-[#F8D1B7] dark:text-white dark:bg-[#311E13]
                     rounded-lg flex flex-col text-xl`}>
                     <p>Question {currentIndex + 1}: </p>
@@ -142,7 +142,7 @@ export default function Page() {
                             {questions.map((_, index) => (
                             <div
                                 key={index}
-                                className={`w-3 h-3 rounded-full ${currentIndex === index ? 'bg-black dark:lightCream' : ' bg-lightCream dark:bg-black'}`}
+                                className={`w-3 h-3 rounded-full ${currentIndex === index ? 'bg-black dark:bg-lightCream' : ' bg-lightCream dark:bg-black'}`}
                             />
                             ))}
                         </div>
