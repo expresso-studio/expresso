@@ -3,6 +3,8 @@ import { MetricType, ReportItemType } from "@/lib/types";
 import {
   cn,
   generateRecommendations,
+  getWordColorClass,
+  getWordColorHex,
   transformMetricsToAnalysisData,
 } from "@/lib/utils";
 import { useAuthUtils } from "@/hooks/useAuthUtils";
@@ -11,9 +13,12 @@ import {
   MetricNameToDisplay,
   MetricNameToIcon,
   MetricNameToId,
+  OPTIMAL_RANGES,
 } from "@/lib/constants";
 import { outfit } from "@/app/fonts";
-import { Lightbulb } from "lucide-react";
+import KeyRecommendations from "@/components/key-recommendations";
+import MetricBar from "@/components/metric-bar";
+import { getMetricStatus } from "../evaluate/gesture-analysis";
 
 interface Props {
   short?: boolean;
@@ -117,15 +122,10 @@ const Summary = React.memo<Props>(function Summary({ short }) {
 
   return (
     <div className="flex flex-col gap-8 w-full h-full">
-      {recommendations && (
-        <div className="bg-white dark:bg-black p-4 rounded-lg">
-          {recommendations.map((rec, i) => (
-            <div className="flex gap-2 items-start pb-4" key={`rec${i}`}>
-              <Lightbulb className="text-darkCaramel" />
-              <p>{rec}</p>
-            </div>
-          ))}
-        </div>
+      {!short && (
+        <KeyRecommendations
+          analysisData={transformMetricsToAnalysisData(avgMetrics)}
+        />
       )}
       <div className="w-full h-full rounded-lg bg-lightGray dark:bg-stone-700 relative overflow-hidden">
         <div
@@ -139,22 +139,48 @@ const Summary = React.memo<Props>(function Summary({ short }) {
           return (
             (!short || i < 3) && (
               <div
-                className={cn(
-                  "flex items-center gap-8 justify-between px-4 py-2 group",
-                  "even:bg-[#e0d7ce]",
-                  "dark:even:bg-[#4d4843]"
-                )}
+                className={cn("even:bg-[#e0d7ce]", "dark:even:bg-[#4d4843]")}
                 key={metric.metric_id}
               >
-                <div className="flex gap-2 items-center">
-                  <Icon />
-                  <span className="truncate">
-                    {MetricNameToDisplay[metric.name]}
+                <div className="flex items-center gap-8 justify-between px-4 py-2 group">
+                  <div className="text-lg flex gap-2 items-center">
+                    <Icon />
+                    <span className="truncate">
+                      {MetricNameToDisplay[metric.name]}
+                    </span>
+                  </div>
+
+                  <span
+                    style={{
+                      color: getWordColorHex(
+                        getMetricStatus(metric.name, metric.score)
+                      ),
+                    }}
+                  >
+                    {metric.score.toFixed(2)}%
                   </span>
                 </div>
-                <span className="font-bold text-[#33926d]">
-                  {metric.score.toFixed(2)}
-                </span>
+                <div className="px-4 pb-4">
+                  {metric.name !== "OverallScore" ? (
+                    <MetricBar
+                      name={metric.name as keyof typeof OPTIMAL_RANGES}
+                      metric={{
+                        value: metric.score,
+                        status: getMetricStatus(metric.name, metric.score),
+                      }}
+                      live={true}
+                    />
+                  ) : (
+                    <div className="mt-2 w-full bg-gray-300 dark:bg-gray-700 rounded-full h-2.5">
+                      <div
+                        className={`h-2.5 rounded-full ${getWordColorClass(
+                          getMetricStatus(metric.name, metric.score)
+                        )}`}
+                        style={{ width: `${metric.score * 100}%` }}
+                      ></div>
+                    </div>
+                  )}
+                </div>
               </div>
             )
           );

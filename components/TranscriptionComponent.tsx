@@ -348,7 +348,7 @@ function TranscriptionComponent({
         <button
           onClick={handleRecordButtonClick}
           disabled={isConnecting}
-          className={`px-6 py-3 rounded-lg text-lg font-medium 
+          className={`px-6 py-3 rounded-lg text-lg font-medium cursor-pointer
             ${
               isConnecting
                 ? "bg-gray-500 cursor-wait"

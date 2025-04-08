@@ -4,6 +4,11 @@ import React, { useState, useEffect } from "react"; // Import useState and useEf
 import VideoPlayback from "./VideoPlayback";
 import { AnalysisData, MetricData } from "@/lib/types";
 import { generateRecommendations } from "@/lib/utils";
+import { OPTIMAL_RANGES } from "@/lib/constants";
+import MetricIndicator from "@/components/metric-indicator";
+import { outfit } from "@/app/fonts";
+import DetailedMetrics from "@/components/detailed-metrics";
+import KeyRecommendations from "@/components/key-recommendations";
 
 // Define interface for Emotion data if needed, based on API response
 interface EmotionScores {
@@ -85,28 +90,6 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  // Function to get color class based on status
-  const getColorClass = (status: string): string => {
-    switch (status) {
-      case "Low":
-        return "text-red-500";
-      case "High":
-        return "text-amber-500";
-      case "Normal":
-        return "text-blue-500";
-      case "Good":
-        return "text-green-500";
-      case "Fair":
-        return "text-yellow-500";
-      case "Poor":
-        return "text-red-500";
-      default:
-        return "text-gray-500";
-    }
-  };
-
-  const recommendations = generateRecommendations(analysisData);
-
   // Truncate or format transcript if it's too long
   const formattedTranscript =
     analysisData.transcript.length > 500
@@ -115,15 +98,15 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          <div className="flex justify-between items-center border-b pb-4 mb-4">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+      <div className="bg-white dark:bg-black rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <div className="bg-lightCream dark:bg-darkBurnt p-6">
+          <div className="flex justify-between items-center -b pb-4 mb-4">
+            <h2 className="text-2xl font-bold text-stone-900 dark:text-white">
               Presentation Analysis Report
             </h2>
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white"
+              className="text-stone-500 hover:text-stone-700 dark:text-stone-300 dark:hover:text-white"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -143,8 +126,11 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
           </div>
 
           {/* Video Recording */}
-          <div className="mb-6 border rounded-lg p-4 dark:border-gray-700">
-            <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">
+          <div className="mb-6 rounded-lg p-4 dark:-stone-700">
+            <h3
+              style={outfit.style}
+              className="text-lg font-semibold mb-3 text-stone-900 dark:text-white"
+            >
               Presentation Recording
             </h3>
             <VideoPlayback videoBlob={recordedVideo} metrics={analysisData} />
@@ -152,16 +138,19 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Session Overview */}
-            <div className="border rounded-lg p-4 dark:border-gray-700">
-              <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">
+            <div className="bg-white dark:bg-black rounded-lg p-4 dark:-stone-700">
+              <h3
+                style={outfit.style}
+                className="text-lg font-semibold mb-2 text-stone-900 dark:text-white"
+              >
                 Session Overview
               </h3>
               <div className="space-y-2">
-                <p className="text-gray-700 dark:text-gray-300">
+                <p className="text-stone-700 dark:text-stone-300">
                   <span className="font-medium">Duration:</span>{" "}
                   {formatTime(analysisData.sessionDuration)}
                 </p>
-                <p className="text-gray-700 dark:text-gray-300">
+                <p className="text-stone-700 dark:text-stone-300">
                   <span className="font-medium">Overall Score:</span>{" "}
                   <span className="text-xl font-bold text-blue-600">
                     {analysisData.OverallScore}/100
@@ -171,84 +160,35 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
             </div>
 
             {/* Recommendations */}
-            <div className="border rounded-lg p-4 dark:border-gray-700">
-              <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">
-                Key Recommendations
-              </h3>
-              <ul className="list-disc pl-5 space-y-1 text-gray-700 dark:text-gray-300">
-                {recommendations.map((rec, index) => (
-                  <li key={index}>{rec}</li>
-                ))}
-              </ul>
-            </div>
+            <KeyRecommendations analysisData={analysisData} />
           </div>
 
           {/* Detailed Metrics */}
-          <div className="mt-6 border rounded-lg p-4 dark:border-gray-700">
-            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
-              Detailed Metrics
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Object.entries(analysisData).map(([key, value]) => {
-                // Skip non-metric fields and overall score (already displayed)
-                if (
-                  key === "sessionDuration" ||
-                  key === "transcript" ||
-                  key === "OverallScore"
-                )
-                  return null;
-
-                const metric = value as MetricData;
-                const formattedKey = key.replace(/([A-Z])/g, " $1").trim();
-
-                return (
-                  <div
-                    key={key}
-                    className="border rounded-lg p-3 dark:border-gray-700"
-                  >
-                    <div className="flex justify-between items-center">
-                      <h4 className="font-medium text-gray-900 dark:text-white">
-                        {formattedKey}
-                      </h4>
-                      <span
-                        className={`font-medium ${getColorClass(
-                          metric.status
-                        )}`}
-                      >
-                        {metric.status}
-                      </span>
-                    </div>
-                    <div className="mt-2 w-full bg-gray-300 dark:bg-gray-700 rounded-full h-2.5">
-                      <div
-                        className={`h-2.5 rounded-full ${getColorClass(
-                          metric.status
-                        ).replace("text-", "bg-")}`}
-                        style={{ width: `${metric.value * 100}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <DetailedMetrics analysisData={analysisData} />
 
           {/* Transcript */}
-          <div className="mt-6 border rounded-lg p-4 dark:border-gray-700">
-            <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">
+          <div className="mt-6  rounded-lg p-4 dark:-stone-700">
+            <h3
+              style={outfit.style}
+              className="text-lg font-semibold mb-2 text-stone-900 dark:text-white"
+            >
               Transcript
             </h3>
-            <div className="max-h-60 overflow-y-auto p-3 bg-gray-100 dark:bg-gray-900 rounded text-gray-800 dark:text-gray-300">
+            <div className="max-h-60 overflow-y-auto p-3 bg-stone-100 dark:bg-stone-900 rounded text-stone-800 dark:text-stone-300">
               {formattedTranscript}
             </div>
           </div>
 
           {/* Tone Analysis Section (Emotion & Sentiment) */}
-          <div className="mt-6 border rounded-lg p-4 dark:border-gray-700">
-            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+          <div className="mt-6  rounded-lg p-4 dark:-stone-700">
+            <h3
+              style={outfit.style}
+              className="text-lg font-semibold mb-4 text-stone-900 dark:text-white"
+            >
               Tone Analysis (via IBM Watson)
             </h3>
             {isLoadingAnalysis && (
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-stone-600 dark:text-stone-400">
                 Loading analysis data...
               </p>
             )}
@@ -260,9 +200,9 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
             {sentimentScore !== null &&
               !isLoadingAnalysis &&
               !analysisError && (
-                <div className="mb-4 border rounded-lg p-3 dark:border-gray-700">
+                <div className="mb-4  rounded-lg p-3 dark:-stone-700">
                   <div className="flex justify-between items-center mb-1">
-                    <h4 className="font-medium text-gray-900 dark:text-white">
+                    <h4 className="font-medium text-stone-900 dark:text-white">
                       Overall Sentiment
                     </h4>
                     <span
@@ -282,7 +222,7 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
                       ({sentimentScore.toFixed(2)})
                     </span>
                   </div>
-                  <div className="w-full bg-gray-300 dark:bg-gray-700 rounded-full h-2.5">
+                  <div className="w-full bg-stone-300 dark:bg-stone-700 rounded-full h-2.5">
                     {/* Represent score from -1 to 1 on a 0 to 100 scale */}
                     <div
                       className={`h-2.5 rounded-full ${
@@ -302,7 +242,7 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
                     ></div>
                     {/* Add a marker for neutral */}
                     <div className="relative bottom-1.5 h-full flex justify-center items-center">
-                      <div className="w-px h-4 bg-gray-500 dark:bg-gray-400"></div>
+                      <div className="w-px h-4 bg-stone-500 dark:bg-stone-400"></div>
                     </div>
                   </div>
                 </div>
@@ -311,24 +251,24 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
             {/* Emotion Display */}
             {emotionData && !isLoadingAnalysis && !analysisError && (
               <div>
-                <h4 className="text-md font-semibold mb-2 text-gray-800 dark:text-gray-200">
+                <h4 className="text-md font-semibold mb-2 text-stone-800 dark:text-stone-200">
                   Emotion Breakdown
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {Object.entries(emotionData).map(([emotion, score]) => (
                     <div
                       key={emotion}
-                      className="border rounded-lg p-3 dark:border-gray-700"
+                      className="bg-white dark:bg-black rounded-lg p-3 dark:-stone-700"
                     >
                       <div className="flex justify-between items-center mb-1">
-                        <h4 className="font-medium text-gray-900 dark:text-white capitalize">
+                        <h4 className="font-medium text-stone-900 dark:text-white capitalize">
                           {emotion}
                         </h4>
                         <span className="font-medium text-blue-600">
                           {(score * 100).toFixed(1)}%
                         </span>
                       </div>
-                      <div className="w-full bg-gray-300 dark:bg-gray-700 rounded-full h-2.5">
+                      <div className="w-full bg-stone-300 dark:bg-stone-700 rounded-full h-2.5">
                         <div
                           className="bg-blue-500 h-2.5 rounded-full"
                           style={{ width: `${score * 100}%` }}
@@ -344,7 +284,7 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
               sentimentScore === null &&
               !isLoadingAnalysis &&
               !analysisError && (
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-stone-600 dark:text-stone-400">
                   No tone analysis data available for this transcript.
                 </p>
               )}
@@ -354,7 +294,7 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
           <div className="mt-6 flex justify-end space-x-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 dark:text-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="px-4 py-2  -stone-300 rounded-md text-stone-700 dark:text-stone-300 dark:-stone-600 hover:bg-stone-100 dark:hover:bg-stone-700"
             >
               Close
             </button>

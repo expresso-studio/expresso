@@ -1,9 +1,10 @@
 "use client";
 
 import React from "react";
-import { GestureMetrics } from "@/lib/types";
-import { MetricNames, MetricNameToIcon } from "@/lib/constants";
+import { GestureMetrics, MetricData } from "@/lib/types";
+import { MetricNames, MetricNameToIcon, OPTIMAL_RANGES } from "@/lib/constants";
 import { formatMetricName, getColorClass, getMetricStatus } from "../utils";
+import MetricBar from "@/components/metric-bar";
 
 interface MetricsDisplayProps {
   metrics: GestureMetrics;
@@ -59,19 +60,12 @@ const MetricsDisplay: React.FC<MetricsDisplayProps> = ({
                 </span>
               )}
             </div>
-            {enabled && (
-              <div className="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
-                <div
-                  className={`h-3 rounded-full transition-all duration-300 ${
-                    key === "OverallScore"
-                      ? "bg-blue-500"
-                      : getColorClass(key, value)
-                  }`}
-                  style={{
-                    width: `${key === "OverallScore" ? value : value * 100}%`,
-                  }}
-                />
-              </div>
+            {enabled && key !== "OverallScore" && (
+              <MetricBar
+                name={key as keyof typeof OPTIMAL_RANGES}
+                metric={{ status: getMetricStatus(key, value), value: value }}
+                live={true}
+              />
             )}
           </div>
         );

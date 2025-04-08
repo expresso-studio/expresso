@@ -3,20 +3,21 @@
 import { useEffect, useState, use } from "react";
 import { useAuthUtils } from "@/hooks/useAuthUtils";
 import { outfit } from "@/app/fonts";
-import { cn, transformMetricsToGestureMetrics } from "@/lib/utils";
+import { cn, transformMetricsToAnalysisData } from "@/lib/utils";
 import { MetricType } from "@/lib/types";
 import { Download, LoaderCircle, MessagesSquare } from "lucide-react";
 import Loading from "@/components/loading";
 import PageFormat from "@/components/page-format";
 import Heading1 from "@/components/heading-1";
 import Link from "next/link";
-import { MetricsDisplay } from "@/app/dashboard/evaluate/gesture-analysis";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import DetailedMetrics from "@/components/detailed-metrics";
+import KeyRecommendations from "@/components/key-recommendations";
 
 interface Metric {
   metric_id: number;
@@ -201,14 +202,21 @@ export default function PresentationPage({
               {new Date(presentation.created_at).toLocaleDateString()}
             </p>
           </div>
-          <div className="bg-stone-100 dark:bg-stone-900 py-6 px-4 rounded-lg h-full mt-4">
+          <div className="bg-white dark:bg-black py-6 px-4 rounded-lg my-4">
             <h2 className={cn("text-xl font-semibold mb-4", outfit.className)}>
               Transcript
             </h2>
-            <p className="whitespace-pre-wrap">
-              {presentation.transcript_text || "No transcript available."}
-            </p>
+            <div className="max-h-[200px] overflow-y-scroll">
+              <p className="whitespace-pre-wrap">
+                {presentation.transcript_text || "No transcript available."}
+              </p>
+            </div>
           </div>
+          <KeyRecommendations
+            analysisData={transformMetricsToAnalysisData(
+              presentation.metrics as MetricType[]
+            )}
+          />
         </div>
 
         <div className="h-full flex flex-col gap-2">
@@ -220,7 +228,7 @@ export default function PresentationPage({
                   onClick={() => window.print()}
                 >
                   <Download
-                    className="text-stone-400 group-hover:text-stone-800 dark:text-stone-400 dark:group-hover:text-white duration-200"
+                    className="text-stone-500 group-hover:text-stone-800 dark:text-stone-400 dark:group-hover:text-white duration-200"
                     size={20}
                   />
                 </TooltipTrigger>
@@ -234,7 +242,7 @@ export default function PresentationPage({
                 <TooltipTrigger className="group">
                   <Link
                     href={`/dashboard/qna?id=${params.id}`}
-                    className="flex items-center gap-1 px-2 py-1 rounded-md bg-darkCoffee group-hover:bg-lightCoffee"
+                    className="flex items-center gap-1 px-2 py-1 rounded-md text-white bg-darkCoffee group-hover:bg-lightCoffee"
                   >
                     <MessagesSquare size={14} />
                     QnA
@@ -246,16 +254,12 @@ export default function PresentationPage({
               </Tooltip>
             </TooltipProvider>
           </div>
-          <div className="bg-stone-100 dark:bg-stone-900 py-6 px-4 rounded-lg h-full">
-            <h2 className={cn("text-xl font-semibold mb-4", outfit.className)}>
-              Performance Metrics
-            </h2>
-            <MetricsDisplay
-              metrics={transformMetricsToGestureMetrics(
-                presentation.metrics as MetricType[]
-              )}
-            />
-          </div>
+          <DetailedMetrics
+            analysisData={transformMetricsToAnalysisData(
+              presentation.metrics as MetricType[]
+            )}
+            scroll={true}
+          />
         </div>
       </div>
     </PageFormat>

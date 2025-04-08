@@ -380,14 +380,14 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
     <>
       <video
         ref={videoRef}
-        className="absolute w-full h-full object-cover"
+        className="absolute w-full h-full object-cover rounded-lg"
         autoPlay
         playsInline
         muted
       />
       <canvas
         ref={canvasRef}
-        className="absolute w-full h-full object-cover"
+        className="absolute w-full h-full object-cover rounded-lg"
         width={1280}
         height={720}
       />

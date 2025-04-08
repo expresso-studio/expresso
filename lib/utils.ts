@@ -53,7 +53,7 @@ export const getMetricStatus = (key: string, value: number): string => {
 export function transformMetricsToAnalysisData(
   metrics: MetricType[]
 ): AnalysisData {
-  const defaultMetricData: MetricData = { value: 0, status: "low" };
+  const defaultMetricData: MetricData = { value: 0, status: "Low" };
 
   const analysisData: AnalysisData = {
     HandMovement: defaultMetricData,
@@ -73,6 +73,8 @@ export function transformMetricsToAnalysisData(
       if (metric.name === "OverallScore") {
         analysisData.OverallScore = metric.score;
       } else {
+        console.log("getMetricStatus(metric.name, metric.score)");
+        console.log(getMetricStatus(metric.name, metric.score));
         analysisData[
           metric.name as keyof Omit<
             AnalysisData,
@@ -139,4 +141,44 @@ export const generateRecommendations = (
   }
 
   return recommendations;
+};
+
+// Function to get color class based on status
+export const getWordColorClass = (status: string): string => {
+  switch (status) {
+    case "Low":
+      return "text-red-500";
+    case "High":
+      return "text-amber-500";
+    case "Normal":
+      return "text-blue-500";
+    case "Good":
+      return "text-green-500";
+    case "Fair":
+      return "text-yellow-500";
+    case "Poor":
+      return "text-red-500";
+    default:
+      return "text-gray-500";
+  }
+};
+
+// Function to get color hex based on status
+export const getWordColorHex = (status: string): string => {
+  switch (status) {
+    case "Low":
+      return "#EF4444"; // red-500
+    case "High":
+      return "#F59E0B"; // amber-500
+    case "Normal":
+      return "#3B82F6"; // blue-500
+    case "Good":
+      return "#10B981"; // green-500
+    case "Fair":
+      return "#FBBF24"; // yellow-500
+    case "Poor":
+      return "#EF4444"; // red-500
+    default:
+      return "#6B7280"; // gray-500
+  }
 };
