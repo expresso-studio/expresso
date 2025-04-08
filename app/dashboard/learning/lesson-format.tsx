@@ -7,10 +7,6 @@ import {
   LessonNameToLink,
 } from "@/lib/constants";
 import { LessonType } from "@/lib/types";
-import { cn } from "@/lib/utils";
-import Lesson from "@/components/lesson";
-import { outfit } from "@/app/fonts";
-import CourseProgress from "./course-progress";
 import { Check, X } from "lucide-react";
 
 interface Props extends LessonType {

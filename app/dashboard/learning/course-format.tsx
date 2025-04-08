@@ -1,12 +1,10 @@
 import * as React from "react";
 import Heading1 from "@/components/heading-1";
 import PageFormat from "@/components/page-format";
-import { CourseNames, CourseNameToLink } from "@/lib/constants";
-import { CourseType } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import { CourseNameToLink, LessonStatuses } from "@/lib/constants";
+import { CourseType, LessonStatus, LessonType } from "@/lib/types";
 import Lesson from "@/components/lesson";
 import { outfit } from "@/app/fonts";
-import { Slider } from "@/components/ui/slider";
 import CourseProgress from "./course-progress";
 
 interface Props extends CourseType {
@@ -30,6 +28,19 @@ export default function CourseFormat({
     "rotate-6",
     "rotate-12",
   ];
+  const lessonsWithStatus: (LessonType & LessonStatus)[] = lessons.map(
+    (lesson) => {
+      const matchingLesson = LessonStatuses.find(
+        (lessonStatus) => lessonStatus.name === lesson.name
+      );
+
+      if (matchingLesson) {
+        return { ...lesson, ...matchingLesson };
+      }
+
+      return { ...lesson, status: false };
+    }
+  );
 
   return (
     <PageFormat
@@ -79,14 +90,10 @@ export default function CourseFormat({
             </span>
           </div>
           <div className="flex flex-col p-4 bg-lightCoffee/10 dark:bg-black/75 rounded-lg">
-            {lessons.map((lesson, i) => (
-              <Lesson
-                {...lesson}
-                status={i % 2 == 0}
-                color={color}
-                courseName={name}
-              />
-            ))}
+            {lessonsWithStatus &&
+              lessonsWithStatus.map((lesson, i) => (
+                <Lesson {...lesson} color={color} courseName={name} />
+              ))}
           </div>
         </div>
       </div>

@@ -244,7 +244,7 @@ export const Courses: CourseType[] = [
 export const CourseStatuses: CourseStatus[] = [
   {
     name: CourseNames.Intro,
-    status: 50,
+    status: 0,
   },
   {
     name: CourseNames.HandLanguage,
@@ -252,15 +252,15 @@ export const CourseStatuses: CourseStatus[] = [
   },
   {
     name: CourseNames.BodyLanguage,
-    status: 75,
+    status: 50,
   },
   {
     name: CourseNames.HeadLanguage,
-    status: 20,
+    status: 50,
   },
   {
     name: CourseNames.Gestures,
-    status: 20,
+    status: 0,
   },
 ];
 
@@ -268,11 +268,11 @@ export const CourseStatuses: CourseStatus[] = [
 export const LessonStatuses: LessonStatus[] = [
   {
     name: LessonNames.Basics,
-    status: true,
+    status: false,
   },
   {
     name: LessonNames.HandMovement,
-    status: false,
+    status: true,
   },
   {
     name: LessonNames.HandSymmetry,
