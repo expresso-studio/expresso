@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { GestureMetrics, MetricData } from "@/lib/types";
+import { GestureMetrics } from "@/lib/types";
 import { MetricNames, MetricNameToIcon, OPTIMAL_RANGES } from "@/lib/constants";
 import { formatMetricName, getColorClass, getMetricStatus } from "../utils";
 import MetricBar from "@/components/metric-bar";

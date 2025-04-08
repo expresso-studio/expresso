@@ -2,7 +2,6 @@ import React from "react";
 import { MetricType, ReportItemType } from "@/lib/types";
 import {
   cn,
-  generateRecommendations,
   getWordColorClass,
   getWordColorHex,
   transformMetricsToAnalysisData,
@@ -29,7 +28,6 @@ const Summary = React.memo<Props>(function Summary({ short }) {
     useAuthUtils();
   const [avgMetrics, setAvgMetrics] = React.useState<MetricType[]>([]);
   const [loadingReports, setLoadingReports] = React.useState(true);
-  const [recommendations, setRecommendations] = React.useState<string[]>([]);
 
   const loadingBubbles = [1, 2, 3, 4, 5, 6, 7];
 
@@ -90,9 +88,6 @@ const Summary = React.memo<Props>(function Summary({ short }) {
         const data = await res.json();
         const avgScores = calculateAvgMetrics(data);
         setAvgMetrics(avgScores);
-        const analysisData = transformMetricsToAnalysisData(avgScores);
-        const rec = generateRecommendations(analysisData);
-        setRecommendations(rec);
       } catch (err) {
         console.error("Error fetching report data:", err);
       } finally {

@@ -2,10 +2,7 @@
 
 import React, { useState, useEffect } from "react"; // Import useState and useEffect
 import VideoPlayback from "./VideoPlayback";
-import { AnalysisData, MetricData } from "@/lib/types";
-import { generateRecommendations } from "@/lib/utils";
-import { OPTIMAL_RANGES } from "@/lib/constants";
-import MetricIndicator from "@/components/metric-indicator";
+import { AnalysisData } from "@/lib/types";
 import { outfit } from "@/app/fonts";
 import DetailedMetrics from "@/components/detailed-metrics";
 import KeyRecommendations from "@/components/key-recommendations";

@@ -9,7 +9,11 @@ interface Props {
   live?: boolean;
 }
 
-const MetricBar = React.memo(({ name, metric, live }: Props) => {
+const MetricBar = React.memo(function MetricBarFunction({
+  name,
+  metric,
+  live,
+}: Props) {
   // Skip non-metric fields and overall score (already displayed)
 
   // Get optimal range from constants if available
