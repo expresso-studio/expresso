@@ -5,7 +5,7 @@ import { useAuthUtils } from "@/hooks/useAuthUtils";
 import { outfit } from "@/app/fonts";
 import { cn, transformMetricsToAnalysisData } from "@/lib/utils";
 import { MetricType } from "@/lib/types";
-import { Download, LoaderCircle, MessagesSquare } from "lucide-react";
+import { Download, LoaderCircle, MessagesSquare, Info } from "lucide-react";
 import Loading from "@/components/loading";
 import PageFormat from "@/components/page-format";
 import Heading1 from "@/components/heading-1";
@@ -133,6 +133,7 @@ export default function PresentationPage({
   const { user, isAuthenticated, isLoading } = useAuthUtils();
   const [presentation, setPresentation] = useState<Presentation | null>(null);
   const [loading, setLoading] = useState(true);
+  const [score, setScore] = useState(-1);
 
   useEffect(() => {
     async function fetchPresentation() {
@@ -152,6 +153,34 @@ export default function PresentationPage({
 
         const data = await res.json();
         setPresentation(data);
+
+        const res2 = await fetch(
+          `/api/get-qna-info?userId=${encodeURIComponent(user.sub!)}&id=${
+            params.id
+          }`
+        );
+        const scriptTranscript = await res2.json();
+
+        if (!res2.ok) {
+          throw new Error("Failed to fetch script and transcript");
+        }
+        const transcriptData =
+          scriptTranscript.transcript[0]?.transcript_text || "";
+        const scriptData = scriptTranscript.script[0]?.script_text || "";
+
+        const coverageRes = await fetch("/api/openai_coverage", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ transcriptData, scriptData }),
+        });
+
+        const scoreData = await coverageRes.json();
+        if (scoreData.score === undefined) {
+          throw new Error("Failed to fetch coverage score");
+        }
+        setScore(scoreData.score);
       } catch (err) {
         console.error("Error fetching presentation:", err);
       } finally {
@@ -237,22 +266,55 @@ export default function PresentationPage({
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger className="group">
-                  <Link
-                    href={`/dashboard/qna?id=${params.id}`}
-                    className="flex items-center gap-1 px-2 py-1 rounded-md text-white bg-darkCoffee group-hover:bg-lightCoffee"
-                  >
-                    <MessagesSquare size={14} />
-                    QnA
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Practice a QnA session with this presentation!</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+          </div>
+          <div className="bg-stone-100 dark:bg-stone-900 py-6 px-4 rounded-lg flex items-center justify-between">
+            <p>Practice a QnA session with this presentation!</p>
+            <Link
+              href={`/dashboard/qna?id=${params.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 p-2 rounded-md bg-darkCoffee group-hover:bg-lightCoffee"
+            >
+              <MessagesSquare className="mr-2 w-6 h-6" />
+              Launch in New Tab
+            </Link>
+          </div>
+          <div className="bg-stone-100 dark:bg-stone-900 py-6 px-4 rounded-lg">
+            <h2 className={cn("text-xl font-semibold mb-4", outfit.className)}>
+              Coverage Score
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="ml-2" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>
+                      Scored by comparing trascript and the provided script.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </h2>
+            {score === -1 ? (
+              <p className="whitespace-pre-wrap">N/A - No Script Provided.</p>
+            ) : (
+              <>
+                <p className="whitespace-pre-wrap">Score: {score}%</p>
+                <div className="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
+                  <div
+                    className={`h-3 rounded-full transition-all duration-300 bg-green-500`}
+                    style={{ width: `${score}%` }}
+                  />
+                </div>
+                <p className="mt-2">
+                  {score < 50
+                    ? "Low coverage indicates indicates that a significant portion of the scripted content was not reflected in the presentation."
+                    : score < 85
+                    ? "Moderate coverage indicates key parts of the script were included, but some sections were modified or improvised."
+                    : "High coverage indicates presentation closely followed the script, with minimal deviation"}
+                </p>
+              </>
+            )}
           </div>
           <DetailedMetrics
             analysisData={transformMetricsToAnalysisData(
