@@ -5,8 +5,6 @@ import { useState, ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import FooterWave from "@/components/ui/footer-wave";
 import {
-  ImageUp,
-  Camera,
   ArrowRight,
   Laptop,
   PersonStanding,
@@ -44,8 +42,6 @@ export default function Page() {
     GestureVariety: false,
     EyeContact: false,
   });
-
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   const [selectedPersona, setSelectedPersona] = useState<string | null>(null);
 
@@ -134,22 +130,10 @@ export default function Page() {
     }
   };
 
-  const handleOptionSelect = (option: string) => {
-    setSelectedOption(option);
-  };
-
-  const isFormValid = () => {
-    return !!selectedOption && !!formData.topic;
-  };
-
   const handleStart = () => {
-    if (!isFormValid()) {
-      if (!selectedOption) {
-        alert("Please Select Practice Now or Upload Video");
-      } else {
+    if (!formData.topic) {
         alert("Please Provide Presentation Topic");
-      }
-      return;
+        return;
     }
 
     const { topic, ...rest } = formData;
@@ -166,50 +150,13 @@ export default function Page() {
         .filter(([, v]) => v !== "")
         .map(([key, value]) => [key, String(value)])
     ).toString();
-
-    if (selectedOption === "practice") {
-      router.push(`/dashboard/evaluate?${query}`);
-    } else if (selectedOption === "upload") {
-      router.push(`/dashboard/upload-video?${query}`);
-    }
+    router.push(`/dashboard/evaluate?${query}`);
   };
 
   return (
     <PageFormat breadCrumbs={[{ name: "Evaluation Settings" }]}>
       <div className="flex flex-col min-h-screen px-4 items-center">
         <form className="w-full max-w-[800px] px-8 pb-8 pt-0 rounded-lg">
-          <div className="flex flex-col gap-4 mb-4">
-            <p className="text-lg font-medium">
-              Select Option: <span className="text-red-500">*</span>
-            </p>
-            <button
-              type="button"
-              onClick={() => handleOptionSelect("practice")}
-              className={`p-4 rounded-lg flex flex-row items-center justify-start 
-                                transition ${
-                                  selectedOption === "practice"
-                                    ? "bg-[#F8AC78] text-black dark:bg-[#CA773F] dark:text-white"
-                                    : "bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white dark:hover:bg-[#CA773F]"
-                                } hover:bg-[#F8AC78]`}
-            >
-              <Camera className="mr-4 ml-2" />
-              Practice Now
-            </button>
-            <button
-              type="button"
-              onClick={() => handleOptionSelect("upload")}
-              className={`p-4 rounded-lg flex flex-row items-center justify-start
-                                transition ${
-                                  selectedOption === "upload"
-                                    ? "bg-[#F8AC78] text-black dark:bg-[#CA773F] dark:text-white"
-                                    : "bg-[#ffffff] text-black dark:bg-[#1D1816] dark:text-white dark:hover:bg-[#CA773F]"
-                                } hover:bg-[#F8AC78]`}
-            >
-              <ImageUp className="mr-4 ml-2" />
-              Upload Video
-            </button>
-          </div>
-
           <div className="mb-4">
             <label>
               Presenting Topic: <span className="text-red-500">*</span>
@@ -349,7 +296,7 @@ export default function Page() {
           </div>
 
           <div className="mb-4">
-            Enter Script:
+            Enter Script (Optional):
             <div className="w-full max-w-100 mb-4">
               <textarea
                 value={localScript}
