@@ -70,12 +70,6 @@ describe("Page Component", () => {
     const locationSelect = screen.getByLabelText(/Location/i);
     fireEvent.change(locationSelect, { target: { value: "online" } });
 
-    // Select one option
-    const practiceButton = screen.getByRole("button", {
-      name: /Practice Now/i,
-    });
-    fireEvent.click(practiceButton);
-
     // The Start button should now be enabled
     const startButton = screen.getByRole("button", { name: /Start/i });
     expect(startButton).not.toBeDisabled();
@@ -106,11 +100,6 @@ describe("Page Component", () => {
       name: /Lecture/i,
     });
     fireEvent.click(lectureBtn);
-
-    const practiceButton = screen.getByRole("button", {
-      name: /Practice Now/i,
-    });
-    fireEvent.click(practiceButton);
 
     const startButton = screen.getByRole('button', { name: /Start/i });
     // Click the button without selecting entering presentation topic
