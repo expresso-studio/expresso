@@ -11,7 +11,7 @@ const KeyRecommendations = ({ analysisData }: Props) => {
   const recommendations = generateRecommendations(analysisData);
 
   return (
-    <div className="bg-white dark:bg-black rounded-lg p-4 dark:-stone-700">
+    <div className="bg-white dark:bg-stone-800 rounded-lg p-4 dark:-stone-700">
       <h3
         style={outfit.style}
         className="text-lg font-semibold mb-2 text-stone-900 dark:text-white"

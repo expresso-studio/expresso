@@ -12,7 +12,7 @@ interface Props {
 
 const DetailedMetrics = ({ analysisData, scroll }: Props) => {
   return (
-    <div className="bg-white dark:bg-black mt-6 rounded-lg p-4">
+    <div className="bg-white dark:bg-stone-800 mt-6 rounded-lg p-4">
       <h3
         style={outfit.style}
         className="text-lg font-semibold mb-4 text-stone-900 dark:text-white"

@@ -231,7 +231,7 @@ export default function PresentationPage({
               {new Date(presentation.created_at).toLocaleDateString()}
             </p>
           </div>
-          <div className="bg-white dark:bg-black py-6 px-4 rounded-lg my-4">
+          <div className="bg-white dark:bg-stone-800 py-6 px-4 rounded-lg my-4">
             <h2 className={cn("text-xl font-semibold mb-4", outfit.className)}>
               Transcript
             </h2>
@@ -267,7 +267,7 @@ export default function PresentationPage({
               </Tooltip>
             </TooltipProvider>
           </div>
-          <div className="bg-white dark:bg-black py-6 px-4 rounded-lg flex items-center justify-between mb-2">
+          <div className="bg-white dark:bg-stone-800 py-6 px-4 rounded-lg flex items-center justify-between mb-2">
             <p>Practice a QnA session with this presentation!</p>
             <Link
               href={`/dashboard/qna?id=${params.id}`}
@@ -279,7 +279,7 @@ export default function PresentationPage({
               Launch in New Tab
             </Link>
           </div>
-          <div className="bg-white dark:bg-black py-6 px-4 rounded-lg">
+          <div className="bg-white dark:bg-stone-800 py-6 px-4 rounded-lg">
             <h2 className={cn("text-xl font-semibold mb-4", outfit.className)}>
               Coverage Score
               <TooltipProvider>

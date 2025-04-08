@@ -94,8 +94,8 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
       : analysisData.transcript || "No transcript available.";
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-black rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-stone-800/70 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-stone-800 rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
         <div className="bg-lightCream dark:bg-darkBurnt p-6">
           <div className="flex justify-between items-center -b pb-4 mb-4">
             <h2 className="text-2xl font-bold text-stone-900 dark:text-white">
@@ -135,7 +135,7 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Session Overview */}
-            <div className="bg-white dark:bg-black rounded-lg p-4 dark:-stone-700">
+            <div className="bg-white dark:bg-stone-800 rounded-lg p-4 dark:-stone-700">
               <h3
                 style={outfit.style}
                 className="text-lg font-semibold mb-2 text-stone-900 dark:text-white"
@@ -255,7 +255,7 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
                   {Object.entries(emotionData).map(([emotion, score]) => (
                     <div
                       key={emotion}
-                      className="bg-white dark:bg-black rounded-lg p-3 dark:-stone-700"
+                      className="bg-white dark:bg-stone-800 rounded-lg p-3 dark:-stone-700"
                     >
                       <div className="flex justify-between items-center mb-1">
                         <h4 className="font-medium text-stone-900 dark:text-white capitalize">
