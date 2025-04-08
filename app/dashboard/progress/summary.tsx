@@ -105,7 +105,7 @@ const Summary = React.memo<Props>(function Summary({ short }) {
         <div className={cn(!short && "font-bold text-lg")} style={outfit.style}>
           Summary statistics
         </div>
-        {loadingBubbles.map((loadingBubble, i) => (
+        {loadingBubbles.map((loadingBubble) => (
           <div
             className={cn("w-full h-[20px] bg-[#4d4843] rounded-full ")}
             key={loadingBubble}
@@ -120,9 +120,9 @@ const Summary = React.memo<Props>(function Summary({ short }) {
       {recommendations && (
         <div className="bg-white dark:bg-black p-4 rounded-lg">
           {recommendations.map((rec, i) => (
-            <div className="flex gap-2 items-start pb-4">
+            <div className="flex gap-2 items-start pb-4" key={`rec${i}`}>
               <Lightbulb className="text-darkCaramel" />
-              <p key={`rec${i}`}>{rec}</p>
+              <p>{rec}</p>
             </div>
           ))}
         </div>
