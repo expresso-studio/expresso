@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react"; // Import useState and useEffect
 import VideoPlayback from "./VideoPlayback";
 import { AnalysisData, MetricData } from "@/lib/types";
+import { generateRecommendations } from "@/lib/utils";
 
 // Define interface for Emotion data if needed, based on API response
 interface EmotionScores {
@@ -104,57 +105,7 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
     }
   };
 
-  // Generate recommendations based on metrics
-  const generateRecommendations = (): string[] => {
-    const recommendations: string[] = [];
-
-    if (analysisData.HandMovement.status === "Low") {
-      recommendations.push(
-        "Use more hand gestures to emphasize key points and engage your audience."
-      );
-    } else if (analysisData.HandMovement.status === "High") {
-      recommendations.push(
-        "Try to reduce excessive hand movements as they may distract from your message."
-      );
-    }
-
-    if (
-      analysisData.Posture.status === "Poor" ||
-      analysisData.Posture.status === "Fair"
-    ) {
-      recommendations.push(
-        "Work on maintaining better Posture by keeping your back straight and shoulders level."
-      );
-    }
-
-    if (analysisData.EyeContact.status === "Low") {
-      recommendations.push(
-        "Maintain more consistent Eye contact with the camera to better connect with your audience."
-      );
-    }
-
-    if (analysisData.HandSymmetry.status === "Low") {
-      recommendations.push(
-        "Try to use both hands more equally for a balanced presentation style."
-      );
-    }
-
-    if (analysisData.GestureVariety.status === "Low") {
-      recommendations.push(
-        "Incorporate a wider variety of gestures to keep your presentation engaging."
-      );
-    }
-
-    if (recommendations.length === 0) {
-      recommendations.push(
-        "Your presentation skills are solid! Continue practicing to maintain consistency."
-      );
-    }
-
-    return recommendations;
-  };
-
-  const recommendations = generateRecommendations();
+  const recommendations = generateRecommendations(analysisData);
 
   // Truncate or format transcript if it's too long
   const formattedTranscript =

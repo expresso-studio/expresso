@@ -6,6 +6,7 @@ import GestureAnalysis from "./gesture-analysis/GestureAnalysis";
 import AnalysisReport from "./AnalysisReport";
 import { GestureMetrics, AnalysisData } from "@/lib/types";
 import { Eye, EyeOff, BarChart2 } from "lucide-react";
+import { OPTIMAL_RANGES } from "./gesture-analysis";
 
 interface GestureAnalyzerProps {
   isRecording: boolean;
@@ -50,17 +51,6 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
 
   // Helper function to get metric status
   const getMetricStatus = useCallback((key: string, value: number): string => {
-    // Define optimal ranges
-    const OPTIMAL_RANGES = {
-      HandMovement: { min: 0.08, max: 0.7 },
-      HeadMovement: { min: 0.01, max: 0.5 },
-      BodyMovement: { min: 0.02, max: 0.6 },
-      Posture: { min: 0.4, max: 1.0 },
-      HandSymmetry: { min: 0.2, max: 0.9 },
-      GestureVariety: { min: 0.15, max: 0.9 },
-      EyeContact: { min: 0.3, max: 0.9 },
-    };
-
     // For Posture, use categorical labels
     if (key === "Posture") {
       if (value < 0.33) return "Poor";
