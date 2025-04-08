@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import Page from "app/dashboard/eval-settings/page";
 import { useRouter } from "next/navigation";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { ScriptProvider } from "@/context/ScriptContext";
 
 // Mock Next.js router
 jest.mock("next/navigation", () => ({
@@ -21,25 +22,23 @@ describe("Page Component", () => {
 
   it("renders form elements", () => {
     render(
-      <SidebarProvider>
-        <Page />
-      </SidebarProvider>
+      <ScriptProvider>
+        <SidebarProvider>
+          <Page />
+        </SidebarProvider>
+      </ScriptProvider>
     );
-    expect(
-      screen.getByLabelText(/Presenting about\.\.\./i)
-    ).toBeInTheDocument();
-    expect(screen.getByLabelText(/Number of Attendees/i)).toBeInTheDocument();
-    expect(
-      screen.getByLabelText(/Duration \(in minutes\)/i)
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText(/Presenting Topic:/i)).toBeInTheDocument();
     expect(screen.getByText(/Select preset persona/i)).toBeInTheDocument();
   });
 
   it("updates form state when selecting a preset persona", () => {
     render(
-      <SidebarProvider>
-        <Page />
-      </SidebarProvider>
+      <ScriptProvider>
+        <SidebarProvider>
+          <Page />
+        </SidebarProvider>
+      </ScriptProvider>
     );
     const classPresentationBtn = screen.getByRole("button", {
       name: /Class Presentation/i,
@@ -55,31 +54,17 @@ describe("Page Component", () => {
     expect(EyeContactCheckbox.checked).toBe(true);
   });
 
-  it("disables the Start button when required fields are missing", () => {
-    render(
-      <SidebarProvider>
-        <Page />
-      </SidebarProvider>
-    );
-    const startButton = screen.getByRole("button", { name: /Start/i });
-    expect(startButton).toBeDisabled();
-  });
-
   it("enables the Start button when all required fields are filled and navigates on click", async () => {
     render(
-      <SidebarProvider>
-        <Page />
-      </SidebarProvider>
+      <ScriptProvider>
+        <SidebarProvider>
+          <Page />
+        </SidebarProvider>
+      </ScriptProvider>
     );
     // Fill required text fields
-    const topicTextarea = screen.getByLabelText(/Presenting about\.\.\./i);
+    const topicTextarea = screen.getByLabelText(/Presenting Topic:/i);
     fireEvent.change(topicTextarea, { target: { value: "React Testing" } });
-
-    const attendeesInput = screen.getByLabelText(/Number of Attendees/i);
-    fireEvent.change(attendeesInput, { target: { value: "50" } });
-
-    const durationInput = screen.getByLabelText(/Duration \(in minutes\)/i);
-    fireEvent.change(durationInput, { target: { value: "30" } });
 
     // Select location from dropdown
     const locationSelect = screen.getByLabelText(/Location/i);
@@ -102,30 +87,34 @@ describe("Page Component", () => {
       expect(pushMock).toHaveBeenCalled();
       // You can also check that the URL includes certain query parameters:
       const calledUrl = pushMock.mock.calls[0][0];
-      expect(calledUrl).toMatch(/topic=React\+Testing/);
-      expect(calledUrl).toMatch(/attendees=50/);
-      expect(calledUrl).toMatch(/duration=30/);
       expect(calledUrl).toMatch(/location=online/);
     });
   });
 
-  // it('alerts the user when no option is selected', () => {
-  //   // Spy on window.alert
-  //   window.alert = jest.fn();
-  //   render(
-  //     <SidebarProvider>
-  //       <Page />
-  //     </SidebarProvider>
-  //   );
-  //   // Fill required text fields to pass validation except for the option selection
-  //   fireEvent.change(screen.getByLabelText(/Presenting about\.\.\./i), { target: { value: 'Demo Topic' } });
-  //   fireEvent.change(screen.getByLabelText(/Number of Attendees/i), { target: { value: '10' } });
-  //   fireEvent.change(screen.getByLabelText(/Duration \(in minutes\)/i), { target: { value: '15' } });
-  //   fireEvent.change(screen.getByLabelText(/Location/i), { target: { value: 'online' } });
+  it('alerts the user when no option is selected', () => {
+    // Spy on window.alert
+    window.alert = jest.fn();
+    render(
+      <ScriptProvider>
+        <SidebarProvider>
+          <Page />
+        </SidebarProvider>
+      </ScriptProvider>
+    );
+    // Select Preset persona but don't enter presentation topic
+    const lectureBtn = screen.getByRole("button", {
+      name: /Lecture/i,
+    });
+    fireEvent.click(lectureBtn);
 
-  //   const startButton = screen.getByRole('button', { name: /Start/i });
-  //   // Click the button without selecting an option (practice or upload)
-  //   fireEvent.click(startButton);
-  //   expect(window.alert).toHaveBeenCalledWith('Please select an option');
-  // });
+    const practiceButton = screen.getByRole("button", {
+      name: /Practice Now/i,
+    });
+    fireEvent.click(practiceButton);
+
+    const startButton = screen.getByRole('button', { name: /Start/i });
+    // Click the button without selecting entering presentation topic
+    fireEvent.click(startButton);
+    expect(window.alert).toHaveBeenCalledWith('Please Provide Presentation Topic');
+  });
 });
