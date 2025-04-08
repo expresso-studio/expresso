@@ -119,7 +119,15 @@ export default function Page() {
     });
 
     setFilteredReports(filtered);
-  }, [setFilteredReports]);
+  }, [
+    setFilteredReports,
+    dateRange,
+    reports,
+    scoreRange.max,
+    scoreRange.min,
+    searchQuery,
+    sortBy,
+  ]);
 
   const loadingDelays = [0, 75, 100, 200, 400];
 
