@@ -41,7 +41,7 @@ export default function Page() {
     React.useState<ReportItemType[]>(reports);
 
   // Filter logic
-  const applyFilters = () => {
+  const applyFilters = React.useCallback(() => {
     let filtered = [...reports];
 
     // Search filter
@@ -101,15 +101,17 @@ export default function Page() {
           );
         case "score-desc":
           return (
-            b.metrics.filter((metric) => metric.name == "OverallScore")[0]
-              .score -
-            a.metrics.filter((metric) => metric.name == "OverallScore")[0].score
+            (b.metrics.find((metric) => metric.name == "OverallScore")?.score ??
+              0) -
+            (a.metrics.find((metric) => metric.name == "OverallScore")?.score ??
+              0)
           );
         case "score-asc":
           return (
-            a.metrics.filter((metric) => metric.name == "OverallScore")[0]
-              .score -
-            b.metrics.filter((metric) => metric.name == "OverallScore")[0].score
+            (a.metrics.find((metric) => metric.name == "OverallScore")?.score ??
+              0) -
+            (b.metrics.find((metric) => metric.name == "OverallScore")?.score ??
+              0)
           );
         default:
           return 0;
@@ -117,7 +119,15 @@ export default function Page() {
     });
 
     setFilteredReports(filtered);
-  };
+  }, [
+    setFilteredReports,
+    dateRange,
+    reports,
+    scoreRange.max,
+    scoreRange.min,
+    searchQuery,
+    sortBy,
+  ]);
 
   const loadingDelays = [0, 75, 100, 200, 400];
 
@@ -133,7 +143,7 @@ export default function Page() {
         }
         const data = await res.json();
         setReports(data);
-        setFilteredReports(data);
+        setFilteredReports(data.reverse());
       } catch (err) {
         console.error("Error fetching report data:", err);
       } finally {
@@ -156,7 +166,7 @@ export default function Page() {
         <Heading1 id="previous">Previous Sessions</Heading1>
 
         <div className="pt-8 flex flex-col sm:flex-row gap-8">
-          <div className="bg-lightLatte dark:bg-darkCoffee rounded-md p-4 min-h-[60vh] w-full sm:w-[20vw] flex flex-col gap-4">
+          <div className="bg-lightLatte dark:bg-darkCoffee rounded-md p-4 min-h-[75vh] w-full sm:w-[20vw] flex flex-col gap-4">
             <div className="space-y-4">
               <input
                 type="text"
@@ -280,7 +290,7 @@ export default function Page() {
             ) : (
               user && (
                 <div
-                  className="grid grid-cols-2 md:grid-cols-4 gap-4"
+                  className="grid grid-cols-2 md:grid-cols-4 gap-4 max-h-[75vh] overflow-y-scroll"
                   key="filtered"
                 >
                   {filteredReports.map((report) => (

@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { MetricIds, MetricNames } from "./constants";
-import { GestureMetrics } from "./types";
+import { MetricIds, MetricNames, OPTIMAL_RANGES } from "./constants";
+import { AnalysisData, GestureMetrics, MetricData, MetricType } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -32,3 +32,111 @@ export function transformMetricsToGestureMetrics(
 
   return gestureMetrics;
 }
+
+// Helper function to get metric status
+export const getMetricStatus = (key: string, value: number): string => {
+  // For Posture, use categorical labels
+  if (key === "Posture") {
+    if (value < 0.33) return "Poor";
+    if (value < 0.67) return "Fair";
+    return "Good";
+  }
+
+  // For other metrics
+  if (value < OPTIMAL_RANGES[key as keyof typeof OPTIMAL_RANGES].min)
+    return "Low";
+  if (value > OPTIMAL_RANGES[key as keyof typeof OPTIMAL_RANGES].max)
+    return "High";
+  return "Normal";
+};
+
+export function transformMetricsToAnalysisData(
+  metrics: MetricType[]
+): AnalysisData {
+  const defaultMetricData: MetricData = { value: 0, status: "low" };
+
+  const analysisData: AnalysisData = {
+    HandMovement: defaultMetricData,
+    HeadMovement: defaultMetricData,
+    BodyMovement: defaultMetricData,
+    Posture: defaultMetricData,
+    HandSymmetry: defaultMetricData,
+    GestureVariety: defaultMetricData,
+    EyeContact: defaultMetricData,
+    OverallScore: 0,
+    sessionDuration: 0,
+    transcript: "",
+  };
+
+  metrics.forEach((metric) => {
+    if (metric.name in analysisData) {
+      if (metric.name === "OverallScore") {
+        analysisData.OverallScore = metric.score;
+      } else {
+        analysisData[
+          metric.name as keyof Omit<
+            AnalysisData,
+            "OverallScore" | "sessionDuration" | "transcript"
+          >
+        ] = {
+          value: metric.score,
+          status: getMetricStatus(metric.name, metric.score),
+        };
+      }
+    }
+  });
+
+  return analysisData;
+}
+
+// Generate recommendations based on metrics
+export const generateRecommendations = (
+  analysisData: AnalysisData
+): string[] => {
+  const recommendations: string[] = [];
+
+  if (analysisData.HandMovement.status === "Low") {
+    recommendations.push(
+      "Use more hand gestures to emphasize key points and engage your audience."
+    );
+  } else if (analysisData.HandMovement.status === "High") {
+    recommendations.push(
+      "Try to reduce excessive hand movements as they may distract from your message."
+    );
+  }
+
+  if (
+    analysisData.Posture.status === "Poor" ||
+    analysisData.Posture.status === "Fair"
+  ) {
+    recommendations.push(
+      "Work on maintaining better posture by keeping your back straight and shoulders level."
+    );
+  }
+
+  if (analysisData.EyeContact.status === "Low") {
+    recommendations.push(
+      "Maintain more consistent Eye contact with the camera to better connect with your audience."
+    );
+  }
+
+  if (analysisData.HandSymmetry.status === "Low") {
+    recommendations.push(
+      "Try to use both hands more equally for a balanced presentation style."
+    );
+  }
+
+  if (analysisData.GestureVariety.status === "Low") {
+    recommendations.push(
+      "Incorporate a wider variety of gestures to keep your presentation engaging."
+    );
+  }
+
+  if (recommendations.length === 0) {
+    recommendations.push(
+      "Your presentation skills are solid! Continue practicing to maintain consistency."
+    );
+  }
+
+  return recommendations;
+};

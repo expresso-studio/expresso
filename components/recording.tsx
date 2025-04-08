@@ -27,6 +27,7 @@ const Recording = React.memo<Props>(function Recording({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [signedUrl, setSignedUrl] = useState<string>("");
   const [isLoaded, setIsLoaded] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!video_url || isLoading || !isAuthenticated || !user?.sub) return;
@@ -38,14 +39,21 @@ const Recording = React.memo<Props>(function Recording({
             video_url
           )}&user=${encodeURIComponent(user.sub ?? "")}`
         );
-        if (!res.ok) {
-          console.error("Failed to fetch signed URL");
-          return;
-        }
         const data = await res.json();
+
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch video URL");
+        }
+
         setSignedUrl(data.url);
+        setError(null);
       } catch (error) {
         console.error("Error fetching signed URL:", error);
+        setError("Failed to load video preview");
       }
     };
 
@@ -60,6 +68,14 @@ const Recording = React.memo<Props>(function Recording({
       setIsLoaded(true);
     }
   }, []);
+
+  const handleVideoError = React.useCallback(
+    (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
+      console.error("Video loading error:", e);
+      setError("Failed to load video preview");
+    },
+    []
+  );
 
   const handleClick = React.useCallback(() => {
     console.log("opening ", id);
@@ -118,10 +134,22 @@ const Recording = React.memo<Props>(function Recording({
           ?.score ?? 0}
         %
       </div>
-      {signedUrl ? (
+      {error ? (
+        <div className="w-full h-[144px] rounded-md flex items-center justify-center bg-darkCoffee/50 relative overflow-hidden">
+          <Image
+            src={"/teapot.svg"}
+            alt={""}
+            width={200}
+            height={200}
+            className="absolute translate-y-4 translate-x-2"
+            unoptimized
+          />
+        </div>
+      ) : signedUrl ? (
         <video
           ref={videoRef}
           onLoadedData={handleLoadedData}
+          onError={handleVideoError}
           className={cn(
             "w-full h-[144px] rounded-md object-cover",
             !isLoaded && "hidden"
@@ -143,7 +171,7 @@ const Recording = React.memo<Props>(function Recording({
           />
         </div>
       )}
-      {!isLoaded && signedUrl && (
+      {!isLoaded && signedUrl && !error && (
         <div className="animate-pulse bg-darkCoffee/50 w-full h-[144px] rounded-md flex items-start justify-end relative overflow-hidden">
           <Image
             src={"/coffee_bean.svg"}
