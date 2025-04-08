@@ -13,9 +13,23 @@ import CourseList from "../learning/course-list";
 import LogoutButton from "@/components/logout-button";
 import ProtectedRoute from "@/components/protected-route";
 import { useAuthUtils } from "@/hooks/useAuthUtils";
+import { Courses, CourseStatuses } from "@/lib/constants";
 
 export default function Page() {
   const { user, isAuthenticated, error, refreshToken } = useAuthUtils();
+
+  // TODO(casey): replace with actual status
+  const coursesWithStatus = Courses.map((course) => {
+    const matchingCourse = CourseStatuses.find(
+      (courseStatus) => courseStatus.name === course.name
+    );
+
+    if (matchingCourse) {
+      return { ...course, ...matchingCourse };
+    }
+
+    return { ...course, status: 0 };
+  });
 
   // If there's an auth error, try to refresh the token
   React.useEffect(() => {
@@ -48,7 +62,10 @@ export default function Page() {
                 link={"/dashboard/eval-settings"}
                 className="sm:min-w-[300px] bg-lightCoffee dark:bg-darkCoffee group cursor-pointer"
               >
-                <Link href={"/dashboard/eval-settings"} className=" overflow-hidden">
+                <Link
+                  href={"/dashboard/eval-settings"}
+                  className=" overflow-hidden"
+                >
                   <div className="absolute z-20 flex flex-col gap-2 w-full">
                     <span className="text-6xl md:text-[5vw] font-black text-white uppercase group-hover:translate-x-1 duration-200">
                       Evaluate
@@ -59,7 +76,7 @@ export default function Page() {
                   </div>
                   <div className="h-[30vh] flex flex-col items-end justify-end">
                     <Image
-                      src={"./teapot.svg"}
+                      src={"/teapot.svg"}
                       alt={"a teapot"}
                       width="500"
                       height="500"
@@ -76,7 +93,7 @@ export default function Page() {
                 link={"/dashboard/learning"}
                 title="Learning"
               >
-                <CourseList />
+                <CourseList courses={coursesWithStatus} />
               </Section>
             </div>
             <div className="flex flex-col gap-16 w-full">

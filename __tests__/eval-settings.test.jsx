@@ -1,15 +1,15 @@
 // __tests__/Page.test.jsx
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import Page from "app/dashboard/eval-settings/page"; 
-import { useRouter } from 'next/navigation';
-import { SidebarProvider } from "@/components/ui/sidebar"
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import Page from "app/dashboard/eval-settings/page";
+import { useRouter } from "next/navigation";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 // Mock Next.js router
-jest.mock('next/navigation', () => ({
+jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
 }));
 
-describe('Page Component', () => {
+describe("Page Component", () => {
   const pushMock = jest.fn();
 
   beforeEach(() => {
@@ -19,49 +19,53 @@ describe('Page Component', () => {
     pushMock.mockClear();
   });
 
-  it('renders form elements', () => {
+  it("renders form elements", () => {
     render(
       <SidebarProvider>
         <Page />
       </SidebarProvider>
     );
-    expect(screen.getByLabelText(/Presenting about\.\.\./i)).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(/Presenting about\.\.\./i)
+    ).toBeInTheDocument();
     expect(screen.getByLabelText(/Number of Attendees/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Duration \(in minutes\)/i)).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(/Duration \(in minutes\)/i)
+    ).toBeInTheDocument();
     expect(screen.getByText(/Select preset persona/i)).toBeInTheDocument();
   });
 
-  it('updates form state when selecting a preset persona', () => {
+  it("updates form state when selecting a preset persona", () => {
     render(
       <SidebarProvider>
         <Page />
       </SidebarProvider>
     );
-    const classPresentationBtn = screen.getByRole('button', {
+    const classPresentationBtn = screen.getByRole("button", {
       name: /Class Presentation/i,
     });
     fireEvent.click(classPresentationBtn);
 
     // Check that the location select value is updated to "classroom"
     const locationSelect = screen.getByLabelText(/Location/i);
-    expect(locationSelect.value).toBe('classroom');
+    expect(locationSelect.value).toBe("classroom");
 
-    // Check that evaluation metrics checkboxes are set to true (example: eyeContact)
-    const eyeContactCheckbox = screen.getByLabelText(/Eye Contact/i);
-    expect(eyeContactCheckbox.checked).toBe(true);
+    // Check that evaluation metrics checkboxes are set to true (example: EyeContact)
+    const EyeContactCheckbox = screen.getByLabelText(/Eye Contact/i);
+    expect(EyeContactCheckbox.checked).toBe(true);
   });
 
-  it('disables the Start button when required fields are missing', () => {
+  it("disables the Start button when required fields are missing", () => {
     render(
       <SidebarProvider>
         <Page />
       </SidebarProvider>
     );
-    const startButton = screen.getByRole('button', { name: /Start/i });
+    const startButton = screen.getByRole("button", { name: /Start/i });
     expect(startButton).toBeDisabled();
   });
 
-  it('enables the Start button when all required fields are filled and navigates on click', async () => {
+  it("enables the Start button when all required fields are filled and navigates on click", async () => {
     render(
       <SidebarProvider>
         <Page />
@@ -69,24 +73,26 @@ describe('Page Component', () => {
     );
     // Fill required text fields
     const topicTextarea = screen.getByLabelText(/Presenting about\.\.\./i);
-    fireEvent.change(topicTextarea, { target: { value: 'React Testing' } });
+    fireEvent.change(topicTextarea, { target: { value: "React Testing" } });
 
     const attendeesInput = screen.getByLabelText(/Number of Attendees/i);
-    fireEvent.change(attendeesInput, { target: { value: '50' } });
+    fireEvent.change(attendeesInput, { target: { value: "50" } });
 
     const durationInput = screen.getByLabelText(/Duration \(in minutes\)/i);
-    fireEvent.change(durationInput, { target: { value: '30' } });
+    fireEvent.change(durationInput, { target: { value: "30" } });
 
     // Select location from dropdown
     const locationSelect = screen.getByLabelText(/Location/i);
-    fireEvent.change(locationSelect, { target: { value: 'online' } });
+    fireEvent.change(locationSelect, { target: { value: "online" } });
 
     // Select one option
-    const practiceButton = screen.getByRole('button', { name: /Practice Now/i });
+    const practiceButton = screen.getByRole("button", {
+      name: /Practice Now/i,
+    });
     fireEvent.click(practiceButton);
 
     // The Start button should now be enabled
-    const startButton = screen.getByRole('button', { name: /Start/i });
+    const startButton = screen.getByRole("button", { name: /Start/i });
     expect(startButton).not.toBeDisabled();
 
     // Click the Start button and check that router.push is called with expected query params.

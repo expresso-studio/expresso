@@ -53,8 +53,8 @@ export const getColorClass = (key: string, value: number): string => {
   const metricKey = key as keyof typeof OPTIMAL_RANGES;
   if (!OPTIMAL_RANGES[metricKey]) return "bg-blue-500";
 
-  // For posture, use categorical colors
-  if (key === "posture") {
+  // For Posture, use categorical colors
+  if (key === "Posture") {
     if (value < 0.33) return "bg-red-500";
     if (value < 0.67) return "bg-yellow-500";
     return "bg-green-500";
@@ -71,8 +71,8 @@ export const getMetricStatus = (key: string, value: number): string => {
   const metricKey = key as keyof typeof OPTIMAL_RANGES;
   if (!OPTIMAL_RANGES[metricKey]) return "N/A";
 
-  // For posture, use categorical labels
-  if (key === "posture") {
+  // For Posture, use categorical labels
+  if (key === "Posture") {
     if (value < 0.33) return "Poor";
     if (value < 0.67) return "Fair";
     return "Good";
@@ -86,7 +86,7 @@ export const getMetricStatus = (key: string, value: number): string => {
 
 // Function to format metric name for display
 export const formatMetricName = (key: string): string => {
-  return key === "overallScore"
+  return key === "OverallScore"
     ? "Overall Score"
     : key.replace(/([A-Z])/g, " $1").trim();
 };

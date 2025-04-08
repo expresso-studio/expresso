@@ -5,7 +5,7 @@ import { PoseLandmark, GestureMetrics, GestureFeedback } from "@/lib/types";
 import { calculateMovement } from "./utils";
 import { OPTIMAL_RANGES } from "@/lib/constants";
 
-// Analyze posture from landmarks - simplified to more boolean-like states
+// Analyze Posture from landmarks - simplified to more boolean-like states
 export const analyzePosture = (landmarks?: PoseLandmark[]): number => {
   if (!landmarks) return 0.5;
 
@@ -55,17 +55,17 @@ export const analyzePosture = (landmarks?: PoseLandmark[]): number => {
   // More boolean-like: good if under threshold
   const headAligned = headOffset < 0.1;
 
-  // Count how many posture aspects are good
+  // Count how many Posture aspects are good
   let goodPostureCount = 0;
   if (shoulderAligned) goodPostureCount++;
   if (spineAligned) goodPostureCount++;
   if (headAligned) goodPostureCount++;
 
   // Convert to three discrete levels: bad (0-0.33), medium (0.34-0.66), good (0.67-1.0)
-  if (goodPostureCount === 0) return 0.2; // Bad posture
-  if (goodPostureCount === 1) return 0.5; // Medium posture
-  if (goodPostureCount === 2) return 0.8; // Good posture
-  return 1.0; // Perfect posture (all 3 aspects good)
+  if (goodPostureCount === 0) return 0.2; // Bad Posture
+  if (goodPostureCount === 1) return 0.5; // Medium Posture
+  if (goodPostureCount === 2) return 0.8; // Good Posture
+  return 1.0; // Perfect Posture (all 3 aspects good)
 };
 
 // Calculate body movement based on shoulders and hips
@@ -335,37 +335,37 @@ export const generateFeedback = (
     if (value < range.min) {
       // Low value
       switch (metricKey) {
-        case "handMovement":
+        case "HandMovement":
           feedback.push({
             message: "Consider using more hand gestures",
             type: "warning",
           });
           break;
-        case "headMovement":
+        case "HeadMovement":
           feedback.push({
             message: "Slight head movement recommended",
             type: "info",
           });
           break;
-        case "posture":
+        case "Posture":
           feedback.push({
-            message: "Check posture alignment",
+            message: "Check Posture alignment",
             type: "warning",
           });
           break;
-        case "handSymmetry":
+        case "HandSymmetry":
           feedback.push({
             message: "Balance hand usage",
             type: "info",
           });
           break;
-        case "gestureVariety":
+        case "GestureVariety":
           feedback.push({
             message: "Vary gestures for engagement",
             type: "info",
           });
           break;
-        case "eyeContact":
+        case "EyeContact":
           feedback.push({
             message: "Maintain eye contact",
             type: "info",
@@ -375,31 +375,31 @@ export const generateFeedback = (
     } else if (value > range.max) {
       // High value
       switch (metricKey) {
-        case "handMovement":
+        case "HandMovement":
           feedback.push({
             message: "Hand movements above normal range",
             type: "info",
           });
           break;
-        case "headMovement":
+        case "HeadMovement":
           feedback.push({
             message: "Head movement above normal range",
             type: "info",
           });
           break;
-        case "posture":
-          // Usually not an issue to have extremely good posture
+        case "Posture":
+          // Usually not an issue to have extremely good Posture
           break;
-        case "handSymmetry":
+        case "HandSymmetry":
           // Usually not an issue to have perfect symmetry
           break;
-        case "gestureVariety":
+        case "GestureVariety":
           feedback.push({
             message: "Consider more consistent gestures",
             type: "info",
           });
           break;
-        case "eyeContact":
+        case "EyeContact":
           // Usually not an issue to have perfect eye contact
           break;
       }

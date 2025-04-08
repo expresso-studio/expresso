@@ -1,4 +1,11 @@
-import { MetricNames, MetricIds } from "./constants";
+import { IconType } from "react-icons";
+import {
+  MetricNames,
+  MetricIds,
+  CourseNames,
+  MetricDisplayNames,
+  LessonNames,
+} from "./constants";
 
 export type StatisticType = {
   icon: React.ReactNode;
@@ -7,12 +14,29 @@ export type StatisticType = {
 };
 
 export type CourseType = {
-  id: string;
-  icon: React.ReactNode;
+  id: number;
+  icon: IconType;
   color: string;
-  text: string;
+  name: CourseNames;
+  topics: (string | MetricDisplayNames)[];
+  lessons: LessonType[];
+};
+
+export type CourseStatus = {
+  name: CourseNames;
   status: number;
-  nLessons: number;
+};
+
+export type LessonType = {
+  id: number;
+  icon: IconType;
+  name: LessonNames;
+  topics: (string | MetricDisplayNames)[];
+};
+
+export type LessonStatus = {
+  name: LessonNames;
+  status: boolean;
 };
 
 export type MetricType = {
@@ -67,14 +91,14 @@ export interface PoseLandmark {
 }
 
 export interface GestureMetrics {
-  handMovement: number;
-  headMovement: number;
-  bodyMovement: number;
-  posture: number;
-  handSymmetry: number;
-  gestureVariety: number;
-  eyeContact: number;
-  overallScore: number;
+  HandMovement: number;
+  HeadMovement: number;
+  BodyMovement: number;
+  Posture: number;
+  HandSymmetry: number;
+  GestureVariety: number;
+  EyeContact: number;
+  OverallScore: number;
 }
 
 export interface GestureFeedback {
@@ -93,14 +117,14 @@ export interface MetricData {
 }
 
 export interface AnalysisData {
-  handMovement: MetricData;
-  headMovement: MetricData;
-  bodyMovement: MetricData;
-  posture: MetricData;
-  handSymmetry: MetricData;
-  gestureVariety: MetricData;
-  eyeContact: MetricData;
-  overallScore: number;
+  HandMovement: MetricData;
+  HeadMovement: MetricData;
+  BodyMovement: MetricData;
+  Posture: MetricData;
+  HandSymmetry: MetricData;
+  GestureVariety: MetricData;
+  EyeContact: MetricData;
+  OverallScore: number;
   sessionDuration: number;
   transcript: string;
 }

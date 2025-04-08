@@ -42,53 +42,50 @@ const GestureAnalysis: React.FC<Props> = ({
 }) => {
   // State
   const [metrics, setMetrics] = useState<GestureMetrics>({
-    handMovement: 0.5,
-    headMovement: 0.5,
-    bodyMovement: 0.5,
-    posture: 0.5,
-    handSymmetry: 0.5,
-    gestureVariety: 0.5,
-    eyeContact: 0.5,
-    overallScore: 50,
+    HandMovement: 0.5,
+    HeadMovement: 0.5,
+    BodyMovement: 0.5,
+    Posture: 0.5,
+    HandSymmetry: 0.5,
+    GestureVariety: 0.5,
+    EyeContact: 0.5,
+    OverallScore: 50,
   });
   const [feedback, setFeedback] = useState<GestureFeedback[]>([]);
   const [sessionDuration, setSessionDuration] = useState(0);
   const [isPanelVisible, setIsPanelVisible] = useState(false); // Changed to false by default
   const [isDevReportVisible, setIsDevReportVisible] = useState(false);
-  
-  const searchParams = useSearchParams();
 
-  const [enabledMetrics, setEnabledMetrics] = useState<Record<keyof GestureMetrics, boolean>>({
-    handMovement: true,
-    headMovement: true,
-    bodyMovement: true,
-    posture: true,
-    handSymmetry: true,
-    gestureVariety: true,
-    eyeContact: true,
-    overallScore: true,
+  const searchParams = useSearchParams();
+  const initialEnabled = {
+    HandMovement: true,
+    HeadMovement: true,
+    BodyMovement: true,
+    Posture: true,
+    HandSymmetry: true,
+    GestureVariety: true,
+    EyeContact: true,
+    OverallScore: true,
+  };
+  Object.keys(initialEnabled).forEach((key) => {
+    const param = searchParams?.get(key);
+    if (param === "false" || param === "true") {
+      initialEnabled[key as keyof GestureMetrics] = param === "true";
+    }
   });
 
-  useEffect(() => {
-    const newEnabled = { ...enabledMetrics };
-    Object.keys(newEnabled).forEach((key) => {
-      const param = searchParams?.get(key);
-      if (param === "false" || param === "true") {
-        newEnabled[key as keyof GestureMetrics] = param === "true";
-      }
-    });
-    setEnabledMetrics(newEnabled);
-  }, [enabledMetrics, searchParams]);
+  const [enabledMetrics, setEnabledMetrics] =
+    useState<Record<keyof GestureMetrics, boolean>>(initialEnabled);
 
   // Refs for tracking movement and analysis data
   const prevLandmarksRef = useRef<PoseLandmark[]>([]);
-  const handMovementBufferRef = useRef<number[]>(
+  const HandMovementBufferRef = useRef<number[]>(
     Array(MOVEMENT_BUFFER_SIZE).fill(0.5)
   );
-  const headMovementBufferRef = useRef<number[]>(
+  const HeadMovementBufferRef = useRef<number[]>(
     Array(MOVEMENT_BUFFER_SIZE).fill(0.5)
   );
-  const bodyMovementBufferRef = useRef<number[]>(
+  const BodyMovementBufferRef = useRef<number[]>(
     Array(MOVEMENT_BUFFER_SIZE).fill(0.5)
   );
   const handPositionsBufferRef = useRef<
@@ -142,7 +139,7 @@ const GestureAnalysis: React.FC<Props> = ({
       }
 
       // Calculate all metrics
-      const postureScore = analyzePosture(poseLandmarks);
+      const PostureScore = analyzePosture(poseLandmarks);
 
       // Hand movements - more balanced sensitivity for middle zone
       const leftHandMove = calculateMovement(
@@ -171,16 +168,16 @@ const GestureAnalysis: React.FC<Props> = ({
       );
 
       // Update movement buffers
-      handMovementBufferRef.current = [
-        ...handMovementBufferRef.current.slice(1),
+      HandMovementBufferRef.current = [
+        ...HandMovementBufferRef.current.slice(1),
         handScore,
       ];
-      headMovementBufferRef.current = [
-        ...headMovementBufferRef.current.slice(1),
+      HeadMovementBufferRef.current = [
+        ...HeadMovementBufferRef.current.slice(1),
         headMove,
       ];
-      bodyMovementBufferRef.current = [
-        ...bodyMovementBufferRef.current.slice(1),
+      BodyMovementBufferRef.current = [
+        ...BodyMovementBufferRef.current.slice(1),
         bodyMove,
       ];
 
@@ -197,67 +194,67 @@ const GestureAnalysis: React.FC<Props> = ({
       }
 
       // Calculate averages from buffers for stability
-      const recentHandBuffer = handMovementBufferRef.current.slice(-30);
-      const recentHeadBuffer = headMovementBufferRef.current.slice(-30);
-      const recentBodyBuffer = bodyMovementBufferRef.current.slice(-30);
+      const recentHandBuffer = HandMovementBufferRef.current.slice(-30);
+      const recentHeadBuffer = HeadMovementBufferRef.current.slice(-30);
+      const recentBodyBuffer = BodyMovementBufferRef.current.slice(-30);
 
       const averageHandMovement = _.mean(recentHandBuffer);
       const averageHeadMovement = _.mean(recentHeadBuffer);
       const averageBodyMovement = _.mean(recentBodyBuffer);
 
       // Calculate advanced metrics
-      const handSymmetry = calculateHandSymmetry(
+      const HandSymmetry = calculateHandSymmetry(
         poseLandmarks,
         handPositionsBufferRef.current
       );
-      const gestureVariety = calculateGestureVariety(
+      const GestureVariety = calculateGestureVariety(
         poseLandmarks,
         handPositionsBufferRef.current
       );
-      const eyeContact = calculateEyeContact(poseLandmarks);
+      const EyeContact = calculateEyeContact(poseLandmarks);
 
       // Update metrics using functional update with slower update rate
       setMetrics((prevMetrics) => {
         const newMetrics = {
-          handMovement: smoothUpdate(
-            prevMetrics.handMovement,
+          HandMovement: smoothUpdate(
+            prevMetrics.HandMovement,
             averageHandMovement,
             0.05
           ),
-          headMovement: smoothUpdate(
-            prevMetrics.headMovement,
+          HeadMovement: smoothUpdate(
+            prevMetrics.HeadMovement,
             averageHeadMovement,
             0.05
           ),
-          bodyMovement: smoothUpdate(
-            prevMetrics.bodyMovement,
+          BodyMovement: smoothUpdate(
+            prevMetrics.BodyMovement,
             averageBodyMovement,
             0.05
           ),
-          posture: postureScore, // Directly use posture score (already discrete)
-          handSymmetry: smoothUpdate(
-            prevMetrics.handSymmetry,
-            handSymmetry,
+          Posture: PostureScore, // Directly use Posture score (already discrete)
+          HandSymmetry: smoothUpdate(
+            prevMetrics.HandSymmetry,
+            HandSymmetry,
             0.05
           ),
-          gestureVariety: smoothUpdate(
-            prevMetrics.gestureVariety,
-            gestureVariety,
+          GestureVariety: smoothUpdate(
+            prevMetrics.GestureVariety,
+            GestureVariety,
             0.05
           ),
-          eyeContact: smoothUpdate(prevMetrics.eyeContact, eyeContact, 0.05),
-          overallScore: 0,
+          EyeContact: smoothUpdate(prevMetrics.EyeContact, EyeContact, 0.05),
+          OverallScore: 0,
         };
 
         // Calculate overall score (weighted average) with a boost to improve user experience
         const rawScore =
-          ((newMetrics.handMovement * HAND_MOVEMENT_COEFFICIENT +
-            newMetrics.headMovement * HEAD_MOVEMENT_COEFFICIENT +
-            newMetrics.bodyMovement * BODY_MOVEMENT_COEFFICIENT +
-            newMetrics.posture * POSTURE_COEFFICIENT +
-            newMetrics.handSymmetry * HAND_SYMMETRY_COEFFICIENT +
-            newMetrics.gestureVariety * GESTURE_VARIETY_COEFFICIENT +
-            newMetrics.eyeContact * EYE_CONTACT_COEFFICIENT) *
+          ((newMetrics.HandMovement * HAND_MOVEMENT_COEFFICIENT +
+            newMetrics.HeadMovement * HEAD_MOVEMENT_COEFFICIENT +
+            newMetrics.BodyMovement * BODY_MOVEMENT_COEFFICIENT +
+            newMetrics.Posture * POSTURE_COEFFICIENT +
+            newMetrics.HandSymmetry * HAND_SYMMETRY_COEFFICIENT +
+            newMetrics.GestureVariety * GESTURE_VARIETY_COEFFICIENT +
+            newMetrics.EyeContact * EYE_CONTACT_COEFFICIENT) *
             100) /
           (HAND_MOVEMENT_COEFFICIENT +
             HEAD_MOVEMENT_COEFFICIENT +
@@ -269,7 +266,7 @@ const GestureAnalysis: React.FC<Props> = ({
 
         // Apply curve to make scores higher - this gives a 10-15 point boost to mid-range scores
         const curvedScore = Math.round(Math.min(100, rawScore * 1.15));
-        newMetrics.overallScore = curvedScore;
+        newMetrics.OverallScore = curvedScore;
 
         return newMetrics;
       });
@@ -313,7 +310,7 @@ const GestureAnalysis: React.FC<Props> = ({
   };
 
   const toggleMetric = (metric: keyof GestureMetrics) => {
-    setEnabledMetrics(prev =>({...prev, [metric]: !prev[metric] }));
+    setEnabledMetrics((prev) => ({ ...prev, [metric]: !prev[metric] }));
   };
 
   // Minimized view when panel is hidden
@@ -401,21 +398,21 @@ const GestureAnalysis: React.FC<Props> = ({
           <div className="flex justify-between items-center mb-2">
             <span className="text-gray-300">Overall Score</span>
             <span className="text-xl font-bold text-blue-400">
-              {metrics.overallScore}/100
+              {metrics.OverallScore}/100
             </span>
           </div>
           <div className="w-full bg-gray-700 rounded-full h-3">
             <div
               className="h-3 rounded-full bg-blue-500 transition-all duration-500"
-              style={{ width: `${metrics.overallScore}%` }}
+              style={{ width: `${metrics.OverallScore}%` }}
             />
           </div>
         </div>
 
         {/* Metrics Display Component */}
-        <MetricsDisplay 
-          metrics={metrics} 
-          enabledMetrics={enabledMetrics} 
+        <MetricsDisplay
+          metrics={metrics}
+          enabledMetrics={enabledMetrics}
           toggleMetric={toggleMetric}
         />
 

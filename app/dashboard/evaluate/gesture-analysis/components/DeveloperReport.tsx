@@ -143,49 +143,49 @@ const DeveloperReport: React.FC<DeveloperReportProps> = ({
             <div className="grid grid-cols-2 gap-4">
               <MetricCard
                 title="Overall Score"
-                value={metrics.overallScore.toFixed(2)}
+                value={metrics.OverallScore.toFixed(2)}
                 unit="/100"
                 description="Weighted average of all metrics"
               />
               <MetricCard
                 title="Hand Movement"
-                value={(metrics.handMovement * 100).toFixed(2)}
+                value={(metrics.HandMovement * 100).toFixed(2)}
                 unit="%"
                 description="Hand gesture activity level"
               />
               <MetricCard
                 title="Head Movement"
-                value={(metrics.headMovement * 100).toFixed(2)}
+                value={(metrics.HeadMovement * 100).toFixed(2)}
                 unit="%"
                 description="Head motion activity level"
               />
               <MetricCard
                 title="Body Movement"
-                value={(metrics.bodyMovement * 100).toFixed(2)}
+                value={(metrics.BodyMovement * 100).toFixed(2)}
                 unit="%"
                 description="Torso movement activity"
               />
               <MetricCard
                 title="Posture"
-                value={(metrics.posture * 100).toFixed(2)}
+                value={(metrics.Posture * 100).toFixed(2)}
                 unit="%"
                 description="Alignment quality score"
               />
               <MetricCard
                 title="Hand Symmetry"
-                value={(metrics.handSymmetry * 100).toFixed(2)}
+                value={(metrics.HandSymmetry * 100).toFixed(2)}
                 unit="%"
                 description="Balance between hands"
               />
               <MetricCard
                 title="Gesture Variety"
-                value={(metrics.gestureVariety * 100).toFixed(2)}
+                value={(metrics.GestureVariety * 100).toFixed(2)}
                 unit="%"
                 description="Diversity of gestures"
               />
               <MetricCard
                 title="Eye Contact"
-                value={(metrics.eyeContact * 100).toFixed(2)}
+                value={(metrics.EyeContact * 100).toFixed(2)}
                 unit="%"
                 description="Camera gaze consistency"
               />
@@ -201,8 +201,8 @@ const DeveloperReport: React.FC<DeveloperReportProps> = ({
                     <td className="py-1">Hand-Head Movement:</td>
                     <td className="text-right">
                       {calculateCorrelation(
-                        metrics.handMovement,
-                        metrics.headMovement
+                        metrics.HandMovement,
+                        metrics.HeadMovement
                       ).toFixed(2)}
                     </td>
                   </tr>
@@ -210,8 +210,8 @@ const DeveloperReport: React.FC<DeveloperReportProps> = ({
                     <td className="py-1">Body-Posture Quality:</td>
                     <td className="text-right">
                       {calculateCorrelation(
-                        metrics.bodyMovement,
-                        metrics.posture
+                        metrics.BodyMovement,
+                        metrics.Posture
                       ).toFixed(2)}
                     </td>
                   </tr>
@@ -219,8 +219,8 @@ const DeveloperReport: React.FC<DeveloperReportProps> = ({
                     <td className="py-1">Eye Contact-Posture:</td>
                     <td className="text-right">
                       {calculateCorrelation(
-                        metrics.eyeContact,
-                        metrics.posture
+                        metrics.EyeContact,
+                        metrics.Posture
                       ).toFixed(2)}
                     </td>
                   </tr>

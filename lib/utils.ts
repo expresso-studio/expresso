@@ -16,14 +16,14 @@ export function transformMetricsToGestureMetrics(
   }[]
 ): GestureMetrics {
   const gestureMetrics: GestureMetrics = {
-    handMovement: 0,
-    headMovement: 0,
-    bodyMovement: 0,
-    posture: 0,
-    handSymmetry: 0,
-    gestureVariety: 0,
-    eyeContact: 0,
-    overallScore: 0,
+    HandMovement: 0,
+    HeadMovement: 0,
+    BodyMovement: 0,
+    Posture: 0,
+    HandSymmetry: 0,
+    GestureVariety: 0,
+    EyeContact: 0,
+    OverallScore: 0,
   };
 
   metrics.forEach((metric) => {
