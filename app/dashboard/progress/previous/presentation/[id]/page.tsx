@@ -300,7 +300,7 @@ export default function PresentationPage({
             ) : (
               <>
                 <p className="whitespace-pre-wrap">Score: {score}%</p>
-                <div className="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
+                <div className="w-full bg-stone-700 rounded-full h-3 overflow-hidden">
                   <div
                     className={`h-3 rounded-full transition-all duration-300 bg-[#98aa57]`}
                     style={{ width: `${score}%` }}
