@@ -3,20 +3,21 @@
 import { useEffect, useState, use } from "react";
 import { useAuthUtils } from "@/hooks/useAuthUtils";
 import { outfit } from "@/app/fonts";
-import { cn, transformMetricsToGestureMetrics } from "@/lib/utils";
+import { cn, transformMetricsToAnalysisData } from "@/lib/utils";
 import { MetricType } from "@/lib/types";
 import { Download, LoaderCircle, MessagesSquare, Info } from "lucide-react";
 import Loading from "@/components/loading";
 import PageFormat from "@/components/page-format";
 import Heading1 from "@/components/heading-1";
 import Link from "next/link";
-import { MetricsDisplay } from "@/app/dashboard/evaluate/gesture-analysis";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import DetailedMetrics from "@/components/detailed-metrics";
+import KeyRecommendations from "@/components/key-recommendations";
 
 interface Metric {
   metric_id: number;
@@ -152,15 +153,20 @@ export default function PresentationPage({
 
         const data = await res.json();
         setPresentation(data);
-        
-        const res2 = await fetch(`/api/get-qna-info?userId=${encodeURIComponent(user.sub!)}&id=${params.id}`);
+
+        const res2 = await fetch(
+          `/api/get-qna-info?userId=${encodeURIComponent(user.sub!)}&id=${
+            params.id
+          }`
+        );
         const scriptTranscript = await res2.json();
-        
+
         if (!res2.ok) {
           throw new Error("Failed to fetch script and transcript");
         }
-        const transcriptData = scriptTranscript.transcript[0]?.transcript_text || '';
-        const scriptData = scriptTranscript.script[0]?.script_text || '';
+        const transcriptData =
+          scriptTranscript.transcript[0]?.transcript_text || "";
+        const scriptData = scriptTranscript.script[0]?.script_text || "";
 
         const coverageRes = await fetch("/api/openai_coverage", {
           method: "POST",
@@ -169,7 +175,7 @@ export default function PresentationPage({
           },
           body: JSON.stringify({ transcriptData, scriptData }),
         });
-        
+
         const scoreData = await coverageRes.json();
         if (scoreData.score === undefined) {
           throw new Error("Failed to fetch coverage score");
@@ -225,14 +231,21 @@ export default function PresentationPage({
               {new Date(presentation.created_at).toLocaleDateString()}
             </p>
           </div>
-          <div className="bg-stone-100 dark:bg-stone-900 py-6 px-4 rounded-lg h-full mt-4">
+          <div className="bg-white dark:bg-black py-6 px-4 rounded-lg my-4">
             <h2 className={cn("text-xl font-semibold mb-4", outfit.className)}>
               Transcript
             </h2>
-            <p className="whitespace-pre-wrap">
-              {presentation.transcript_text || "No transcript available."}
-            </p>
+            <div className="max-h-[200px] overflow-y-scroll">
+              <p className="whitespace-pre-wrap">
+                {presentation.transcript_text || "No transcript available."}
+              </p>
+            </div>
           </div>
+          <KeyRecommendations
+            analysisData={transformMetricsToAnalysisData(
+              presentation.metrics as MetricType[]
+            )}
+          />
         </div>
 
         <div className="h-full flex flex-col gap-2">
@@ -244,7 +257,7 @@ export default function PresentationPage({
                   onClick={() => window.print()}
                 >
                   <Download
-                    className="text-stone-400 group-hover:text-stone-800 dark:text-stone-400 dark:group-hover:text-white duration-200"
+                    className="text-stone-500 group-hover:text-stone-800 dark:text-stone-400 dark:group-hover:text-white duration-200"
                     size={20}
                   />
                 </TooltipTrigger>
@@ -254,30 +267,30 @@ export default function PresentationPage({
               </Tooltip>
             </TooltipProvider>
           </div>
-          <div className ="bg-stone-100 dark:bg-stone-900 py-6 px-4 rounded-lg flex items-center justify-between">
+          <div className="bg-white dark:bg-black py-6 px-4 rounded-lg flex items-center justify-between mb-2">
             <p>Practice a QnA session with this presentation!</p>
-              <Link
-                href={`/dashboard/qna?id=${params.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 p-2 rounded-md bg-darkCoffee group-hover:bg-lightCoffee"
-              >
-                <MessagesSquare className="mr-2 w-6 h-6"/>
-                Launch in New Tab
-              </Link>
+            <Link
+              href={`/dashboard/qna?id=${params.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white flex items-center gap-1 p-2 rounded-md bg-darkCoffee group-hover:bg-lightCoffee"
+            >
+              <MessagesSquare className="mr-2 w-6 h-6" />
+              Launch in New Tab
+            </Link>
           </div>
-          <div className ="bg-stone-100 dark:bg-stone-900 py-6 px-4 rounded-lg">
-            
+          <div className="bg-white dark:bg-black py-6 px-4 rounded-lg">
             <h2 className={cn("text-xl font-semibold mb-4", outfit.className)}>
               Coverage Score
-
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
-                      <Info className="ml-2"/>
+                    <Info className="ml-2 -translate-y-1" size={12} />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Scored by comparing trascript and the provided script.</p>
+                    <p>
+                      Scored by comparing transcript and the provided script.
+                    </p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -289,7 +302,7 @@ export default function PresentationPage({
                 <p className="whitespace-pre-wrap">Score: {score}%</p>
                 <div className="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
                   <div
-                    className={`h-3 rounded-full transition-all duration-300 bg-green-500`}
+                    className={`h-3 rounded-full transition-all duration-300 bg-[#98aa57]`}
                     style={{ width: `${score}%` }}
                   />
                 </div>
@@ -303,16 +316,12 @@ export default function PresentationPage({
               </>
             )}
           </div>
-          <div className="bg-stone-100 dark:bg-stone-900 py-6 px-4 rounded-lg h-full">
-            <h2 className={cn("text-xl font-semibold mb-4", outfit.className)}>
-              Performance Metrics
-            </h2>
-            <MetricsDisplay
-              metrics={transformMetricsToGestureMetrics(
-                presentation.metrics as MetricType[]
-              )}
-            />
-          </div>
+          <DetailedMetrics
+            analysisData={transformMetricsToAnalysisData(
+              presentation.metrics as MetricType[]
+            )}
+            scroll={true}
+          />
         </div>
       </div>
     </PageFormat>
