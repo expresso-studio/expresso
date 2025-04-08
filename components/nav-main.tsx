@@ -37,7 +37,7 @@ const navMain: NavItemType[] = [
   },
   {
     title: "Evaluate",
-    url: "/dashboard/evaluate",
+    url: "/dashboard/eval-settings",
     icon: <PiPresentation />,
     activeIcon: <PiPresentationFill />,
     isActive: false,
@@ -50,11 +50,7 @@ const navMain: NavItemType[] = [
     items: [
       {
         title: "statistics",
-        url: "/dashboard/progress/statistics",
-      },
-      {
-        title: "learning suggestions",
-        url: "/dashboard/progress/suggestions",
+        url: "/dashboard/progress/",
       },
       {
         title: "previous sessions",
