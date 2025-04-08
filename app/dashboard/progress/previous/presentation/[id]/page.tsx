@@ -44,30 +44,63 @@ interface VideoPlayerProps {
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoKey, userId }) => {
   const [signedUrl, setSignedUrl] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!videoKey || !userId) return;
+
     const fetchSignedUrl = async () => {
       try {
+        setIsLoading(true);
         const res = await fetch(
           `/api/get-signed-url?videoKey=${encodeURIComponent(
             videoKey
           )}&user=${encodeURIComponent(userId)}`
         );
-        if (!res.ok) {
-          console.error("Failed to fetch signed URL, status:", res.status);
-          return;
-        }
         const data = await res.json();
+
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch video URL");
+        }
+
         setSignedUrl(data.url);
+        setError(null);
       } catch (error) {
         console.error("Error fetching signed URL", error);
+        setError(
+          error instanceof Error
+            ? error.message
+            : "Failed to load video. Please try again later."
+        );
+      } finally {
+        setIsLoading(false);
       }
     };
-    fetchSignedUrl();
+
+    // Add a small delay to prevent overwhelming the server
+    const timeoutId = setTimeout(fetchSignedUrl, 500);
+    return () => clearTimeout(timeoutId);
   }, [videoKey, userId]);
 
-  if (!signedUrl) {
+  const handleVideoError = (
+    e: React.SyntheticEvent<HTMLVideoElement, Event>
+  ) => {
+    console.error("Video loading error:", e);
+    setError(
+      "Failed to load video. The video may be corrupted or unavailable."
+    );
+  };
+
+  if (error) {
+    return <></>;
+  }
+
+  if (isLoading || !signedUrl) {
     return (
       <div className="animate-pulse w-full h-[342px] flex items-center justify-center rounded-lg shadow-lg bg-stone-300 dark:bg-stone-800">
         <LoaderCircle className="animate-spin" />
@@ -76,10 +109,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoKey, userId }) => {
   }
 
   return (
-    <div>
+    <div className="relative">
       <video
         className="w-full rounded-lg shadow-lg border border-stone-600"
         controls
+        onError={handleVideoError}
+        preload="metadata"
       >
         <source src={signedUrl} type="video/mp4" />
         Your browser does not support the video tag.
@@ -134,16 +169,16 @@ export default function PresentationPage({
 
   if (!isAuthenticated || !user?.sub) {
     return (
-      <div className="w-full h-full items-center justify-center">
-        Please log in to view this presentation.
+      <div className="w-full h-full flex items-center justify-center text-center">
+        <p>Please log in to view this presentation.</p>
       </div>
     );
   }
 
   if (!presentation) {
     return (
-      <div className="w-full h-full items-center justify-center">
-        Presentation not found.
+      <div className="w-full h-full flex items-center justify-center text-center">
+        <p>Presentation not found.</p>
       </div>
     );
   }

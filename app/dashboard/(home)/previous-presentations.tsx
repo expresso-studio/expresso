@@ -85,20 +85,22 @@ export default function PreviousPresentationsSection() {
               </div>
             ) : (
               user &&
-              reports.map(
-                (report, i) =>
-                  i < 3 && (
-                    <Recording
-                      key={report.presentation_id}
-                      id={report.presentation_id}
-                      title={report.title}
-                      created_at={report.created_at}
-                      loading={false}
-                      video_url={report.video_url}
-                      metrics={report.metrics}
-                    />
-                  )
-              )
+              [...reports]
+                .reverse()
+                .map(
+                  (report, i) =>
+                    i < 3 && (
+                      <Recording
+                        key={report.presentation_id}
+                        id={report.presentation_id}
+                        title={report.title}
+                        created_at={report.created_at}
+                        loading={false}
+                        video_url={report.video_url}
+                        metrics={report.metrics}
+                      />
+                    )
+                )
             )}
             <div aria-hidden={true} className={"max-w-[1rem] opacity-0"}>
               x
