@@ -22,7 +22,7 @@ const MetricIndicator = ({ name, metric }: Props) => {
   if (!optimalRange) return null;
 
   return (
-    <div className="bg-white rounded-lg p-3">
+    <div className="bg-white dark:bg-black rounded-lg p-3">
       <div className="flex justify-between items-center mb-2">
         <div className="flex items-center gap-3">
           <Icon />

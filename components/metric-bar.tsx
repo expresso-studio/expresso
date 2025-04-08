@@ -29,7 +29,7 @@ const MetricBar = React.memo(function MetricBarFunction({
   return (
     <div
       className={cn(
-        "relative w-full h-5 bg-orange-200 dark:bg-gray-700 rounded-full mt-1",
+        "relative w-full h-5 bg-orange-200 dark:bg-darkCaramel rounded-full mt-1",
         live && "h-2"
       )}
     >
