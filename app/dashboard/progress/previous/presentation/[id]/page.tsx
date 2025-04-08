@@ -253,22 +253,6 @@ export default function PresentationPage({
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger className="group">
-                  <Link
-                    href={`/dashboard/qna?id=${params.id}`}
-                    className="flex items-center gap-1 px-2 py-1 rounded-md bg-darkCoffee group-hover:bg-lightCoffee"
-                  >
-                    <MessagesSquare size={14} />
-                    QnA
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Practice a QnA session with this presentation!</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
           </div>
           <div className ="bg-stone-100 dark:bg-stone-900 py-6 px-4 rounded-lg flex items-center justify-between">
             <p>Practice a QnA session with this presentation!</p>
