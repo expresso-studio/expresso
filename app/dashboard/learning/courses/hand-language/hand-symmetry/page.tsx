@@ -57,7 +57,7 @@ export default function Page() {
   return (
     <LessonFormat {...lesson} courseName={course.name} color={course.color}>
       <p>
-        Why do weather forecasters often hold their hands in a triangle and
+        {`Why do weather forecasters often hold their hands in a triangle and
         return them to the same position during their broadcasts? The answer
         lies in how this gesture helps maintain a baseline. By positioning their
         hands in a consistent shape—usually a triangle in front of their
@@ -68,7 +68,7 @@ export default function Page() {
         uncontrolled physical movement. However, outside of the context of a
         weather broadcast, this repetitive, fixed hand position can come across
         as robotic or mechanical, lacking the natural fluidity we often
-        associate with spontaneous communication.
+        associate with spontaneous communication.`}
       </p>
       <div className="w-full flex items-center justify-center">
         <iframe
@@ -83,7 +83,7 @@ export default function Page() {
         />
       </div>
       <p>
-        In the world of nonverbal communication, the importance of gesture goes
+        {` In the world of nonverbal communication, the importance of gesture goes
         beyond simply making the audience feel comfortable with controlled body
         movements. Hand gestures that are meaningful, like pointing at an object
         or showing the palm when counting, carry more weight than ensuring the
@@ -94,10 +94,10 @@ export default function Page() {
         When standing in front of an audience, especially in larger spaces, it’s
         better to use broad, purposeful gestures that come from the shoulders,
         rather than smaller, unnecessary movements that may seem less
-        intentional or more nervous.
+        intentional or more nervous.`}
       </p>
       <p>
-        Moreover, when considering gestures in a larger room or during an online
+        {`Moreover, when considering gestures in a larger room or during an online
         presentation, the dynamics change. For example, the focus for online
         presentations should shift from hand gestures altogether, as the
         audience may not even see them, making them less impactful. In contrast,
@@ -107,7 +107,7 @@ export default function Page() {
         rocking or fiddling with the hands can help maintain focus on the
         message, rather than on the speaker's nervous movements. Ultimately,
         gestures should enhance the message being delivered, acting as a tool to
-        clarify and emphasize rather than a distraction or unnecessary tic.
+        clarify and emphasize rather than a distraction or unnecessary tic.`}
       </p>
       <div className="w-full flex items-center justify-center pb-16">
         <EvaluateButton />
