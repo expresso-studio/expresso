@@ -28,10 +28,8 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({
 
   useEffect(() => {
     if (videoBlob && videoRef.current) {
-      // Create an object URL from the blob
       const videoUrl = URL.createObjectURL(videoBlob);
       videoRef.current.src = videoUrl;
-      // Clean up the object URL when the component unmounts
       return () => {
         URL.revokeObjectURL(videoUrl);
       };
@@ -39,7 +37,7 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({
   }, [videoBlob]);
 
   const handleSaveClick = () => {
-    setTitle(""); // Reset title
+    setTitle("");
     setShowTitleDialog(true);
   };
 
@@ -60,36 +58,42 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({
     setUploadError(null);
     setUploadSuccess(false);
 
-    const formData = new FormData();
-    formData.append("video", videoBlob, "presentation-recording.mp4");
-
     try {
       const finalTitle = title.trim() || "Untitled Presentation";
-      // Upload video first
-      const videoRes = await fetch(
-        `/api/upload-video?user=${encodeURIComponent(
-          user.sub
-        )}&title=${encodeURIComponent(finalTitle)}`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
 
-      if (!videoRes.ok) {
-        throw new Error("Video upload failed");
+      // Step 1: Request a pre-signed URL and register the presentation.
+      const signRes = await fetch("/api/sign-s3", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: user.sub,
+          title: finalTitle,
+        }),
+      });
+      if (!signRes.ok) {
+        throw new Error("Failed to get a pre-signed URL");
       }
 
-      const { videoUrl, presentationId } = await videoRes.json();
+      const { signedUrl, videoKey, presentationId } = await signRes.json();
 
-      // save script
-      console.log("Script and presentationId:", { script, presentationId });
+      // Step 2: Upload the video directly to S3 using the pre-signed URL.
+      const uploadRes = await fetch(signedUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "video/mp4",
+        },
+        body: videoBlob,
+      });
+      if (!uploadRes.ok) {
+        throw new Error("Direct upload to S3 failed");
+      }
+      console.log("Video directly uploaded to S3. Video key:", videoKey);
+      console.log("Presentation registered with ID:", presentationId);
 
-      if (
-        typeof script === "string" &&
-        script.trim() !== "" &&
-        presentationId
-      ) {
+      // Step 3: Upload related metadata using the presentationId.
+      if (typeof script === "string" && script.trim() !== "") {
         const scriptRes = await fetch("/api/save-script", {
           method: "POST",
           headers: {
@@ -98,24 +102,20 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({
           body: JSON.stringify({
             userId: user.sub,
             presentationId,
+            videoKey,
             script,
           }),
         });
-
         if (!scriptRes.ok) {
           throw new Error("Script upload failed");
         }
-
         const { scriptId } = await scriptRes.json();
         console.log("Script saved successfully. ID:", scriptId);
       } else {
-        console.warn("Script not saved. Missing script or presentationId:", {
-          script,
-          presentationId,
-        });
+        console.warn("Script not saved. Missing script content.");
       }
-      // Upload transcript if available
-      if (metrics?.transcript && presentationId) {
+
+      if (metrics?.transcript) {
         const transcriptRes = await fetch("/api/upload-transcript", {
           method: "POST",
           headers: {
@@ -124,104 +124,85 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({
           body: JSON.stringify({
             userId: user.sub,
             presentationId,
+            videoKey,
             transcript: metrics.transcript,
           }),
         });
-
         if (!transcriptRes.ok) {
           throw new Error("Transcript upload failed");
         }
-
         const transcriptData = await transcriptRes.json();
         console.log("Transcript uploaded, ID:", transcriptData.transcriptId);
       } else {
-        console.warn("No transcript provided or missing presentationId.");
+        console.warn("No transcript provided.");
       }
 
-      console.log("Video uploaded, URL:", videoUrl, "ID:", presentationId);
+      if (metrics) {
+        const metricsToSend: MetricInput[] = [
+          {
+            name: MetricNames.HandSymmetry,
+            value: Math.min(1, Math.max(0, metrics.HandMovement.value)),
+          },
+          {
+            name: MetricNames.HeadMovement,
+            value: Math.min(1, Math.max(0, metrics.HeadMovement.value)),
+          },
+          {
+            name: MetricNames.BodyMovement,
+            value: Math.min(1, Math.max(0, metrics.BodyMovement.value)),
+          },
+          {
+            name: MetricNames.Posture,
+            value: Math.min(1, Math.max(0, metrics.Posture.value)),
+          },
+          {
+            name: MetricNames.HandSymmetry,
+            value: Math.min(1, Math.max(0, metrics.HandSymmetry.value)),
+          },
+          {
+            name: MetricNames.GestureVariety,
+            value: Math.min(1, Math.max(0, metrics.GestureVariety.value)),
+          },
+          {
+            name: MetricNames.EyeContact,
+            value: Math.min(1, Math.max(0, metrics.EyeContact.value)),
+          },
+          {
+            name: MetricNames.OverallScore,
+            value: Math.min(1, Math.max(0, metrics.OverallScore)),
+          },
+        ];
 
-      // If metrics are provided and we have a presentationId, save the metrics
-      if (metrics && presentationId) {
-        try {
-          console.log("Sending metrics:", metrics);
-
-          // Format metrics data properly and ensure values are between 0-100
-          const metricsToSend: MetricInput[] = [
-            {
-              name: MetricNames.HandSymmetry,
-              value: Math.min(1, Math.max(0, metrics.HandMovement.value)),
-            },
-            {
-              name: MetricNames.HeadMovement,
-              value: Math.min(1, Math.max(0, metrics.HeadMovement.value)),
-            },
-            {
-              name: MetricNames.BodyMovement,
-              value: Math.min(1, Math.max(0, metrics.BodyMovement.value)),
-            },
-            {
-              name: MetricNames.Posture,
-              value: Math.min(1, Math.max(0, metrics.Posture.value)),
-            },
-            {
-              name: MetricNames.HandSymmetry,
-              value: Math.min(1, Math.max(0, metrics.HandSymmetry.value)),
-            },
-            {
-              name: MetricNames.GestureVariety,
-              value: Math.min(1, Math.max(0, metrics.GestureVariety.value)),
-            },
-            {
-              name: MetricNames.EyeContact,
-              value: Math.min(1, Math.max(0, metrics.EyeContact.value)),
-            },
-            {
-              name: MetricNames.OverallScore,
-              value: Math.min(1, Math.max(0, metrics.OverallScore)),
-            },
-          ];
-
-          const metricsRes = await fetch("/api/presentation/metrics", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              presentationId,
-              userId: user.sub,
-              metrics: metricsToSend,
-            }),
-          });
-
-          if (!metricsRes.ok) {
-            const errorData = await metricsRes.json();
-            console.error("Metrics response:", errorData);
-            throw new Error(
-              `Failed to save metrics: ${errorData.error || "Unknown error"}`
-            );
-          }
-
-          const metricsData = await metricsRes.json();
-          console.log("Metrics saved successfully:", metricsData);
-        } catch (metricsError) {
-          console.error("Error saving metrics:", metricsError);
-          setUploadError("Video uploaded but failed to save metrics.");
-        }
-      } else {
-        console.warn("No metrics provided or missing presentationId:", {
-          hasMetrics: !!metrics,
-          presentationId,
+        const metricsRes = await fetch("/api/presentation/metrics", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            presentationId,
+            userId: user.sub,
+            videoKey,
+            metrics: metricsToSend,
+          }),
         });
+        if (!metricsRes.ok) {
+          const errorData = await metricsRes.json();
+          throw new Error(
+            `Failed to save metrics: ${errorData.error || "Unknown error"}`
+          );
+        }
+        const metricsData = await metricsRes.json();
+        console.log("Metrics saved successfully:", metricsData);
       }
 
-      console.log("Video uploaded, URL:", videoUrl, "ID:", presentationId);
+      console.log("Upload and registration complete.");
       setUploadSuccess(true);
     } catch (error) {
       console.error("Error during upload:", error);
       setUploadError(
         error instanceof Error
           ? error.message
-          : "Failed to upload video or save metrics."
+          : "Failed to upload video or save metadata."
       );
     } finally {
       setUploading(false);
@@ -295,8 +276,6 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({
       {uploadSuccess && (
         <p className="mt-2 text-green-500">Video saved successfully!</p>
       )}
-
-      {/* Title Dialog */}
       {showTitleDialog && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
