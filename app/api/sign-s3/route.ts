@@ -11,7 +11,7 @@ const s3 = new S3Client({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
   },
 });
-const S3_BUCKET_NAME = process.env.S3_BUCKET!;
+const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME!;
 
 export async function POST(request: NextRequest) {
   try {
