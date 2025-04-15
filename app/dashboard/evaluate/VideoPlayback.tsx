@@ -61,7 +61,7 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({
     try {
       const finalTitle = title.trim() || "Untitled Presentation";
 
-      // Step 1: Request a pre-signed URL and register the presentation.
+      // Request a pre-signed URL and register the presentation.
       const signRes = await fetch("/api/sign-s3", {
         method: "POST",
         headers: {
@@ -78,7 +78,7 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({
 
       const { signedUrl, videoKey, presentationId } = await signRes.json();
 
-      // Step 2: Upload the video directly to S3 using the pre-signed URL.
+      // Upload the video directly to S3 using the pre-signed URL.
       const uploadRes = await fetch(signedUrl, {
         method: "PUT",
         headers: {
@@ -92,7 +92,7 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({
       console.log("Video directly uploaded to S3. Video key:", videoKey);
       console.log("Presentation registered with ID:", presentationId);
 
-      // Step 3: Upload related metadata using the presentationId.
+      // Upload related metadata using the presentationId.
       if (typeof script === "string" && script.trim() !== "") {
         const scriptRes = await fetch("/api/save-script", {
           method: "POST",
