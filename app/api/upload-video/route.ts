@@ -25,6 +25,8 @@ export async function POST(request: NextRequest) {
     // Convert file to buffer
     const buffer = Buffer.from(await videoFile.arrayBuffer());
     
+    console.log(`Uploaded video size: ${videoFile.size} bytes`);
+
     // Generate a unique filename
     const videoKey = `${userId}-${Date.now()}-presentation-recording.mp4`;
     
@@ -50,7 +52,7 @@ export async function POST(request: NextRequest) {
 export const config = {
   api: {
     bodyParser: {
-      sizeLimit: '10000mb',
+      sizeLimit: '100mb',
     },
   },
 };
