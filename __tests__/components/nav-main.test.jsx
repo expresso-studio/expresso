@@ -1,20 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import { NavMain } from "@/components/nav-main";
 import { SidebarProvider } from "@/components/ui/sidebar"
+import { usePathname } from "next/navigation";
 
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: jest.fn().mockImplementation(query => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: jest.fn(), // Deprecated
-    removeListener: jest.fn(), // Deprecated
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn(),
-  })),
-});
+jest.mock("next/navigation", () => ({
+  usePathname: jest.fn(),
+}));
+
 
 describe("NavMain Component", () => {
   it("renders without crashing", () => {
@@ -26,5 +18,31 @@ describe("NavMain Component", () => {
     );
     
     expect(screen.getByText("Dashboard")).toBeInTheDocument();
+  });
+  it('computes active path as "dashboard" when pathname has less than 3 segments', () => {
+    // When pathname is "/" the computed path is "dashboard".
+    usePathname.mockReturnValue("/");
+    render(
+      <SidebarProvider>
+        <NavMain />
+      </SidebarProvider>
+    );
+
+    expect(screen.getByText("Dashboard")).toBeInTheDocument();
+  });
+
+  it('computes active path correctly as "progress" when pathname has 3 or more segments', () => {
+    // When pathname is "/dashboard/progress", the computed path is "progress".
+    usePathname.mockReturnValue("/dashboard/progress");
+    render(
+      <SidebarProvider>
+        <NavMain />
+      </SidebarProvider>
+    );
+    
+    const progressLink = screen.queryByRole("link", { name: /Progress/i });
+    expect(progressLink).toBeNull();
+    
+    expect(screen.getByText("Progress")).toBeInTheDocument();
   });
 })

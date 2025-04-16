@@ -32,7 +32,7 @@ describe("Page Component", () => {
     expect(screen.getByText(/Select preset persona/i)).toBeInTheDocument();
   });
 
-  it("updates form state when selecting a preset persona", () => {
+  it("updates form state when selecting class presentation persona", () => {
     render(
       <ScriptProvider>
         <SidebarProvider>
@@ -53,6 +53,85 @@ describe("Page Component", () => {
     const EyeContactCheckbox = screen.getByLabelText(/Eye Contact/i);
     expect(EyeContactCheckbox.checked).toBe(true);
   });
+
+  it("updates form state when selecting none persona", () => {
+    render(
+      <ScriptProvider>
+        <SidebarProvider>
+          <Page />
+        </SidebarProvider>
+      </ScriptProvider>
+    );
+    const personaBtn = screen.getByRole("button", {
+      name: /None/i,
+    });
+    fireEvent.click(personaBtn);
+
+    const metricCheckbox = screen.getByLabelText(/Hand Movement/i);
+    expect(metricCheckbox.checked).toBe(false);
+  });
+  
+  it("updates form state when selecting online persona", () => {
+    render(
+      <ScriptProvider>
+        <SidebarProvider>
+          <Page />
+        </SidebarProvider>
+      </ScriptProvider>
+    );
+    const personaBtn = screen.getByRole("button", {
+      name: /Online/i,
+    });
+    fireEvent.click(personaBtn);
+
+    const locationSelect = screen.getByLabelText(/Location/i);
+    expect(locationSelect.value).toBe("online");
+ 
+    const metricCheckbox = screen.getByLabelText(/Head Movement/i);
+    expect(metricCheckbox.checked).toBe(true);
+  });
+
+  it("updates form state when selecting lecture persona", () => {
+    render(
+      <ScriptProvider>
+        <SidebarProvider>
+          <Page />
+        </SidebarProvider>
+      </ScriptProvider>
+    );
+    const personaBtn = screen.getByRole("button", {
+      name: /Lecture/i,
+    });
+    fireEvent.click(personaBtn);
+
+    const locationSelect = screen.getByLabelText(/Location/i);
+    expect(locationSelect.value).toBe("classroom");
+ 
+
+    const metricCheckbox = screen.getByLabelText(/Posture/i);
+    expect(metricCheckbox.checked).toBe(true);
+  });
+
+  it("updates form state when selecting meeting persona", () => {
+    render(
+      <ScriptProvider>
+        <SidebarProvider>
+          <Page />
+        </SidebarProvider>
+      </ScriptProvider>
+    );
+    const personaBtn = screen.getByRole("button", {
+      name: /Meeting/i,
+    });
+    fireEvent.click(personaBtn);
+
+    const locationSelect = screen.getByLabelText(/Location/i);
+    expect(locationSelect.value).toBe("meeting");
+ 
+    const metricCheckbox = screen.getByLabelText(/Gesture Variety/i);
+    expect(metricCheckbox.checked).toBe(true);
+  });
+
 
   it("enables the Start button when all required fields are filled and navigates on click", async () => {
     render(
@@ -105,5 +184,31 @@ describe("Page Component", () => {
     // Click the button without selecting entering presentation topic
     fireEvent.click(startButton);
     expect(window.alert).toHaveBeenCalledWith('Please Provide Presentation Topic');
+  });
+
+  it("updates formData correctly for text and checkbox inputs", () => {
+    render(
+      <ScriptProvider>
+        <SidebarProvider>
+          <Page />
+        </SidebarProvider>
+      </ScriptProvider>
+    );
+
+    // Test non-checkbox input update (text input for topic)
+    const topicTextarea = screen.getByLabelText(/Presenting Topic:/i);
+    fireEvent.change(topicTextarea, {
+      target: { name: "topic", value: "New Topic" },
+    });
+    expect(topicTextarea.value).toBe("New Topic");
+
+    // Test checkbox input update
+    // By default, the Hand Movement checkbox is expected to be false.
+    const handMovementCheckbox = screen.getByLabelText(/Hand Movement/i);
+    expect(handMovementCheckbox.checked).toBe(false);
+
+    // Fire a change event to toggle the checkbox on.
+    fireEvent.click(handMovementCheckbox);
+    expect(handMovementCheckbox.checked).toBe(true);
   });
 });
