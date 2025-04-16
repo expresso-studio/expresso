@@ -15,6 +15,20 @@ interface Question {
     tips: string;
 }
 
+const retryFetch = async <T,>( fn: () => Promise<T>, retries = 3, delay = 1000): Promise<T> => { 
+    try {
+        return await fn();
+    } catch (err) {
+        if (retries > 0) {
+            console.warn(`Retrying... attempts left: ${retries}`, err);
+            await new Promise(res => setTimeout(res, delay));
+            return retryFetch(fn, retries - 1, delay * 2); // Exponential backoff
+        } else {
+            throw err;
+        }
+    }
+};
+  
 export default function Page() {
 
     const [questions, setQuestions] = useState<Question[]>([]);
@@ -28,13 +42,18 @@ export default function Page() {
     const searchParams = useSearchParams()!;
     const presentationID = searchParams.get("id");
 
+    
+      
+
     useEffect(() => {
         if (isLoading || !isAuthenticated || !user?.sub || !searchParams) return;
 
         const fetchData = async () => {
             setLoading(true);
             try {
-                const res = await fetch(`/api/get-qna-info?userId=${encodeURIComponent(user.sub!)}&id=${presentationID}`);
+                const res = await retryFetch(() => 
+                    fetch(`/api/get-qna-info?userId=${encodeURIComponent(user.sub!)}&id=${presentationID}`)
+                );
                 const data = await res.json();
                 
                 if (data.error) {
@@ -47,13 +66,15 @@ export default function Page() {
                 
                 setTitle(titleData);
 
-                const qnaRes = await fetch("/api/openai_qna", {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ transcriptData, scriptData }),
-                });
+                const qnaRes = await retryFetch(() =>
+                    fetch("/api/openai_qna", {
+                        method: "POST",
+                        headers: {
+                        "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ transcriptData, scriptData }),
+                    })
+                );
                   
                 const qnaData = await qnaRes.json();
                 if (Array.isArray(qnaData.questions)) {
