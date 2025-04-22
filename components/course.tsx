@@ -7,7 +7,7 @@ import { CourseNameToLink } from "@/lib/constants";
 import Link from "next/link";
 
 interface Props extends CourseType {
-  status: number;
+  status?: number;
 }
 
 const Course = React.memo<Props>(function Course({
@@ -37,15 +37,27 @@ const Course = React.memo<Props>(function Course({
           <div className="flex justify-between pb-2">
             <div className="flex flex-col">
               <span className={cn(outfit.className, "font-bold")}>{name}</span>
-              <span className="text-lightCoffee text-xs italics">
-                {status}%
-              </span>
+              {status !== undefined ? (
+                <span className="text-lightCoffee text-xs italics">
+                  {status}%
+                </span>
+              ) : (
+                <span className="bg-lightCoffee opacity-50 rounded-full text-xs w-8 h-4 animate-pulse">
+                  {status}
+                </span>
+              )}
             </div>
             <span className="text-sm">
               {lessons.length} lesson{lessons.length > 1 ? "s" : ""}
             </span>
           </div>
-          <Slider disabled={true} defaultValue={[status]} max={100} step={1} />
+          <Slider
+            className={status !== undefined ? "" : "animate-pulse"}
+            disabled={true}
+            defaultValue={[status !== undefined ? status : 100]}
+            max={100}
+            step={1}
+          />
         </div>
       </div>
     </Link>

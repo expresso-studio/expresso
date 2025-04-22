@@ -45,7 +45,7 @@ export default function CourseFormat({
     <PageFormat
       breadCrumbs={[
         { url: "/dashboard/learning", name: "learning" },
-        { url: "/dashboard/learning/courses", name: "courses" },
+        { url: "/dashboard/learning", name: "courses" },
         { name: CourseNameToLink[name] },
       ]}
     >
