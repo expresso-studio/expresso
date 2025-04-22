@@ -1,8 +1,22 @@
+"use client";
+
 import LoginButton from "../components/login-button";
 import FooterWave from "@/components/ui/footer-wave";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import React, { useEffect } from "react";
+import { useAuthUtils } from "@/hooks/useAuthUtils";
 
 export default function Page() {
+  const router = useRouter();
+  const { isAuthenticated } = useAuthUtils();
+  
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace("/dashboard");
+    }
+  }, [isAuthenticated, router]);
+
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-grow flex items-center justify-center">
