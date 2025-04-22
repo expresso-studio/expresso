@@ -101,7 +101,7 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
         status: getMetricStatus("EyeContact", currentMetrics.EyeContact),
       },
       OverallScore: currentMetrics.OverallScore,
-      sessionDuration,
+      sessionDuration: sessionDuration,
       transcript: transcriptRef.current || "No transcript available.",
     };
 
@@ -164,7 +164,7 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
         timerRef.current = null;
       }
     };
-  }, [isRecording, generateAnalysisReport]);
+  }, [isRecording]);
 
   // Callback function to receive metrics from GestureAnalysis
   const handleMetricsUpdate = useCallback(
