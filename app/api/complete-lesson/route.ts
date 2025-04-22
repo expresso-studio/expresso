@@ -1,6 +1,5 @@
-// app/api/complete-lesson/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { query } from '@/lib/db';
+import { NextRequest, NextResponse } from "next/server";
+import { query } from "@/lib/db";
 
 export async function POST(request: NextRequest) {
   try {
@@ -8,11 +7,10 @@ export async function POST(request: NextRequest) {
 
     if (!userId || !lessonId) {
       return NextResponse.json(
-        { error: 'Missing userId or lessonId in request body' },
+        { error: "Missing userId or lessonId in request body" },
         { status: 400 }
       );
     }
-
 
     const insertResult = await query(
       `INSERT INTO progress (lesson_id, user_id)
@@ -26,12 +24,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       progressId,
-      message: 'Lesson marked as completed.'
+      message: "Lesson marked as completed.",
     });
   } catch (error) {
-    console.error('Error completing lesson:', error);
+    console.error("Error completing lesson:", error);
     return NextResponse.json(
-      { error: 'Failed to mark lesson as completed' },
+      { error: "Failed to mark lesson as completed" },
       { status: 500 }
     );
   }

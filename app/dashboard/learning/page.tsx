@@ -7,12 +7,7 @@ import { MetricType, ReportItemType } from "@/lib/types";
 import ProtectedRoute from "@/components/protected-route";
 import { useAuthUtils } from "@/hooks/useAuthUtils";
 import Recommendations from "./recommendations";
-import {
-  Courses,
-  CourseStatuses,
-  MetricNames,
-  MetricNameToId,
-} from "@/lib/constants";
+import { Courses, MetricNames, MetricNameToId } from "@/lib/constants";
 import CourseList from "./course-list";
 import { outfit } from "@/app/fonts";
 import PracticeButton from "./practice-button";
@@ -28,21 +23,13 @@ export default function Page() {
       refreshToken();
     }
   }, [error, refreshToken]);
+
   const [avgMetrics, setAvgMetrics] = React.useState<MetricType[]>([]);
   const [loadingReports, setLoadingReports] = React.useState(true);
-
-  // TODO(casey): replace with actual status
-  const coursesWithStatus = Courses.map((course) => {
-    const matchingCourse = CourseStatuses.find(
-      (courseStatus) => courseStatus.name === course.name
-    );
-
-    if (matchingCourse) {
-      return { ...course, ...matchingCourse };
-    }
-
-    return { ...course, status: 0 };
-  });
+  const [coursesWithStatus, setCoursesWithStatus] = React.useState(
+    Courses.map((course) => ({ ...course, status: 0 }))
+  );
+  const [loadingCourses, setLoadingCourses] = React.useState(true);
 
   function calculateAvgMetrics(reports: ReportItemType[]) {
     // Create an object to hold the total sums and count for each category
@@ -80,6 +67,52 @@ export default function Page() {
     return avgScores;
   }
 
+  // Fetch course progress data from API
+  React.useEffect(() => {
+    async function fetchCourseProgress() {
+      if (!user?.sub) return;
+
+      try {
+        setLoadingCourses(true);
+
+        // Create a copy of courses to update
+        const updatedCourses = [...Courses];
+
+        // Fetch progress for each course
+        const progressPromises = updatedCourses.map(async (course) => {
+          const res = await fetch(
+            `/api/course/progress?userId=${encodeURIComponent(
+              user.sub ?? ""
+            )}&courseId=${encodeURIComponent(course.id)}`,
+            { cache: "no-store" }
+          );
+
+          if (!res.ok) {
+            throw new Error(`Failed to fetch progress for course ${course.id}`);
+          }
+
+          const data = await res.json();
+          return {
+            ...course,
+            status: data.progress || 0,
+          };
+        });
+
+        // Wait for all progress fetches to complete
+        const coursesWithProgressData = await Promise.all(progressPromises);
+        setCoursesWithStatus(coursesWithProgressData);
+      } catch (err) {
+        console.error("Error fetching course progress:", err);
+      } finally {
+        setLoadingCourses(false);
+      }
+    }
+
+    if (isAuthenticated && !isLoading) {
+      fetchCourseProgress();
+    }
+  }, [isAuthenticated, isLoading, user]);
+
   React.useEffect(() => {
     async function fetchReports() {
       try {
@@ -110,7 +143,7 @@ export default function Page() {
         <div className="w-full flex flex-col sm:flex-row gap-8">
           <div className="w-full">
             <Recommendations
-              loading={loadingReports}
+              loading={loadingReports || loadingCourses}
               metrics={avgMetrics}
               courses={coursesWithStatus}
             />
@@ -121,7 +154,10 @@ export default function Page() {
               <h3 className="text-xl font-bold pb-2" style={outfit.style}>
                 All Courses
               </h3>
-              <CourseList courses={coursesWithStatus} />
+              <CourseList
+                courses={coursesWithStatus}
+                loading={loadingCourses}
+              />
             </div>
           </div>
         </div>
