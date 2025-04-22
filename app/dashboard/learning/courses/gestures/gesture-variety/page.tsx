@@ -4,6 +4,7 @@ import {
   CourseStatuses,
   LessonNames,
   LessonStatuses,
+  MetricNames,
 } from "@/lib/constants";
 import {
   CourseStatus,
@@ -13,6 +14,7 @@ import {
 } from "@/lib/types";
 import { Courses } from "@/lib/constants";
 import LessonFormat from "../../../lesson-format";
+import EvaluateButton from "@/components/evaluate-button";
 
 export default function Page() {
   // TODO(casey): replace with actual status
@@ -55,7 +57,11 @@ export default function Page() {
 
   return (
     <LessonFormat {...lesson} courseName={course.name} color={course.color}>
-      TODO: add lesson content
+      <p>{`TODO`}</p>
+
+      <div className="w-full flex items-center justify-center pb-16">
+        <EvaluateButton enabledParams={[MetricNames.GestureVariety]} />
+      </div>
     </LessonFormat>
   );
 }

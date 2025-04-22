@@ -127,7 +127,7 @@ export enum LessonLinks {
   HandMovement = "hand-movement",
   HandSymmetry = "hand-symmetry",
   BodyMovement = "body-movement",
-  Posture = "Posture",
+  Posture = "posture",
   HeadMovement = "head-movement",
   EyeContact = "eye-contact",
   GestureVariety = "gesture-variety",
