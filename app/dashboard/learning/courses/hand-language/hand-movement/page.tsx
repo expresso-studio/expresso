@@ -4,6 +4,7 @@ import {
   CourseStatuses,
   LessonNames,
   LessonStatuses,
+  MetricNames,
 } from "@/lib/constants";
 import {
   CourseStatus,
@@ -13,13 +14,14 @@ import {
 } from "@/lib/types";
 import { Courses } from "@/lib/constants";
 import LessonFormat from "../../../lesson-format";
+import EvaluateButton from "@/components/evaluate-button";
 
 export default function Page() {
   // TODO(casey): replace with actual status
   const course: (CourseType & CourseStatus) | undefined = Courses.map(
     (course) => {
       const matchingCourse = CourseStatuses.find(
-        (courseStatus) => courseStatus.name === course.name,
+        (courseStatus) => courseStatus.name === course.name
       );
 
       if (matchingCourse) {
@@ -27,14 +29,14 @@ export default function Page() {
       }
 
       return { ...course, status: 0 };
-    },
+    }
   ).find((course) => course.name == CourseNames.HandLanguage);
 
   // TODO(casey): replace with actual status
   const lesson: (LessonType & LessonStatus) | undefined = course?.lessons
     .map((lesson) => {
       const matchingLesson = LessonStatuses.find(
-        (lessonStatus) => lessonStatus.name === lesson.name,
+        (lessonStatus) => lessonStatus.name === lesson.name
       );
 
       if (matchingLesson) {
@@ -55,7 +57,11 @@ export default function Page() {
 
   return (
     <LessonFormat {...lesson} courseName={course.name} color={course.color}>
-      TODO: add lesson content
+      <p>{`TODO`}</p>
+
+      <div className="w-full flex items-center justify-center pb-16">
+        <EvaluateButton enabledParams={[MetricNames.HandMovement]} />
+      </div>
     </LessonFormat>
   );
 }
