@@ -59,10 +59,10 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({
     setUploading(true);
     setUploadError(null);
     setUploadSuccess(false);
-    console.log(fillerStats)
+    console.log(fillerStats);
 
     try {
-      if (fillerStats){
+      if (fillerStats) {
         // Save the filler word stats
         const response = await fetch("/api/fillerwords", {
           method: "POST",
@@ -79,7 +79,7 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({
         const data = await response.json();
         console.log("Filler stats posted successfully:", data);
       } else {
-        console.log("Filler stats is null")
+        console.log("Filler stats is null");
       }
     } catch (error) {
       console.error("Error posting filler stats:", error);
@@ -215,7 +215,7 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({
         if (!metricsRes.ok) {
           const errorData = await metricsRes.json();
           throw new Error(
-            `Failed to save metrics: ${errorData.error || "Unknown error"}`
+            `Failed to save metrics: ${errorData.error || "Unknown error"}`,
           );
         }
         const metricsData = await metricsRes.json();
@@ -229,7 +229,7 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({
       setUploadError(
         error instanceof Error
           ? error.message
-          : "Failed to upload video or save metadata."
+          : "Failed to upload video or save metadata.",
       );
     } finally {
       setUploading(false);

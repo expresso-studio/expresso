@@ -20,7 +20,7 @@ export default function Page() {
   // TODO(casey): replace with actual status
   const coursesWithStatus = Courses.map((course) => {
     const matchingCourse = CourseStatuses.find(
-      (courseStatus) => courseStatus.name === course.name
+      (courseStatus) => courseStatus.name === course.name,
     );
 
     if (matchingCourse) {

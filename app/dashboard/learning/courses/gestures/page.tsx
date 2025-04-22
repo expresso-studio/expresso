@@ -9,7 +9,7 @@ export default function Page() {
   const course: (CourseType & CourseStatus) | undefined = Courses.map(
     (course) => {
       const matchingCourse = CourseStatuses.find(
-        (courseStatus) => courseStatus.name === course.name
+        (courseStatus) => courseStatus.name === course.name,
       );
 
       if (matchingCourse) {
@@ -17,7 +17,7 @@ export default function Page() {
       }
 
       return { ...course, status: 0 };
-    }
+    },
   ).find((course) => course.name == CourseNames.Gestures);
 
   if (course == null) {

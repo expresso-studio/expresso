@@ -15,7 +15,7 @@ interface MetricsDisplayProps {
 const MetricsDisplay: React.FC<MetricsDisplayProps> = ({
   metrics,
   enabledMetrics = Object.fromEntries(
-    Object.keys(metrics).map((key) => [key, true])
+    Object.keys(metrics).map((key) => [key, true]),
   ) as Record<keyof GestureMetrics, boolean>,
   toggleMetric,
 }) => {
@@ -46,12 +46,12 @@ const MetricsDisplay: React.FC<MetricsDisplayProps> = ({
                     key === "OverallScore"
                       ? "text-white font-bold"
                       : getColorClass(key, value) === "bg-blue-500"
-                      ? "text-blue-400"
-                      : getColorClass(key, value) === "bg-green-500"
-                      ? "text-green-400"
-                      : getColorClass(key, value) === "bg-amber-500"
-                      ? "text-amber-400"
-                      : "text-red-400"
+                        ? "text-blue-400"
+                        : getColorClass(key, value) === "bg-green-500"
+                          ? "text-green-400"
+                          : getColorClass(key, value) === "bg-amber-500"
+                            ? "text-amber-400"
+                            : "text-red-400"
                   }
                 >
                   {key === "OverallScore"

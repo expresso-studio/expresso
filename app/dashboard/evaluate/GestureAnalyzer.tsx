@@ -95,7 +95,7 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
         value: currentMetrics.GestureVariety,
         status: getMetricStatus(
           "GestureVariety",
-          currentMetrics.GestureVariety
+          currentMetrics.GestureVariety,
         ),
       },
       EyeContact: {
@@ -171,13 +171,13 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
   // Callback function to receive metrics from GestureAnalysis
   const handleMetricsUpdate = useCallback(
     (metrics: GestureMetrics) => setCurrentMetrics(metrics),
-    [setCurrentMetrics]
+    [setCurrentMetrics],
   );
 
   // Function to handle the recorded video blob
   const handleVideoRecorded = useCallback(
     (videoBlob: Blob) => setRecordedVideo(videoBlob),
-    [setRecordedVideo]
+    [setRecordedVideo],
   );
 
   // Initialize MediaPipe script

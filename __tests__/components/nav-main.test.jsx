@@ -1,12 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import { NavMain } from "@/components/nav-main";
-import { SidebarProvider } from "@/components/ui/sidebar"
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 
 jest.mock("next/navigation", () => ({
   usePathname: jest.fn(),
 }));
-
 
 describe("NavMain Component", () => {
   it("renders without crashing", () => {
@@ -14,9 +13,9 @@ describe("NavMain Component", () => {
     render(
       <SidebarProvider>
         <NavMain />
-      </SidebarProvider>
+      </SidebarProvider>,
     );
-    
+
     expect(screen.getByText("Dashboard")).toBeInTheDocument();
   });
   it('computes active path as "dashboard" when pathname has less than 3 segments', () => {
@@ -25,7 +24,7 @@ describe("NavMain Component", () => {
     render(
       <SidebarProvider>
         <NavMain />
-      </SidebarProvider>
+      </SidebarProvider>,
     );
 
     expect(screen.getByText("Dashboard")).toBeInTheDocument();
@@ -37,12 +36,12 @@ describe("NavMain Component", () => {
     render(
       <SidebarProvider>
         <NavMain />
-      </SidebarProvider>
+      </SidebarProvider>,
     );
-    
+
     const progressLink = screen.queryByRole("link", { name: /Progress/i });
     expect(progressLink).toBeNull();
-    
+
     expect(screen.getByText("Progress")).toBeInTheDocument();
   });
-})
+});

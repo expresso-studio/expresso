@@ -10,7 +10,7 @@ import { useAuthUtils } from "@/hooks/useAuthUtils";
 export default function Page() {
   const router = useRouter();
   const { isAuthenticated } = useAuthUtils();
-  
+
   useEffect(() => {
     if (isAuthenticated) {
       router.replace("/dashboard");

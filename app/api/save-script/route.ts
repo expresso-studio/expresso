@@ -1,6 +1,6 @@
 // app/api/save-script/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { query } from '@/lib/db';
+import { NextRequest, NextResponse } from "next/server";
+import { query } from "@/lib/db";
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,8 +9,8 @@ export async function POST(request: NextRequest) {
 
     if (!userId || !presentationId || !script) {
       return NextResponse.json(
-        { error: 'Missing required fields: userId, presentationId, or script' },
-        { status: 400 }
+        { error: "Missing required fields: userId, presentationId, or script" },
+        { status: 400 },
       );
     }
 
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
       `INSERT INTO scripts (user_id, presentation_id, script_text)
        VALUES ($1, $2, $3)
        RETURNING id`,
-      [userId, presentationId, script]
+      [userId, presentationId, script],
     );
 
     const scriptId = insertResult.rows[0].id;
@@ -27,13 +27,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       scriptId,
-      message: 'Script saved successfully'
+      message: "Script saved successfully",
     });
   } catch (error) {
-    console.error('Failed to save script:', error);
+    console.error("Failed to save script:", error);
     return NextResponse.json(
-      { error: 'Failed to save script.' },
-      { status: 500 }
+      { error: "Failed to save script." },
+      { status: 500 },
     );
   }
 }

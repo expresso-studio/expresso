@@ -34,7 +34,7 @@ export default function Page() {
   // TODO(casey): replace with actual status
   const coursesWithStatus = Courses.map((course) => {
     const matchingCourse = CourseStatuses.find(
-      (courseStatus) => courseStatus.name === course.name
+      (courseStatus) => courseStatus.name === course.name,
     );
 
     if (matchingCourse) {
@@ -85,7 +85,7 @@ export default function Page() {
       try {
         const res = await fetch(
           `/api/report?user=${encodeURIComponent(user?.sub || "")}`,
-          { cache: "no-store" }
+          { cache: "no-store" },
         );
         if (!res.ok) {
           throw new Error("Failed to fetch report data");

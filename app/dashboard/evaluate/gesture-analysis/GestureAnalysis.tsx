@@ -80,13 +80,13 @@ const GestureAnalysis: React.FC<Props> = ({
   // Refs for tracking movement and analysis data
   const prevLandmarksRef = useRef<PoseLandmark[]>([]);
   const HandMovementBufferRef = useRef<number[]>(
-    Array(MOVEMENT_BUFFER_SIZE).fill(0.5)
+    Array(MOVEMENT_BUFFER_SIZE).fill(0.5),
   );
   const HeadMovementBufferRef = useRef<number[]>(
-    Array(MOVEMENT_BUFFER_SIZE).fill(0.5)
+    Array(MOVEMENT_BUFFER_SIZE).fill(0.5),
   );
   const BodyMovementBufferRef = useRef<number[]>(
-    Array(MOVEMENT_BUFFER_SIZE).fill(0.5)
+    Array(MOVEMENT_BUFFER_SIZE).fill(0.5),
   );
   const handPositionsBufferRef = useRef<
     { left: PoseLandmark; right: PoseLandmark }[]
@@ -145,12 +145,12 @@ const GestureAnalysis: React.FC<Props> = ({
       const leftHandMove = calculateMovement(
         poseLandmarks[15],
         prevLandmarksRef.current[15],
-        8
+        8,
       );
       const rightHandMove = calculateMovement(
         poseLandmarks[16],
         prevLandmarksRef.current[16],
-        8
+        8,
       );
       const handScore = Math.max(leftHandMove, rightHandMove);
 
@@ -158,13 +158,13 @@ const GestureAnalysis: React.FC<Props> = ({
       const headMove = calculateMovement(
         poseLandmarks[0],
         prevLandmarksRef.current[0],
-        15
+        15,
       );
 
       // Body movement - track torso movement
       const bodyMove = calculateBodyMovement(
         poseLandmarks,
-        prevLandmarksRef.current
+        prevLandmarksRef.current,
       );
 
       // Update movement buffers
@@ -205,11 +205,11 @@ const GestureAnalysis: React.FC<Props> = ({
       // Calculate advanced metrics
       const HandSymmetry = calculateHandSymmetry(
         poseLandmarks,
-        handPositionsBufferRef.current
+        handPositionsBufferRef.current,
       );
       const GestureVariety = calculateGestureVariety(
         poseLandmarks,
-        handPositionsBufferRef.current
+        handPositionsBufferRef.current,
       );
       const EyeContact = calculateEyeContact(poseLandmarks);
 
@@ -219,28 +219,28 @@ const GestureAnalysis: React.FC<Props> = ({
           HandMovement: smoothUpdate(
             prevMetrics.HandMovement,
             averageHandMovement,
-            0.05
+            0.05,
           ),
           HeadMovement: smoothUpdate(
             prevMetrics.HeadMovement,
             averageHeadMovement,
-            0.05
+            0.05,
           ),
           BodyMovement: smoothUpdate(
             prevMetrics.BodyMovement,
             averageBodyMovement,
-            0.05
+            0.05,
           ),
           Posture: PostureScore, // Directly use Posture score (already discrete)
           HandSymmetry: smoothUpdate(
             prevMetrics.HandSymmetry,
             HandSymmetry,
-            0.05
+            0.05,
           ),
           GestureVariety: smoothUpdate(
             prevMetrics.GestureVariety,
             GestureVariety,
-            0.05
+            0.05,
           ),
           EyeContact: smoothUpdate(prevMetrics.EyeContact, EyeContact, 0.05),
           OverallScore: 0,

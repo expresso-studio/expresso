@@ -24,7 +24,7 @@ describe("Breadcrumb Components", () => {
     render(
       <BreadcrumbList data-testid="breadcrumb-list">
         <li>Item 1</li>
-      </BreadcrumbList>
+      </BreadcrumbList>,
     );
     const olEl = screen.getByTestId("breadcrumb-list");
     expect(olEl.tagName).toBe("OL");
@@ -36,7 +36,7 @@ describe("Breadcrumb Components", () => {
     render(
       <ul>
         <BreadcrumbItem data-testid="breadcrumb-item">Item</BreadcrumbItem>
-      </ul>
+      </ul>,
     );
     const liEl = screen.getByTestId("breadcrumb-item");
     expect(liEl.tagName).toBe("LI");
@@ -48,19 +48,19 @@ describe("Breadcrumb Components", () => {
     render(
       <BreadcrumbLink data-testid="breadcrumb-link" href="/test">
         Test Link
-      </BreadcrumbLink>
+      </BreadcrumbLink>,
     );
     const linkEl = screen.getByTestId("breadcrumb-link");
     expect(linkEl.tagName).toBe("A");
     expect(linkEl).toHaveAttribute("href", "/test");
     expect(linkEl).toHaveTextContent("Test Link");
   });
-  
+
   test("BreadcrumbLink renders as a child when asChild is true", () => {
     render(
       <BreadcrumbLink asChild data-testid="breadcrumb-link-child" href="/child">
         <span data-testid="child-span">Child Link</span>
-      </BreadcrumbLink>
+      </BreadcrumbLink>,
     );
     const childSpan = screen.getByTestId("child-span");
     expect(childSpan.tagName).toBe("SPAN");
@@ -69,7 +69,9 @@ describe("Breadcrumb Components", () => {
 
   test("BreadcrumbPage renders a span with proper accessibility attributes", () => {
     render(
-      <BreadcrumbPage data-testid="breadcrumb-page">Current Page</BreadcrumbPage>
+      <BreadcrumbPage data-testid="breadcrumb-page">
+        Current Page
+      </BreadcrumbPage>,
     );
     const pageEl = screen.getByTestId("breadcrumb-page");
     expect(pageEl.tagName).toBe("SPAN");

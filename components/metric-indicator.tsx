@@ -32,7 +32,7 @@ const MetricIndicator = ({ name, metric }: Props) => {
         </div>
         <span
           className={`font-medium rounded-sm ${getWordColorClass(
-            metric.status
+            metric.status,
           )}`}
           style={{ color: getWordColorHex(metric.status) }}
         >

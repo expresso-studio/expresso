@@ -30,7 +30,7 @@ export default function CourseFormat({
   const lessonsWithStatus: (LessonType & LessonStatus)[] = lessons.map(
     (lesson) => {
       const matchingLesson = LessonStatuses.find(
-        (lessonStatus) => lessonStatus.name === lesson.name
+        (lessonStatus) => lessonStatus.name === lesson.name,
       );
 
       if (matchingLesson) {
@@ -38,7 +38,7 @@ export default function CourseFormat({
       }
 
       return { ...lesson, status: false };
-    }
+    },
   );
 
   return (

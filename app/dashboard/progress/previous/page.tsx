@@ -47,7 +47,7 @@ export default function Page() {
     // Search filter
     if (searchQuery) {
       filtered = filtered.filter((report) =>
-        report.title.toLowerCase().includes(searchQuery.toLowerCase())
+        report.title.toLowerCase().includes(searchQuery.toLowerCase()),
       );
     }
 
@@ -77,14 +77,14 @@ export default function Page() {
       filtered = filtered.filter(
         (report) =>
           report.metrics.filter((metric) => metric.name == "OverallScore")[0]
-            .score >= Number(scoreRange.min)
+            .score >= Number(scoreRange.min),
       );
     }
     if (scoreRange.max !== "") {
       filtered = filtered.filter(
         (report) =>
           report.metrics.filter((metric) => metric.name == "OverallScore")[0]
-            .score <= Number(scoreRange.max)
+            .score <= Number(scoreRange.max),
       );
     }
 
@@ -136,7 +136,7 @@ export default function Page() {
       try {
         const res = await fetch(
           `/api/report?user=${encodeURIComponent(user?.sub || "")}`,
-          { cache: "no-store" }
+          { cache: "no-store" },
         );
         if (!res.ok) {
           throw new Error("Failed to fetch report data");

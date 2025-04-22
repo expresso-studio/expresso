@@ -49,7 +49,7 @@ export function WPMChart() {
 
       try {
         const response = await fetch(
-          `/api/fillerwords/wpm?userId=${encodeURIComponent(user.sub)}`
+          `/api/fillerwords/wpm?userId=${encodeURIComponent(user.sub)}`,
         );
         if (!response.ok) {
           throw new Error("Failed to fetch filler words");
@@ -65,7 +65,7 @@ export function WPMChart() {
               }),
               high: parseFloat(entry.max_wpm),
               low: parseFloat(entry.min_wpm),
-            })
+            }),
           );
 
           setChartData(formattedData);

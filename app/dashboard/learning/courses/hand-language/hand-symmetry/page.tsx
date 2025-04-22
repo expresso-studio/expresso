@@ -20,7 +20,7 @@ export default function Page() {
   const course: (CourseType & CourseStatus) | undefined = Courses.map(
     (course) => {
       const matchingCourse = CourseStatuses.find(
-        (courseStatus) => courseStatus.name === course.name
+        (courseStatus) => courseStatus.name === course.name,
       );
 
       if (matchingCourse) {
@@ -28,14 +28,14 @@ export default function Page() {
       }
 
       return { ...course, status: 0 };
-    }
+    },
   ).find((course) => course.name == CourseNames.HandLanguage);
 
   // TODO(casey): replace with actual status
   const lesson: (LessonType & LessonStatus) | undefined = course?.lessons
     .map((lesson) => {
       const matchingLesson = LessonStatuses.find(
-        (lessonStatus) => lessonStatus.name === lesson.name
+        (lessonStatus) => lessonStatus.name === lesson.name,
       );
 
       if (matchingLesson) {

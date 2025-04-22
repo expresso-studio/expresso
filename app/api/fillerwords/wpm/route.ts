@@ -1,4 +1,4 @@
-import { NextResponse, NextRequest} from 'next/server';
+import { NextResponse, NextRequest } from "next/server";
 import { query } from "../../../../lib/db";
 
 export async function GET(request: NextRequest) {
@@ -7,11 +7,14 @@ export async function GET(request: NextRequest) {
     const userId = url.searchParams.get("userId");
 
     if (!userId) {
-      return NextResponse.json({ 
-        error: 'User ID is required' 
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: "User ID is required",
+        },
+        { status: 400 },
+      );
     }
-    
+
     const results = await query(
       `SELECT * FROM (
         SELECT id, created_at, max_wpm, min_wpm, session_wpm
@@ -20,17 +23,22 @@ export async function GET(request: NextRequest) {
         ORDER BY created_at DESC
         LIMIT 10
       ) subquery 
-      ORDER BY created_at ASC`, [userId]);
+      ORDER BY created_at ASC`,
+      [userId],
+    );
 
-    return NextResponse.json({ fillerWords: results.rows }, {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
-    } catch (error) {
-    console.error('Error fetching WPM sessions:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
+      { fillerWords: results.rows },
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
+  } catch (error) {
+    console.error("Error fetching WPM sessions:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
     );
   }
 }

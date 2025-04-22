@@ -23,7 +23,7 @@ export function useAuthUtils() {
   useEffect(() => {
     if (error) {
       console.error("Auth error detected:", error);
-      
+
       // If error is related to login required, redirect to login
       if (error.message.includes("login required")) {
         loginWithRedirect();
@@ -34,7 +34,7 @@ export function useAuthUtils() {
   // Function to refresh token
   const refreshToken = async () => {
     if (isRefreshing || !isAuthenticated) return;
-    
+
     setIsRefreshing(true);
     try {
       console.log("Attempting to refresh token...");
@@ -48,7 +48,7 @@ export function useAuthUtils() {
     } catch (refreshError) {
       console.error("Failed to refresh token:", refreshError);
       setTokenError(refreshError as Error);
-      
+
       // If refresh fails critically, trigger login
       if ((refreshError as Error).message.includes("login required")) {
         loginWithRedirect({
@@ -64,15 +64,18 @@ export function useAuthUtils() {
   // Set up periodic token refresh
   useEffect(() => {
     if (!isAuthenticated || isLoading) return;
-    
+
     // Initial token refresh
     refreshToken();
-    
+
     // Set up interval for token refresh (every 20 minutes)
-    const intervalId = setInterval(() => {
-      refreshToken();
-    }, 1000 * 60 * 20); // 20 minutes
-    
+    const intervalId = setInterval(
+      () => {
+        refreshToken();
+      },
+      1000 * 60 * 20,
+    ); // 20 minutes
+
     return () => clearInterval(intervalId);
   }, [isAuthenticated, isLoading]);
 
@@ -83,15 +86,15 @@ export function useAuthUtils() {
     error: error || tokenError,
     refreshToken,
     isRefreshing,
-    loginWithRedirect: () => 
+    loginWithRedirect: () =>
       loginWithRedirect({
         appState: { returnTo: window.location.pathname },
       }),
-    logout: () => 
-      logout({ 
-        logoutParams: { 
-          returnTo: typeof window !== "undefined" ? window.location.origin : "" 
-        } 
+    logout: () =>
+      logout({
+        logoutParams: {
+          returnTo: typeof window !== "undefined" ? window.location.origin : "",
+        },
       }),
   };
 }

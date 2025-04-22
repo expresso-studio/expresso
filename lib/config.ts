@@ -1,13 +1,13 @@
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 
 dotenv.config();
 
 if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL is required');
+  throw new Error("DATABASE_URL is required");
 }
 
 if (!process.env.DEEPGRAM_API_KEY) {
-  throw new Error('DEEPGRAM_API_KEY is required');
+  throw new Error("DEEPGRAM_API_KEY is required");
 }
 
 export const config = {

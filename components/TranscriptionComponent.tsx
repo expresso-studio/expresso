@@ -127,10 +127,10 @@ function TranscriptionComponent({
         setSessionWPM(currentWPM);
 
         setMaxWPM((prev) =>
-          prev === null || currentWPM > prev ? currentWPM : prev
+          prev === null || currentWPM > prev ? currentWPM : prev,
         );
         setMinWPM((prev) =>
-          prev === null || currentWPM < prev ? currentWPM : prev
+          prev === null || currentWPM < prev ? currentWPM : prev,
         );
       }
     }
@@ -158,7 +158,7 @@ function TranscriptionComponent({
       }
 
       const ws = new WebSocket(
-        "wss://transcriptionwebsocket-production.up.railway.app"
+        "wss://transcriptionwebsocket-production.up.railway.app",
       );
 
       // Set connection timeout
@@ -346,16 +346,16 @@ function TranscriptionComponent({
               isConnecting
                 ? "bg-gray-500 cursor-wait"
                 : isRecording
-                ? "bg-red-500 hover:bg-red-600"
-                : "bg-[#936648] hover:bg-[#805946]"
+                  ? "bg-red-500 hover:bg-red-600"
+                  : "bg-[#936648] hover:bg-[#805946]"
             } 
             text-white transition-colors`}
         >
           {isConnecting
             ? "Connecting..."
             : isRecording
-            ? "Stop Recording"
-            : "Start Recording"}
+              ? "Stop Recording"
+              : "Start Recording"}
         </button>
       </div>
 

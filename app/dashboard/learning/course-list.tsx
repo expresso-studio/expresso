@@ -11,7 +11,7 @@ const CourseList = React.memo<Props>(function CourseList({ courses, short }) {
   return (
     <div className="flex flex-col gap-2">
       {courses.map(
-        (course, i) => (!short || i < 5) && <Course {...course} key={i} />
+        (course, i) => (!short || i < 5) && <Course {...course} key={i} />,
       )}
     </div>
   );

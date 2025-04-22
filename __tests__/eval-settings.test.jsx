@@ -26,7 +26,7 @@ describe("Page Component", () => {
         <SidebarProvider>
           <Page />
         </SidebarProvider>
-      </ScriptProvider>
+      </ScriptProvider>,
     );
     expect(screen.getByLabelText(/Presenting Topic:/i)).toBeInTheDocument();
     expect(screen.getByText(/Select preset persona/i)).toBeInTheDocument();
@@ -38,7 +38,7 @@ describe("Page Component", () => {
         <SidebarProvider>
           <Page />
         </SidebarProvider>
-      </ScriptProvider>
+      </ScriptProvider>,
     );
     const classPresentationBtn = screen.getByRole("button", {
       name: /Class Presentation/i,
@@ -60,7 +60,7 @@ describe("Page Component", () => {
         <SidebarProvider>
           <Page />
         </SidebarProvider>
-      </ScriptProvider>
+      </ScriptProvider>,
     );
     const personaBtn = screen.getByRole("button", {
       name: /None/i,
@@ -70,14 +70,14 @@ describe("Page Component", () => {
     const metricCheckbox = screen.getByLabelText(/Hand Movement/i);
     expect(metricCheckbox.checked).toBe(false);
   });
-  
+
   it("updates form state when selecting online persona", () => {
     render(
       <ScriptProvider>
         <SidebarProvider>
           <Page />
         </SidebarProvider>
-      </ScriptProvider>
+      </ScriptProvider>,
     );
     const personaBtn = screen.getByRole("button", {
       name: /Online/i,
@@ -86,7 +86,7 @@ describe("Page Component", () => {
 
     const locationSelect = screen.getByLabelText(/Location/i);
     expect(locationSelect.value).toBe("online");
- 
+
     const metricCheckbox = screen.getByLabelText(/Head Movement/i);
     expect(metricCheckbox.checked).toBe(true);
   });
@@ -97,7 +97,7 @@ describe("Page Component", () => {
         <SidebarProvider>
           <Page />
         </SidebarProvider>
-      </ScriptProvider>
+      </ScriptProvider>,
     );
     const personaBtn = screen.getByRole("button", {
       name: /Lecture/i,
@@ -106,7 +106,6 @@ describe("Page Component", () => {
 
     const locationSelect = screen.getByLabelText(/Location/i);
     expect(locationSelect.value).toBe("classroom");
- 
 
     const metricCheckbox = screen.getByLabelText(/Posture/i);
     expect(metricCheckbox.checked).toBe(true);
@@ -118,7 +117,7 @@ describe("Page Component", () => {
         <SidebarProvider>
           <Page />
         </SidebarProvider>
-      </ScriptProvider>
+      </ScriptProvider>,
     );
     const personaBtn = screen.getByRole("button", {
       name: /Meeting/i,
@@ -127,11 +126,10 @@ describe("Page Component", () => {
 
     const locationSelect = screen.getByLabelText(/Location/i);
     expect(locationSelect.value).toBe("meeting");
- 
+
     const metricCheckbox = screen.getByLabelText(/Gesture Variety/i);
     expect(metricCheckbox.checked).toBe(true);
   });
-
 
   it("enables the Start button when all required fields are filled and navigates on click", async () => {
     render(
@@ -139,7 +137,7 @@ describe("Page Component", () => {
         <SidebarProvider>
           <Page />
         </SidebarProvider>
-      </ScriptProvider>
+      </ScriptProvider>,
     );
     // Fill required text fields
     const topicTextarea = screen.getByLabelText(/Presenting Topic:/i);
@@ -164,7 +162,7 @@ describe("Page Component", () => {
     });
   });
 
-  it('alerts the user when no option is selected', () => {
+  it("alerts the user when no option is selected", () => {
     // Spy on window.alert
     window.alert = jest.fn();
     render(
@@ -172,7 +170,7 @@ describe("Page Component", () => {
         <SidebarProvider>
           <Page />
         </SidebarProvider>
-      </ScriptProvider>
+      </ScriptProvider>,
     );
     // Select Preset persona but don't enter presentation topic
     const lectureBtn = screen.getByRole("button", {
@@ -180,10 +178,12 @@ describe("Page Component", () => {
     });
     fireEvent.click(lectureBtn);
 
-    const startButton = screen.getByRole('button', { name: /Start/i });
+    const startButton = screen.getByRole("button", { name: /Start/i });
     // Click the button without selecting entering presentation topic
     fireEvent.click(startButton);
-    expect(window.alert).toHaveBeenCalledWith('Please Provide Presentation Topic');
+    expect(window.alert).toHaveBeenCalledWith(
+      "Please Provide Presentation Topic",
+    );
   });
 
   it("updates formData correctly for text and checkbox inputs", () => {
@@ -192,7 +192,7 @@ describe("Page Component", () => {
         <SidebarProvider>
           <Page />
         </SidebarProvider>
-      </ScriptProvider>
+      </ScriptProvider>,
     );
 
     // Test non-checkbox input update (text input for topic)

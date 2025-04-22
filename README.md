@@ -1,6 +1,6 @@
 # Expresso
-[![GitHub deployments](https://img.shields.io/github/deployments/peicasey/expresso/production?style=flat-square&label=vercel%20deployment)](https://expresso-ruddy.vercel.app/)
 
+[![GitHub deployments](https://img.shields.io/github/deployments/peicasey/expresso/production?style=flat-square&label=vercel%20deployment)](https://expresso-ruddy.vercel.app/)
 
 Link to Deployed Website: https://expresso-ruddy.vercel.app/
 
