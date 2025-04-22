@@ -17,7 +17,6 @@ import { Courses, CourseStatuses } from "@/lib/constants";
 
 export default function Page() {
   const { user, isAuthenticated, error, refreshToken } = useAuthUtils();
-
   // TODO(casey): replace with actual status
   const coursesWithStatus = Courses.map((course) => {
     const matchingCourse = CourseStatuses.find(
