@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import EvaluateVideo, { PoseResults } from "./EvaluateVideo";
 import GestureAnalysis from "./gesture-analysis/GestureAnalysis";
 import AnalysisReport from "./AnalysisReport";
-import { GestureMetrics, AnalysisData } from "@/lib/types";
+import { GestureMetrics, AnalysisData, FillerStats } from "@/lib/types";
 import { Eye, EyeOff, BarChart2 } from "lucide-react";
 import { OPTIMAL_RANGES } from "./gesture-analysis";
 
@@ -13,6 +13,7 @@ interface GestureAnalyzerProps {
   // onStopRecording: () => void;
   transcript: string;
   developerMode?: boolean;
+  fillerStats: FillerStats | null;
 }
 
 const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
@@ -20,6 +21,7 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
   // onStopRecording,
   transcript,
   developerMode = true,
+  fillerStats,
 }) => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -277,6 +279,7 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
         onClose={() => setShowReport(false)}
         analysisData={analysisData}
         recordedVideo={recordedVideo}
+        fillerStats={fillerStats}
       />
 
       {/* Transcript Captions */}

@@ -6,7 +6,7 @@ import { AnalysisData } from "@/lib/types";
 import { outfit } from "@/app/fonts";
 import DetailedMetrics from "@/components/detailed-metrics";
 import KeyRecommendations from "@/components/key-recommendations";
-
+import { FillerStats } from "@/lib/types";
 // Define interface for Emotion data if needed, based on API response
 interface EmotionScores {
   sadness?: number;
@@ -21,6 +21,7 @@ interface AnalysisReportProps {
   onClose: () => void;
   analysisData: AnalysisData | null;
   recordedVideo: Blob | null;
+  fillerStats: FillerStats | null;
 }
 
 const AnalysisReport: React.FC<AnalysisReportProps> = ({
@@ -28,6 +29,7 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
   onClose,
   analysisData,
   recordedVideo,
+  fillerStats,
 }) => {
   const [emotionData, setEmotionData] = useState<EmotionScores | null>(null);
   const [sentimentScore, setSentimentScore] = useState<number | null>(null); // Add state for sentiment
@@ -130,7 +132,7 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
             >
               Presentation Recording
             </h3>
-            <VideoPlayback videoBlob={recordedVideo} metrics={analysisData} />
+            <VideoPlayback videoBlob={recordedVideo} metrics={analysisData} fillerStats={fillerStats} />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

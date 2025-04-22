@@ -3,19 +3,21 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useScript } from "@/context/ScriptContext";
-import { AnalysisData, MetricInput } from "@/lib/types";
+import { AnalysisData, FillerStats, MetricInput } from "@/lib/types";
 import { MetricNames } from "@/lib/constants";
 
 interface VideoPlaybackProps {
   videoBlob: Blob | null;
   onDownload?: () => void;
   metrics: AnalysisData;
+  fillerStats: FillerStats | null;
 }
 
 const VideoPlayback: React.FC<VideoPlaybackProps> = ({
   videoBlob,
   onDownload,
   metrics,
+  fillerStats,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { user, isAuthenticated } = useAuth0();
@@ -57,6 +59,31 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({
     setUploading(true);
     setUploadError(null);
     setUploadSuccess(false);
+    console.log(fillerStats)
+
+    try {
+      if (fillerStats){
+        // Save the filler word stats
+        const response = await fetch("/api/fillerwords", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            user: user.sub,
+            fillerWordCount: fillerStats.fillerWordCount,
+            fillerWordsStats: fillerStats.fillerWordsStats,
+            maxWPM: fillerStats.maxWPM,
+            minWPM: fillerStats.minWPM,
+            sessionWPM: fillerStats.sessionWPM,
+          }),
+        });
+        const data = await response.json();
+        console.log("Filler stats posted successfully:", data);
+      } else {
+        console.log("Filler stats is null")
+      }
+    } catch (error) {
+      console.error("Error posting filler stats:", error);
+    }
 
     try {
       const finalTitle = title.trim() || "Untitled Presentation";
