@@ -42,7 +42,7 @@ const Course = React.memo<Props>(function Course({
                   {status}%
                 </span>
               ) : (
-                <span className="bg-lightCoffee opacity-50 rounded-full text-xs w-8 h-4 animate-pulse">
+                <span className="bg-lightCoffee/50 rounded-full text-xs w-8 h-4 animate-pulse">
                   {status}
                 </span>
               )}
