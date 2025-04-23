@@ -14,16 +14,17 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    console.log("courseId ", courseId);
+    console.log("userId ", userId);
+
     // Select all lessons for the course that are NOT in the user's progress table
     const lessonsLeftResult = await query(
       `SELECT l.lesson_id, l.lesson_name
        FROM lessons l
+       JOIN progress p ON l.lesson_id = p.lesson_id
        WHERE l.course_id = $1
-         AND l.lesson_id NOT IN (
-           SELECT p.lesson_id
-           FROM progress p
-           WHERE p.user_id = $2
-         )`,
+         AND p.user_id = $2
+         AND l.course_id = $1`,
       [courseId, userId]
     );
 

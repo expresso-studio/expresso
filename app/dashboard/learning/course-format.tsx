@@ -59,6 +59,7 @@ export default function CourseFormat({
         // Assume the course ID is available or can be derived
         const courseId = id;
         const userId = user?.sub;
+        console.log(userId);
 
         const response = await fetch(
           `/api/course/lessons-left?userId=${userId}&courseId=${courseId}`
@@ -78,20 +79,22 @@ export default function CourseFormat({
       }
     };
 
-    fetchLessonsLeft();
-  }, []);
+    if (user?.sub) {
+      fetchLessonsLeft();
+    }
+  }, [user?.sub]);
 
   const lessonsWithStatus: (LessonType & LessonStatus)[] = lessons.map(
     (lesson) => {
       // Check if this lesson is in the lessonsLeft array
-      const isLessonLeft = lessonsLeft.some(
+      const isLessonLeft = lessonsLeft.find(
         (leftLesson) => leftLesson.lesson_name === lesson.name
       );
 
-      // If the lesson is not in lessonsLeft, it means it's completed
+      // If the lesson is in lessonsLeft, it means it's not completed
       return {
         ...lesson,
-        status: isLessonLeft,
+        status: isLessonLeft !== undefined,
       };
     }
   );

@@ -1,68 +1,93 @@
+"use client";
+
 import * as React from "react";
-import {
-  CourseNames,
-  CourseStatuses,
-  LessonNames,
-  LessonStatuses,
-  MetricNames,
-} from "@/lib/constants";
-import {
-  CourseStatus,
-  CourseType,
-  LessonStatus,
-  LessonType,
-} from "@/lib/types";
+import { CourseNames, LessonNames, MetricNames } from "@/lib/constants";
+import { LessonLeft, LessonType } from "@/lib/types";
 import { Courses } from "@/lib/constants";
 import LessonFormat from "../../../lesson-format";
 import EvaluateButton from "@/components/evaluate-button";
+import { useState } from "react";
+import { useAuthUtils } from "@/hooks/useAuthUtils";
 
 export default function Page() {
-  // TODO(casey): replace with actual status
-  const course: (CourseType & CourseStatus) | undefined = Courses.map(
-    (course) => {
-      const matchingCourse = CourseStatuses.find(
-        (courseStatus) => courseStatus.name === course.name
-      );
+  const course = Courses.find(
+    (course) => course.name === CourseNames.BodyLanguage
+  )!;
 
-      if (matchingCourse) {
-        return { ...course, ...matchingCourse };
-      }
+  const lessonObj = course.lessons.find(
+    (lesson) => lesson.name === LessonNames.BodyMovement
+  )!;
 
-      return { ...course, status: 0 };
+  const [isLessonLoading, setIsLessonLoading] = useState(true);
+  const [lessonData, setLessonData] = useState<
+    LessonType & { status?: boolean }
+  >(lessonObj);
+  const { user, isAuthenticated, isLoading, error, refreshToken } =
+    useAuthUtils();
+
+  // If there's an auth error, try to refresh the token
+  React.useEffect(() => {
+    if (error) {
+      console.error("Auth error in dashboard:", error);
+      refreshToken();
     }
-  ).find((course) => course.name == CourseNames.BodyLanguage);
+  }, [error, refreshToken]);
 
-  // TODO(casey): replace with actual status
-  const lesson: (LessonType & LessonStatus) | undefined = course?.lessons
-    .map((lesson) => {
-      const matchingLesson = LessonStatuses.find(
-        (lessonStatus) => lessonStatus.name === lesson.name
-      );
+  React.useEffect(() => {
+    const fetchLessonStatus = async () => {
+      try {
+        // Fetch lesson status from the API
+        const response = await fetch(
+          `/api/course/lessons-left?userId=${user?.sub}&courseId=${course.id}`
+        );
 
-      if (matchingLesson) {
-        return { ...lesson, ...matchingLesson };
+        if (!response.ok) {
+          throw new Error("Failed to fetch lesson status");
+        }
+
+        const data = await response.json();
+        console.log(data);
+
+        // Find this specific lesson's status
+        const isLessonLeft = data.lessonsLeft.find(
+          (leftLesson: LessonLeft) => leftLesson.lesson_name === lessonObj.name
+        );
+
+        // Set the lesson data with status
+        setLessonData({
+          ...lessonObj,
+          status: isLessonLeft !== undefined,
+        });
+        console.log("lessonData");
+        console.log(lessonData);
+      } catch (error) {
+        console.error("Error fetching lesson status:", error);
+      } finally {
+        setIsLessonLoading(false);
       }
+    };
 
-      return { ...lesson, status: false };
-    })
-    .find((lesson) => lesson.name == LessonNames.BodyMovement);
+    if (user?.sub) {
+      fetchLessonStatus();
+    }
+  }, [user?.sub]);
 
-  if (course == null || lesson == null) {
+  if (!lessonData) {
     return (
       <main className="w-full min-h-full">
-        <h1 className="text-4xl">Error: Could find lesson.</h1>
+        <h1 className="text-4xl">Error: Could not find lesson.</h1>
       </main>
     );
   }
 
   return (
-    <LessonFormat {...lesson} courseName={course.name} color={course.color}>
+    <LessonFormat {...lessonData} courseName={course.name} color={course.color}>
       <p>{`TODO`}</p>
 
       <div className="w-full flex items-center justify-center pb-16">
         <EvaluateButton
           enabledParams={[MetricNames.BodyMovement]}
-          lessonId={lesson.id}
+          lessonId={lessonData.id}
         />
       </div>
     </LessonFormat>
