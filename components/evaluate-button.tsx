@@ -12,8 +12,7 @@ interface Props {
 }
 
 const EvaluateButton = ({ enabledParams, lessonId }: Props) => {
-  const { user, isAuthenticated, isLoading, error, refreshToken } =
-    useAuthUtils();
+  const { user, isLoading, error, refreshToken } = useAuthUtils();
 
   // If there's an auth error, try to refresh the token
   React.useEffect(() => {

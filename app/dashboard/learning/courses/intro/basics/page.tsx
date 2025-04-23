@@ -16,12 +16,10 @@ export default function Page() {
     (lesson) => lesson.name === LessonNames.Basics
   )!;
 
-  const [isLessonLoading, setIsLessonLoading] = useState(true);
   const [lessonData, setLessonData] = useState<
     LessonType & { status?: boolean }
   >(lessonObj);
-  const { user, isAuthenticated, isLoading, error, refreshToken } =
-    useAuthUtils();
+  const { user, error, refreshToken } = useAuthUtils();
 
   // If there's an auth error, try to refresh the token
   React.useEffect(() => {
@@ -34,9 +32,17 @@ export default function Page() {
   React.useEffect(() => {
     const fetchLessonStatus = async () => {
       try {
+        const selectedCourse = Courses.find(
+          (course) => course.name === CourseNames.Intro
+        )!;
+
+        const lesson = selectedCourse.lessons.find(
+          (lesson) => lesson.name === LessonNames.Basics
+        )!;
+
         // Fetch lesson status from the API
         const response = await fetch(
-          `/api/course/lessons-left?userId=${user?.sub}&courseId=${course.id}`
+          `/api/course/lessons-left?userId=${user?.sub}&courseId=${selectedCourse.id}`
         );
 
         if (!response.ok) {
@@ -48,20 +54,16 @@ export default function Page() {
 
         // Find this specific lesson's status
         const isLessonLeft = data.lessonsLeft.find(
-          (leftLesson: LessonLeft) => leftLesson.lesson_name === lessonObj.name
+          (leftLesson: LessonLeft) => leftLesson.lesson_name === lesson.name
         );
 
         // Set the lesson data with status
         setLessonData({
-          ...lessonObj,
+          ...lesson,
           status: isLessonLeft !== undefined,
         });
-        console.log("lessonData");
-        console.log(lessonData);
       } catch (error) {
         console.error("Error fetching lesson status:", error);
-      } finally {
-        setIsLessonLoading(false);
       }
     };
 

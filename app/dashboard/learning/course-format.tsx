@@ -29,8 +29,7 @@ export default function CourseFormat({
   status,
   lessons,
 }: Props) {
-  const { user, isAuthenticated, isLoading, error, refreshToken } =
-    useAuthUtils();
+  const { user, error, refreshToken } = useAuthUtils();
 
   // If there's an auth error, try to refresh the token
   React.useEffect(() => {
@@ -82,7 +81,7 @@ export default function CourseFormat({
     if (user?.sub) {
       fetchLessonsLeft();
     }
-  }, [user?.sub]);
+  }, [user?.sub, id]);
 
   const lessonsWithStatus: (LessonType & LessonStatus)[] = lessons.map(
     (lesson) => {
