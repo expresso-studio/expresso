@@ -1,12 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { CourseNames, CourseStatuses } from "@/lib/constants";
+import { CourseNames } from "@/lib/constants";
 import CourseFormat from "../../course-format";
 import { CourseStatus, CourseType } from "@/lib/types";
 import { Courses } from "@/lib/constants";
 import { useAuthUtils } from "@/hooks/useAuthUtils";
-import Loading from "@/components/loading";
 
 const defaultCourse: CourseType =
   Courses.find((course) => course.name == CourseNames.BodyLanguage) ??

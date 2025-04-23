@@ -62,10 +62,11 @@ export default function Page() {
       <div className="w-full flex items-center justify-center pb-16">
         <EvaluateButton
           enabledParams={[
+            MetricNames.OverallScore,
             MetricNames.Posture,
             MetricNames.EyeContact,
-            MetricNames.OverallScore,
           ]}
+          lessonId={lesson.id}
         />
       </div>
     </LessonFormat>

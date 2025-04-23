@@ -111,7 +111,10 @@ export default function Page() {
         clarify and emphasize rather than a distraction or unnecessary tic.`}
       </p>
       <div className="w-full flex items-center justify-center pb-16">
-        <EvaluateButton enabledParams={[MetricNames.HandSymmetry]} />
+        <EvaluateButton
+          enabledParams={[MetricNames.HandSymmetry]}
+          lessonId={lesson.id}
+        />
       </div>
     </LessonFormat>
   );

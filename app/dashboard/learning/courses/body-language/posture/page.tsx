@@ -60,7 +60,10 @@ export default function Page() {
       <p>{`TODO`}</p>
 
       <div className="w-full flex items-center justify-center pb-16">
-        <EvaluateButton enabledParams={[MetricNames.Posture]} />
+        <EvaluateButton
+          enabledParams={[MetricNames.Posture]}
+          lessonId={lesson.id}
+        />
       </div>
     </LessonFormat>
   );
