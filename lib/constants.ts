@@ -43,6 +43,7 @@ export enum MetricIds {
   OverallScore = 8,
 }
 
+
 export const MetricNameToIcon: Record<MetricNames, IconType> = {
   [MetricNames.HandMovement]: MdOutlineWavingHand,
   [MetricNames.HeadMovement]: LuSmile,

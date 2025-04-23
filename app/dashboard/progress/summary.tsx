@@ -48,6 +48,9 @@ const Summary = React.memo<Props>(function Summary({ short }) {
     reports.forEach((report) => {
       // Iterate over each metric in the report
       report.metrics.forEach((metric) => {
+        // Skip coverage metric
+        if (!(metric.name in MetricNameToId)) return;
+
         // If this category hasn't been encountered yet, initialize sums and counts
         if (!categorySums[metric.name]) {
           categorySums[metric.name] = 0;
@@ -88,6 +91,7 @@ const Summary = React.memo<Props>(function Summary({ short }) {
         const data = await res.json();
         const avgScores = calculateAvgMetrics(data);
         setAvgMetrics(avgScores);
+        console.log("AVERAGE: ", avgScores);
       } catch (err) {
         console.error("Error fetching report data:", err);
       } finally {
