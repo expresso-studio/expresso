@@ -14,7 +14,6 @@ import {
 } from "./analysisAlgorithms";
 import MetricsDisplay from "./components/MetricsDisplay";
 import FeedbackPanel from "./components/FeedbackPanel";
-import DeveloperReport from "./components/DeveloperReport";
 import {
   MOVEMENT_BUFFER_SIZE,
   HAND_MOVEMENT_COEFFICIENT,
@@ -31,14 +30,18 @@ interface Props {
   poseLandmarks?: PoseLandmark[];
   isRecording: boolean;
   onMetricsUpdate?: (metrics: GestureMetrics) => void;
-  developerMode?: boolean;
+  // developerMode?: boolean;
+  // Add a new prop to control panel visibility from parent
+  isPanelVisible?: boolean;
 }
 
 const GestureAnalysis: React.FC<Props> = ({
   poseLandmarks,
   isRecording,
   onMetricsUpdate,
-  developerMode = true,
+  // developerMode = false, // Set default to false to hide developer mode
+  // Use parent's panel visibility state if provided
+  isPanelVisible = true,
 }) => {
   // State
   const [metrics, setMetrics] = useState<GestureMetrics>({
@@ -53,9 +56,7 @@ const GestureAnalysis: React.FC<Props> = ({
   });
   const [feedback, setFeedback] = useState<GestureFeedback[]>([]);
   const [sessionDuration, setSessionDuration] = useState(0);
-  const [isPanelVisible, setIsPanelVisible] = useState(false); // Changed to false by default
-  const [isDevReportVisible, setIsDevReportVisible] = useState(false);
-
+  
   const searchParams = useSearchParams();
   const initialEnabled = {
     HandMovement: true,
@@ -292,171 +293,58 @@ const GestureAnalysis: React.FC<Props> = ({
     }
   }, [poseLandmarks, isRecording, sessionDuration]);
 
-  // Toggle panel visibility
-  const togglePanelVisibility = () => {
-    setIsPanelVisible(!isPanelVisible);
-  };
-
-  // Toggle developer report visibility
-  const toggleDevReportVisibility = () => {
-    setIsDevReportVisible(!isDevReportVisible);
-  };
-
-  // Activate developer mode on double-click of the header (Easter egg)
-  const handleHeaderDoubleClick = () => {
-    if (!developerMode) {
-      setIsDevReportVisible(true);
-    }
-  };
-
   const toggleMetric = (metric: keyof GestureMetrics) => {
     setEnabledMetrics((prev) => ({ ...prev, [metric]: !prev[metric] }));
   };
 
-  // Minimized view when panel is hidden
+  // Only render the panel if it should be visible
   if (!isPanelVisible) {
-    return (
-      <>
-        <div className="fixed top-4 right-4 bg-black/80 p-3 rounded-lg shadow-lg">
-          <button
-            onClick={togglePanelVisibility}
-            className="flex items-center text-white text-sm hover:text-blue-300 transition-colors"
-          >
-            <span className="mr-2">Show Analysis</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 10V3L4 14h7v7l9-11h-7z"
-              />
-            </svg>
-          </button>
-        </div>
-
-        {/* Developer Report - always show if visible, even when main panel is hidden */}
-        {developerMode && (
-          <DeveloperReport
-            metrics={metrics}
-            poseLandmarks={poseLandmarks}
-            sessionDuration={sessionDuration}
-            isVisible={isDevReportVisible}
-            onToggleVisibility={toggleDevReportVisibility}
-          />
-        )}
-      </>
-    );
+    return null; // Return null instead of a minimized view
   }
 
   return (
-    <>
-      <div className="fixed top-4 right-4 space-y-4 bg-black/80 p-4 rounded-lg w-96 shadow-lg">
-        <div
-          className="flex justify-between items-center"
-          onDoubleClick={handleHeaderDoubleClick}
-        >
-          <h3 className="text-white font-semibold">Gesture Analysis</h3>
-          <div className="flex items-center space-x-3">
-            {isRecording && (
-              <div className="flex items-center">
-                <span className="animate-pulse mr-2 h-3 w-3 rounded-full bg-red-500"></span>
-                <span className="text-white text-sm">
-                  {formatTime(sessionDuration)}
-                </span>
-              </div>
-            )}
-            <button
-              onClick={togglePanelVisibility}
-              className="text-gray-400 hover:text-white transition-colors"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
+    <div className="fixed top-4 right-4 space-y-4 bg-black/80 p-4 rounded-lg w-96 shadow-lg">
+      <div className="flex justify-between items-center">
+        <h3 className="text-white font-semibold">Gesture Analysis</h3>
+        <div className="flex items-center space-x-3">
+          {isRecording && (
+            <div className="flex items-center">
+              <span className="animate-pulse mr-2 h-3 w-3 rounded-full bg-red-500"></span>
+              <span className="text-white text-sm">
+                {formatTime(sessionDuration)}
+              </span>
+            </div>
+          )}
+          {/* Close button removed as we're now controlling this from the parent */}
         </div>
-
-        {/* Overall Score */}
-        <div className="bg-gray-900/50 p-3 rounded-lg border border-gray-700">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-gray-300">Overall Score</span>
-            <span className="text-xl font-bold text-blue-400">
-              {metrics.OverallScore}/100
-            </span>
-          </div>
-          <div className="w-full bg-gray-700 rounded-full h-3">
-            <div
-              className="h-3 rounded-full bg-blue-500 transition-all duration-500"
-              style={{ width: `${metrics.OverallScore}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Metrics Display Component */}
-        <MetricsDisplay
-          metrics={metrics}
-          enabledMetrics={enabledMetrics}
-          toggleMetric={toggleMetric}
-        />
-
-        {/* Feedback Panel Component */}
-        <FeedbackPanel feedback={feedback} isRecording={isRecording} />
-
-        {/* Developer Mode Toggle (if enabled) */}
-        {developerMode && (
-          <div className="mt-2 pt-2 border-t border-gray-700">
-            <button
-              onClick={toggleDevReportVisibility}
-              className="w-full text-xs text-gray-400 hover:text-white py-1 transition-colors flex items-center justify-center"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 mr-1"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
-                />
-              </svg>
-              {isDevReportVisible ? "Hide" : "Show"} Developer Report
-            </button>
-          </div>
-        )}
       </div>
 
-      {/* Developer Report */}
-      {developerMode && (
-        <DeveloperReport
-          metrics={metrics}
-          poseLandmarks={poseLandmarks}
-          sessionDuration={sessionDuration}
-          isVisible={isDevReportVisible}
-          onToggleVisibility={toggleDevReportVisibility}
-        />
-      )}
-    </>
+      {/* Overall Score */}
+      <div className="bg-gray-900/50 p-3 rounded-lg border border-gray-700">
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-gray-300">Overall Score</span>
+          <span className="text-xl font-bold text-blue-400">
+            {metrics.OverallScore}/100
+          </span>
+        </div>
+        <div className="w-full bg-gray-700 rounded-full h-3">
+          <div
+            className="h-3 rounded-full bg-blue-500 transition-all duration-500"
+            style={{ width: `${metrics.OverallScore}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Metrics Display Component */}
+      <MetricsDisplay
+        metrics={metrics}
+        enabledMetrics={enabledMetrics}
+        toggleMetric={toggleMetric}
+      />
+
+      {/* Feedback Panel Component */}
+      <FeedbackPanel feedback={feedback} isRecording={isRecording} />
+    </div>
   );
 };
 
