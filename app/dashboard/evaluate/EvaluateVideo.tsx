@@ -112,7 +112,7 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
         onError(
           `Failed to access webcam: ${
             err instanceof Error ? err.message : String(err)
-          }`
+          }`,
         );
       }
     };
@@ -221,7 +221,7 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
     // Function to draw pose landmarks on canvas
     const drawPoseLandmarks = (
       ctx: CanvasRenderingContext2D,
-      landmarks: PoseLandmark[]
+      landmarks: PoseLandmark[],
     ) => {
       if (!showSkeleton) return; // Skip drawing if skeleton is hidden
 
@@ -234,7 +234,7 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
             landmark.y * ctx.canvas.height,
             4,
             0,
-            2 * Math.PI
+            2 * Math.PI,
           );
           ctx.fillStyle = "#00ff00";
           ctx.fill();
@@ -330,7 +330,7 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
             0,
             0,
             ctx.canvas.width,
-            ctx.canvas.height
+            ctx.canvas.height,
           );
 
           if (results.poseLandmarks) {
@@ -356,7 +356,7 @@ export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
         onError(
           `Error initializing pose detection: ${
             err instanceof Error ? err.message : String(err)
-          }`
+          }`,
         );
       }
     };

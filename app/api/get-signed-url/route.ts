@@ -12,14 +12,14 @@ export async function GET(request: NextRequest) {
     if (!videoKey) {
       return NextResponse.json(
         { error: "Video key is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!userId) {
       return NextResponse.json(
         { error: "User ID is required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     console.error("Error generating pre-signed URL:", error);
     return NextResponse.json(
       { error: "Failed to generate video URL" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

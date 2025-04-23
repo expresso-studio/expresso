@@ -4,7 +4,7 @@ import { MetricIds, MetricIdToName } from "@/lib/constants";
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get("user");
@@ -13,7 +13,7 @@ export async function GET(
   if (!presentationId) {
     return NextResponse.json(
       { error: "Presentation id is required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -30,13 +30,13 @@ export async function GET(
        FROM presentations 
        LEFT JOIN transcripts ON presentations.id = transcripts.presentation_id
        WHERE presentations.id = $1 AND presentations.user_id = $2`,
-      [presentationId, userId]
+      [presentationId, userId],
     );
 
     if (presentationResult.rows.length === 0) {
       return NextResponse.json(
         { error: "Presentation not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -46,7 +46,7 @@ export async function GET(
     if (presentation.user_id !== userId) {
       return NextResponse.json(
         { error: "Unauthorized access" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -55,7 +55,7 @@ export async function GET(
       `SELECT pm.metric_id, pm.score, pm.evaluated_at 
        FROM presentation_metrics pm
        WHERE pm.presentation_id = $1`,
-      [presentationId]
+      [presentationId],
     );
 
     // Map metric_ids to their names
@@ -78,13 +78,13 @@ export async function GET(
       {
         status: 200,
         headers: { "Content-Type": "application/json" },
-      }
+      },
     );
   } catch (error) {
     console.error("Error fetching presentation data:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

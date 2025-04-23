@@ -17,7 +17,7 @@ export default function PreviousPresentationsSection() {
       try {
         const res = await fetch(
           `/api/report?user=${encodeURIComponent(user?.sub || "")}`,
-          { cache: "no-store" }
+          { cache: "no-store" },
         );
         if (!res.ok) {
           throw new Error("Failed to fetch report data");
@@ -45,7 +45,7 @@ export default function PreviousPresentationsSection() {
       <div
         className={cn(
           "flex",
-          reports.length < 3 ? "justify-start" : "justify-end"
+          reports.length < 3 ? "justify-start" : "justify-end",
         )}
       >
         <div className="overflow-x-scroll">
@@ -99,7 +99,7 @@ export default function PreviousPresentationsSection() {
                         video_url={report.video_url}
                         metrics={report.metrics}
                       />
-                    )
+                    ),
                 )
             )}
             <div aria-hidden={true} className={"max-w-[1rem] opacity-0"}>
@@ -110,7 +110,7 @@ export default function PreviousPresentationsSection() {
         <div
           className={cn(
             reports.length < 3 && "opacity-0",
-            "absolute w-[1rem] h-full bg-gradient-to-r from-transparent to-lightGray dark:to-darkGray"
+            "absolute w-[1rem] h-full bg-gradient-to-r from-transparent to-lightGray dark:to-darkGray",
           )}
         ></div>
       </div>

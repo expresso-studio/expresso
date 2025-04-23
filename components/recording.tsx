@@ -36,8 +36,8 @@ const Recording = React.memo<Props>(function Recording({
       try {
         const res = await fetch(
           `/api/get-signed-url?videoKey=${encodeURIComponent(
-            video_url
-          )}&user=${encodeURIComponent(user.sub ?? "")}`
+            video_url,
+          )}&user=${encodeURIComponent(user.sub ?? "")}`,
         );
         const data = await res.json();
 
@@ -74,7 +74,7 @@ const Recording = React.memo<Props>(function Recording({
       console.error("Video loading error:", e);
       setError("Failed to load video preview");
     },
-    []
+    [],
   );
 
   const handleClick = React.useCallback(() => {
@@ -89,13 +89,13 @@ const Recording = React.memo<Props>(function Recording({
       <div
         className={cn(
           "animate-pulse w-[220px] h-[180px] flex flex-col gap-2 relative bg-[#fffbf9] dark:bg-stone-900 hover:shadow-sm p-2 rounded-md",
-          className
+          className,
         )}
       >
         <div
           className={cn(
             "absolute bg-lightCream dark:bg-darkBurnt w-min rounded-xl px-2 translate-x-2 translate-y-2",
-            "h-[1em] w-[2em]"
+            "h-[1em] w-[2em]",
           )}
         ></div>
         <div className="bg-darkCoffee/50 w-full h-[144px] rounded-md flex items-start justify-end relative overflow-hidden">
@@ -120,13 +120,13 @@ const Recording = React.memo<Props>(function Recording({
       onClick={handleClick}
       className={cn(
         "w-[220px] h-[180px] flex flex-col gap-2 relative bg-[#fffbf9] hover:bg-[#fffbf8] dark:bg-stone-900 hover:dark:bg-[#3e322e] hover:shadow-sm p-2 rounded-md cursor-pointer",
-        className
+        className,
       )}
     >
       <div
         className={cn(
           "absolute bg-lightCream dark:bg-darkBurnt w-min rounded-xl px-2 translate-x-2 translate-y-2 z-10",
-          "flex items-center gap-2"
+          "flex items-center gap-2",
         )}
       >
         <LuSpeech />
@@ -152,7 +152,7 @@ const Recording = React.memo<Props>(function Recording({
           onError={handleVideoError}
           className={cn(
             "w-full h-[144px] rounded-md object-cover",
-            !isLoaded && "hidden"
+            !isLoaded && "hidden",
           )}
           muted
           playsInline

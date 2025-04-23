@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { openai } from "@ai-sdk/openai";
-import{ generateText } from 'ai';
+import { generateText } from "ai";
 
 export async function POST(request: Request) {
   try {
@@ -27,9 +27,11 @@ export async function POST(request: Request) {
 
     console.log("score:", score);
     return NextResponse.json({ score: score });
-
   } catch (error) {
     console.error("Error fetching coverage score:", error);
-    return NextResponse.json({ error: "Failed to fetch coverage score." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch coverage score." },
+      { status: 500 },
+    );
   }
 }

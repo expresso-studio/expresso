@@ -30,7 +30,7 @@ const MetricBar = React.memo(function MetricBarFunction({
     <div
       className={cn(
         "relative w-full h-5 bg-orange-200 dark:bg-darkCaramel rounded-full mt-1",
-        live && "h-2"
+        live && "h-2",
       )}
     >
       {/* Optimal range zone */}
@@ -74,14 +74,14 @@ const MetricBar = React.memo(function MetricBarFunction({
       {!live ? (
         <div
           className={`absolute top-0 w-2 h-5 rounded-sm ${getWordColorClass(
-            metric.status
+            metric.status,
           ).replace("text-", "bg-")}`}
           style={{ left: `calc(${currentPosition}% - 4px)` }}
         ></div>
       ) : (
         <div
           className={`absolute top-0 -translate-y-1 w-2 h-4 rounded-sm ${getWordColorClass(
-            metric.status
+            metric.status,
           ).replace("text-", "bg-")}`}
           style={{ left: `calc(${currentPosition}% - 4px)` }}
         ></div>

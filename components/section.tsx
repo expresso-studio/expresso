@@ -34,7 +34,7 @@ const Section = React.memo<Props>(function Section({
       <div
         className={cn(
           `rounded-lg bg-lightGray dark:bg-darkGray relative overflow-hidden p-6`,
-          className
+          className,
         )}
       >
         {children}

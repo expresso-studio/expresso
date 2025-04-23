@@ -13,14 +13,14 @@ export async function POST(request: Request) {
     if (!presentationId || !userId || !metrics || !Array.isArray(metrics)) {
       return new Response(
         JSON.stringify({ error: "Missing required fields or invalid format" }),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Verify user has access to this presentation
     const presentationCheck = await query(
       `SELECT user_id FROM presentations WHERE id = $1`,
-      [presentationId]
+      [presentationId],
     );
 
     if (
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     ) {
       return new Response(
         JSON.stringify({ error: "Unauthorized access to presentation" }),
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
       return query(
         `INSERT INTO presentation_metrics (id, presentation_id, metric_id, score)
          VALUES ($1, $2, $3, $4)`,
-        [randomUUID(), presentationId, metricId, metric.value]
+        [randomUUID(), presentationId, metricId, metric.value],
       );
     });
 
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
     if (results.length === 0) {
       return new Response(
         JSON.stringify({ error: "No valid metrics to insert" }),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
       }),
       {
         status: 200,
-      }
+      },
     );
   } catch (error) {
     console.error("Error saving metrics:", error);
@@ -76,7 +76,7 @@ export async function POST(request: Request) {
       }),
       {
         status: 500,
-      }
+      },
     );
   }
 }

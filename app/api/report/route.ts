@@ -14,7 +14,7 @@ export async function GET(request: Request) {
     // Get all presentations for the user
     const presentationsResult = await query(
       "SELECT id, title, video_url, created_at FROM presentations WHERE user_id = $1",
-      [userId]
+      [userId],
     );
     const presentations = presentationsResult.rows;
 
@@ -26,7 +26,7 @@ export async function GET(request: Request) {
            FROM presentation_metrics pm
            JOIN metrics m ON pm.metric_id = m.id
            WHERE pm.presentation_id = $1`,
-          [presentation.id]
+          [presentation.id],
         );
 
         return {
@@ -36,7 +36,7 @@ export async function GET(request: Request) {
           created_at: presentation.created_at,
           metrics: metricsResult.rows,
         };
-      })
+      }),
     );
 
     return NextResponse.json(reports, {
@@ -47,7 +47,7 @@ export async function GET(request: Request) {
     console.error("Error fetching report data:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

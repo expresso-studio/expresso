@@ -6,7 +6,7 @@ import { AnalysisData } from "@/lib/types";
 import { outfit } from "@/app/fonts";
 import DetailedMetrics from "@/components/detailed-metrics";
 import KeyRecommendations from "@/components/key-recommendations";
-
+import { FillerStats } from "@/lib/types";
 // Define interface for Emotion data if needed, based on API response
 interface EmotionScores {
   sadness?: number;
@@ -21,6 +21,7 @@ interface AnalysisReportProps {
   onClose: () => void;
   analysisData: AnalysisData | null;
   recordedVideo: Blob | null;
+  fillerStats: FillerStats | null;
 }
 
 const AnalysisReport: React.FC<AnalysisReportProps> = ({
@@ -28,6 +29,7 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
   onClose,
   analysisData,
   recordedVideo,
+  fillerStats,
 }) => {
   const [emotionData, setEmotionData] = useState<EmotionScores | null>(null);
   const [sentimentScore, setSentimentScore] = useState<number | null>(null); // Add state for sentiment
@@ -55,7 +57,7 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
           if (!response.ok) {
             const errorData = await response.json();
             throw new Error(
-              errorData.error || `HTTP error! status: ${response.status}`
+              errorData.error || `HTTP error! status: ${response.status}`,
             );
           }
 
@@ -130,7 +132,11 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
             >
               Presentation Recording
             </h3>
-            <VideoPlayback videoBlob={recordedVideo} metrics={analysisData} />
+            <VideoPlayback
+              videoBlob={recordedVideo}
+              metrics={analysisData}
+              fillerStats={fillerStats}
+            />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -207,15 +213,15 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({
                         sentimentScore > 0.3
                           ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
                           : sentimentScore < -0.3
-                          ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-                          : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                            ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+                            : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
                       }`}
                     >
                       {sentimentScore > 0.3
                         ? "Positive"
                         : sentimentScore < -0.3
-                        ? "Negative"
-                        : "Neutral"}{" "}
+                          ? "Negative"
+                          : "Neutral"}{" "}
                       ({sentimentScore.toFixed(2)})
                     </span>
                   </div>

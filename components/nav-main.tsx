@@ -85,7 +85,7 @@ export function NavMain() {
           ...navItem,
           isActive: path == navItem.title.toLowerCase(),
         };
-      })
+      }),
     );
   }, [path]);
 

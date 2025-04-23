@@ -56,8 +56,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoKey, userId }) => {
         setIsLoading(true);
         const res = await fetch(
           `/api/get-signed-url?videoKey=${encodeURIComponent(
-            videoKey
-          )}&user=${encodeURIComponent(userId)}`
+            videoKey,
+          )}&user=${encodeURIComponent(userId)}`,
         );
         const data = await res.json();
 
@@ -76,7 +76,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoKey, userId }) => {
         setError(
           error instanceof Error
             ? error.message
-            : "Failed to load video. Please try again later."
+            : "Failed to load video. Please try again later.",
         );
       } finally {
         setIsLoading(false);
@@ -89,11 +89,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoKey, userId }) => {
   }, [videoKey, userId]);
 
   const handleVideoError = (
-    e: React.SyntheticEvent<HTMLVideoElement, Event>
+    e: React.SyntheticEvent<HTMLVideoElement, Event>,
   ) => {
     console.error("Video loading error:", e);
     setError(
-      "Failed to load video. The video may be corrupted or unavailable."
+      "Failed to load video. The video may be corrupted or unavailable.",
     );
   };
 
@@ -144,7 +144,7 @@ export default function PresentationPage({
           `/api/presentation/${params.id}?user=${encodeURIComponent(user.sub)}`,
           {
             cache: "no-store",
-          }
+          },
         );
 
         if (!res.ok) {
@@ -157,7 +157,7 @@ export default function PresentationPage({
         const res2 = await fetch(
           `/api/get-qna-info?userId=${encodeURIComponent(user.sub!)}&id=${
             params.id
-          }`
+          }`,
         );
         const scriptTranscript = await res2.json();
 
@@ -243,7 +243,7 @@ export default function PresentationPage({
           </div>
           <KeyRecommendations
             analysisData={transformMetricsToAnalysisData(
-              presentation.metrics as MetricType[]
+              presentation.metrics as MetricType[],
             )}
           />
         </div>
@@ -310,15 +310,15 @@ export default function PresentationPage({
                   {score < 50
                     ? "Low coverage indicates indicates that a significant portion of the scripted content was not reflected in the presentation."
                     : score < 85
-                    ? "Moderate coverage indicates key parts of the script were included, but some sections were modified or improvised."
-                    : "High coverage indicates presentation closely followed the script, with minimal deviation"}
+                      ? "Moderate coverage indicates key parts of the script were included, but some sections were modified or improvised."
+                      : "High coverage indicates presentation closely followed the script, with minimal deviation"}
                 </p>
               </>
             )}
           </div>
           <DetailedMetrics
             analysisData={transformMetricsToAnalysisData(
-              presentation.metrics as MetricType[]
+              presentation.metrics as MetricType[],
             )}
             scroll={true}
           />

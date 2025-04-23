@@ -1,33 +1,32 @@
-const nextJest = require('next/jest')
+const nextJest = require("next/jest");
 
 /** @type {import('jest').Config} */
 const createJestConfig = nextJest({
-  dir: './',
-})
- 
+  dir: "./",
+});
+
 const config = {
-  coverageProvider: 'v8',
-  testEnvironment: 'jsdom',
+  coverageProvider: "v8",
+  testEnvironment: "jsdom",
   testEnvironmentOptions: {
-    customExportConditions: [''],
+    customExportConditions: [""],
   },
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
   transform: {
     "^.+\\.(js|jsx|ts|tsx)$": "ts-jest",
   },
-  transformIgnorePatterns: [
-    "/node_modules/(?!(lucide-react|react-icons)/)",
-  ],
+  transformIgnorePatterns: ["/node_modules/(?!(lucide-react|react-icons)/)"],
   moduleNameMapper: {
-    "^lucide-react$": "<rootDir>/node_modules/lucide-react/dist/cjs/lucide-react.js",
-    "^@/(.*)$": "<rootDir>/$1", 
-    '^app/(.*)$': '<rootDir>/app/$1',
+    "^lucide-react$":
+      "<rootDir>/node_modules/lucide-react/dist/cjs/lucide-react.js",
+    "^@/(.*)$": "<rootDir>/$1",
+    "^app/(.*)$": "<rootDir>/app/$1",
   },
   globals: {
-    'ts-jest': {
-      tsconfig: 'tsconfig.test.json',
+    "ts-jest": {
+      tsconfig: "tsconfig.test.json",
     },
   },
-}
- 
-module.exports = createJestConfig(config)
+};
+
+module.exports = createJestConfig(config);

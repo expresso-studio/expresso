@@ -13,7 +13,7 @@ export function transformMetricsToGestureMetrics(
     name: MetricNames;
     score: number;
     evaluated_at: string;
-  }[]
+  }[],
 ): GestureMetrics {
   const gestureMetrics: GestureMetrics = {
     HandMovement: 0,
@@ -51,7 +51,7 @@ export const getMetricStatus = (key: string, value: number): string => {
 };
 
 export function transformMetricsToAnalysisData(
-  metrics: MetricType[]
+  metrics: MetricType[],
 ): AnalysisData {
   const defaultMetricData: MetricData = { value: 0, status: "Low" };
 
@@ -93,17 +93,17 @@ export function transformMetricsToAnalysisData(
 
 // Generate recommendations based on metrics
 export const generateRecommendations = (
-  analysisData: AnalysisData
+  analysisData: AnalysisData,
 ): string[] => {
   const recommendations: string[] = [];
 
   if (analysisData.HandMovement.status === "Low") {
     recommendations.push(
-      "Use more hand gestures to emphasize key points and engage your audience."
+      "Use more hand gestures to emphasize key points and engage your audience.",
     );
   } else if (analysisData.HandMovement.status === "High") {
     recommendations.push(
-      "Try to reduce excessive hand movements as they may distract from your message."
+      "Try to reduce excessive hand movements as they may distract from your message.",
     );
   }
 
@@ -112,31 +112,31 @@ export const generateRecommendations = (
     analysisData.Posture.status === "Fair"
   ) {
     recommendations.push(
-      "Work on maintaining better posture by keeping your back straight and shoulders level."
+      "Work on maintaining better posture by keeping your back straight and shoulders level.",
     );
   }
 
   if (analysisData.EyeContact.status === "Low") {
     recommendations.push(
-      "Maintain more consistent Eye contact with the camera to better connect with your audience."
+      "Maintain more consistent Eye contact with the camera to better connect with your audience.",
     );
   }
 
   if (analysisData.HandSymmetry.status === "Low") {
     recommendations.push(
-      "Try to use both hands more equally for a balanced presentation style."
+      "Try to use both hands more equally for a balanced presentation style.",
     );
   }
 
   if (analysisData.GestureVariety.status === "Low") {
     recommendations.push(
-      "Incorporate a wider variety of gestures to keep your presentation engaging."
+      "Incorporate a wider variety of gestures to keep your presentation engaging.",
     );
   }
 
   if (recommendations.length === 0) {
     recommendations.push(
-      "Your presentation skills are solid! Continue practicing to maintain consistency."
+      "Your presentation skills are solid! Continue practicing to maintain consistency.",
     );
   }
 

@@ -133,3 +133,11 @@ export interface AnalysisData {
   sessionDuration: number;
   transcript: string;
 }
+
+export interface FillerStats {
+  fillerWordCount: number;
+  fillerWordsStats: { [word: string]: number };
+  maxWPM: number | null;
+  minWPM: number | null;
+  sessionWPM: number;
+}

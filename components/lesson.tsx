@@ -34,7 +34,7 @@ const Lesson = React.memo<Props>(function Lesson({
         <div
           style={{ borderColor: color }}
           className={cn(
-            `min-w-[55px] h-[55px] rounded-md overflow-hidden border bg-white dark:bg-darkGray`
+            `min-w-[55px] h-[55px] rounded-md overflow-hidden border bg-white dark:bg-darkGray`,
           )}
         >
           <div

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { openai } from "@ai-sdk/openai";
-import{ generateText } from 'ai';
+import { generateText } from "ai";
 
 export async function POST(request: Request) {
   try {
@@ -29,9 +29,11 @@ export async function POST(request: Request) {
 
     console.log("questions:", questionsWithTips);
     return NextResponse.json({ questions: questionsWithTips });
-
   } catch (error) {
     console.error("Error fetching QnA:", error);
-    return NextResponse.json({ error: "Failed to fetch QnA." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch QnA." },
+      { status: 500 },
+    );
   }
 }

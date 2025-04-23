@@ -112,7 +112,7 @@ export default function Page() {
   };
 
   const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
   ) => {
     if (e.target instanceof HTMLInputElement) {
       const { name, value, checked } = e.target;
@@ -132,8 +132,8 @@ export default function Page() {
 
   const handleStart = () => {
     if (!formData.topic) {
-        alert("Please Provide Presentation Topic");
-        return;
+      alert("Please Provide Presentation Topic");
+      return;
     }
 
     const { topic, ...rest } = formData;
@@ -148,7 +148,7 @@ export default function Page() {
     const query = new URLSearchParams(
       Object.entries(rest)
         .filter(([, v]) => v !== "")
-        .map(([key, value]) => [key, String(value)])
+        .map(([key, value]) => [key, String(value)]),
     ).toString();
     router.push(`/dashboard/evaluate?${query}`);
   };

@@ -60,9 +60,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            <ScriptProvider>
-          {children}
-          </ScriptProvider>
+            <ScriptProvider>{children}</ScriptProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>
