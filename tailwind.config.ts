@@ -9,39 +9,61 @@ export default {
     "./evaluate/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {
-      colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-        sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
-        },
-        lightCream: "#F6F1EE",
-        lightLatte: "#D5A585",
-        lightCoffee: "#936648",
-        lightCaramel: "#C06C35",
-        lightBurnt: "#100B09",
-        lightGray: "#ECE5E1",
-        darkCream: "#F6F1EF",
-        darkLatte: "#B78A6C",
-        darkCoffee: "#7A4A2A",
-        darkCaramel: "#CA773F",
-        darkBurnt: "#110C09",
-        darkGray: "hsl(24, 12.9%, 15%)",
-      },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-      },
-    },
+  	extend: {
+  		colors: {
+  			background: 'var(--background)',
+  			foreground: 'var(--foreground)',
+  			sidebar: {
+  				DEFAULT: 'hsl(var(--sidebar-background))',
+  				foreground: 'hsl(var(--sidebar-foreground))',
+  				primary: 'hsl(var(--sidebar-primary))',
+  				'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+  				accent: 'hsl(var(--sidebar-accent))',
+  				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
+  				border: 'hsl(var(--sidebar-border))',
+  				ring: 'hsl(var(--sidebar-ring))'
+  			},
+  			lightCream: '#F6F1EE',
+  			lightLatte: '#D5A585',
+  			lightCoffee: '#936648',
+  			lightCaramel: '#C06C35',
+  			lightBurnt: '#100B09',
+  			lightGray: '#ECE5E1',
+  			darkCream: '#F6F1EF',
+  			darkLatte: '#B78A6C',
+  			darkCoffee: '#7A4A2A',
+  			darkCaramel: '#CA773F',
+  			darkBurnt: '#110C09',
+  			darkGray: 'hsl(24, 12.9%, 15%)'
+  		},
+  		borderRadius: {
+  			lg: 'var(--radius)',
+  			md: 'calc(var(--radius) - 2px)',
+  			sm: 'calc(var(--radius) - 4px)'
+  		},
+  		keyframes: {
+  			'accordion-down': {
+  				from: {
+  					height: '0'
+  				},
+  				to: {
+  					height: 'var(--radix-accordion-content-height)'
+  				}
+  			},
+  			'accordion-up': {
+  				from: {
+  					height: 'var(--radix-accordion-content-height)'
+  				},
+  				to: {
+  					height: '0'
+  				}
+  			}
+  		},
+  		animation: {
+  			'accordion-down': 'accordion-down 0.2s ease-out',
+  			'accordion-up': 'accordion-up 0.2s ease-out'
+  		}
+  	}
   },
   plugins: [require("tailwindcss-animate")],
 } satisfies Config;

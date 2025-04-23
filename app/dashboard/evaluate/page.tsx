@@ -10,7 +10,6 @@ export default function Page() {
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [fillerStats, setFillerStats] = useState<FillerStats | null>(null);
-  const [showTranscript, setShowTranscript] = useState(true);
 
   // Handle filler stats from TranscriptionComponent
   const handleFillerStats = (stats: FillerStats) => {
@@ -34,43 +33,9 @@ export default function Page() {
     }
   };
 
-  // // Toggle developer mode
-  // const toggleDeveloperMode = () => {
-  //   setIsDeveloperMode(!isDeveloperMode);
-  // };
-
-  // Toggle transcript visibility
-  const toggleTranscript = () => {
-    setShowTranscript(!showTranscript);
-  };
-
   return (
     <ProtectedRoute>
       <div className="relative flex flex-col items-center w-full min-h-screen p-4">
-        <div className="w-full flex justify-end items-center mb-4 gap-2">
-          <button
-            onClick={toggleTranscript}
-            className={`px-2 py-1 text-xs rounded ${
-              showTranscript
-                ? "bg-blue-600 text-white hover:bg-blue-700"
-                : "bg-gray-300 text-gray-700 hover:bg-gray-400"
-            } transition-colors`}
-          >
-            {showTranscript ? "Captions: ON" : "Captions: OFF"}
-          </button>
-
-          {/* <button
-            onClick={toggleDeveloperMode}
-            className={`px-2 py-1 text-xs rounded ${
-              isDeveloperMode 
-                ? 'bg-blue-600 text-white hover:bg-blue-700' 
-                : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
-            } transition-colors`}
-          >
-            {isDeveloperMode ? 'Developer Mode: ON' : 'Developer Mode: OFF'}
-          </button> */}
-        </div>
-
         <Suspense
           fallback={
             <div className="text-center p-8">Loading pose detection...</div>

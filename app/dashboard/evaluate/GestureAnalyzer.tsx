@@ -5,7 +5,14 @@ import EvaluateVideo, { PoseResults } from "./EvaluateVideo";
 import GestureAnalysis from "./gesture-analysis/GestureAnalysis";
 import AnalysisReport from "./AnalysisReport";
 import { GestureMetrics, AnalysisData, FillerStats } from "@/lib/types";
-import { Eye, EyeOff, BarChart2 } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  BarChart2,
+  Captions,
+  CaptionsOff,
+  LoaderCircle,
+} from "lucide-react";
 import { OPTIMAL_RANGES } from "./gesture-analysis";
 
 interface GestureAnalyzerProps {
@@ -42,7 +49,18 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
   });
   const [recordedVideo, setRecordedVideo] = useState<Blob | null>(null);
   const [showSkeleton, setShowSkeleton] = useState(false);
-  const [showAnalysisPanel, setShowAnalysisPanel] = useState(false);
+  const [showTranscript, setShowTranscript] = useState(true);
+  // // Toggle developer mode
+  // const toggleDeveloperMode = () => {
+  //   setIsDeveloperMode(!isDeveloperMode);
+  // };
+
+  // Toggle transcript visibility
+  const toggleTranscript = () => {
+    setShowTranscript(!showTranscript);
+  };
+
+  const showAnalysisPanel = true;
 
   // Store transcript and previous recording state in refs
   const transcriptRef = useRef(transcript);
@@ -95,7 +113,7 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
         value: currentMetrics.GestureVariety,
         status: getMetricStatus(
           "GestureVariety",
-          currentMetrics.GestureVariety,
+          currentMetrics.GestureVariety
         ),
       },
       EyeContact: {
@@ -171,13 +189,13 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
   // Callback function to receive metrics from GestureAnalysis
   const handleMetricsUpdate = useCallback(
     (metrics: GestureMetrics) => setCurrentMetrics(metrics),
-    [setCurrentMetrics],
+    [setCurrentMetrics]
   );
 
   // Function to handle the recorded video blob
   const handleVideoRecorded = useCallback(
     (videoBlob: Blob) => setRecordedVideo(videoBlob),
-    [setRecordedVideo],
+    [setRecordedVideo]
   );
 
   // Initialize MediaPipe script
@@ -228,58 +246,84 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
         </div>
       )}
 
-      {/* Control buttons in top left corner - enhanced with better visual feedback */}
-      <div className="absolute top-5 left-5 z-40 flex space-x-2">
-        {/* Toggle Skeleton Button */}
-        <button
-          onClick={() => setShowSkeleton(!showSkeleton)}
-          className={`p-2 ${
-            showSkeleton ? "bg-blue-600" : "bg-gray-800/80"
-          } text-white rounded-full hover:bg-gray-700 transition-colors flex items-center justify-center`}
-          title={showSkeleton ? "Hide Skeleton" : "Show Skeleton"}
-        >
-          {showSkeleton ? <EyeOff size={16} /> : <Eye size={16} />}
-        </button>
+      <div className="fixed top-4 right-4 z-40 flex items-start gap-4 ">
+        <div className="w-full flex justify-end items-center mb-4 gap-4">
+          <button
+            onClick={toggleTranscript}
+            className={`flex items-center gap-2 px-4 py-4 text-sm rounded-lg bg-black/80 hover:opacity-85 ${
+              showTranscript ? " text-white " : "text-stone-400"
+            } transition-colors`}
+            title={showSkeleton ? "Hide Captions" : "Show Captions"}
+          >
+            {showTranscript ? (
+              <Captions size={20} />
+            ) : (
+              <CaptionsOff size={20} />
+            )}
+            {showTranscript ? "Captions: ON" : "Captions: OFF"}
+          </button>
 
-        {/* Toggle Analysis Panel Button - Enhanced with active state styling */}
-        <button
-          onClick={() => setShowAnalysisPanel(!showAnalysisPanel)}
-          className={`p-2 ${
-            showAnalysisPanel ? "bg-blue-600" : "bg-gray-800/80"
-          } text-white rounded-full hover:bg-gray-700 transition-colors flex items-center justify-center`}
-          title={showAnalysisPanel ? "Hide Analysis" : "Show Analysis"}
-        >
-          <BarChart2 size={16} />
-        </button>
+          {/* <button
+            onClick={toggleDeveloperMode}
+            className={`px-2 py-1 text-xs rounded ${
+              isDeveloperMode 
+                ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
+            } transition-colors`}
+          >
+            {isDeveloperMode ? 'Developer Mode: ON' : 'Developer Mode: OFF'}
+          </button> */}
+
+          {/* Toggle Skeleton Button */}
+          <button
+            onClick={() => setShowSkeleton(!showSkeleton)}
+            className={`flex items-center gap-2 px-4 py-4 text-sm ${
+              showSkeleton ? "text-white" : "text-stone-400"
+            } rounded-lg bg-black/80 hover:opacity-85 flex items-center justify-center`}
+          >
+            {showSkeleton ? <Eye size={20} /> : <EyeOff size={20} />}
+            {showSkeleton ? "Skeleton: ON" : "Skeleton: OFF"}
+          </button>
+        </div>
+
+        {/* Analysis panel is conditionally displayed based on showAnalysisPanel */}
+        {poseResults ? (
+          showAnalysisPanel && (
+            <GestureAnalysis
+              poseLandmarks={poseResults.poseLandmarks}
+              isRecording={isRecording}
+              onMetricsUpdate={handleMetricsUpdate}
+              // developerMode={developerMode}
+              // Pass the showAnalysisPanel state to GestureAnalysis
+              isPanelVisible={showAnalysisPanel}
+            />
+          )
+        ) : (
+          <div className="space-y-4 bg-black/80 p-4 rounded-lg min-w-96 shadow-lg ">
+            <h3 className="text-stone-400 font-semibold text-sm m-0 flex items-center gap-2">
+              <LoaderCircle
+                size={16}
+                className="animate-spin text-stone-400 m-0"
+              />
+              Gesture Analysis
+            </h3>
+          </div>
+        )}
+
+        {/* Run analysis in background regardless of panel visibility */}
+        {poseResults && !showAnalysisPanel && (
+          <div className="absolute inset-0" style={{ display: "none" }}>
+            <GestureAnalysis
+              poseLandmarks={poseResults.poseLandmarks}
+              isRecording={isRecording}
+              onMetricsUpdate={handleMetricsUpdate}
+              // developerMode={developerMode}
+              // Pass the showAnalysisPanel state to GestureAnalysis
+              isPanelVisible={showAnalysisPanel}
+            />
+          </div>
+        )}
       </div>
-
-      {/* Analysis panel is conditionally displayed based on showAnalysisPanel */}
-      {poseResults && showAnalysisPanel && (
-        <div className="absolute inset-0">
-          <GestureAnalysis
-            poseLandmarks={poseResults.poseLandmarks}
-            isRecording={isRecording}
-            onMetricsUpdate={handleMetricsUpdate}
-            // developerMode={developerMode}
-            // Pass the showAnalysisPanel state to GestureAnalysis
-            isPanelVisible={showAnalysisPanel}
-          />
-        </div>
-      )}
-
-      {/* Run analysis in background regardless of panel visibility */}
-      {poseResults && !showAnalysisPanel && (
-        <div className="absolute inset-0" style={{ display: "none" }}>
-          <GestureAnalysis
-            poseLandmarks={poseResults.poseLandmarks}
-            isRecording={isRecording}
-            onMetricsUpdate={handleMetricsUpdate}
-            // developerMode={developerMode}
-            // Pass the showAnalysisPanel state to GestureAnalysis
-            isPanelVisible={showAnalysisPanel}
-          />
-        </div>
-      )}
 
       {/* Analysis Report Popup with video data */}
       <AnalysisReport
