@@ -12,7 +12,7 @@ interface GestureAnalyzerProps {
   isRecording: boolean;
   // onStopRecording: () => void;
   transcript: string;
-  developerMode?: boolean;
+  // developerMode?: boolean;
   fillerStats: FillerStats | null;
 }
 
@@ -20,7 +20,7 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
   isRecording,
   // onStopRecording,
   transcript,
-  developerMode = true,
+  // developerMode = false, // Set default to false to hide developer mode
   fillerStats,
 }) => {
   const [error, setError] = useState<string | null>(null);
@@ -228,21 +228,25 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
         </div>
       )}
 
-      {/* Control buttons in top left corner - smaller and grouped */}
+      {/* Control buttons in top left corner - enhanced with better visual feedback */}
       <div className="absolute top-5 left-5 z-40 flex space-x-2">
         {/* Toggle Skeleton Button */}
         <button
           onClick={() => setShowSkeleton(!showSkeleton)}
-          className="p-2 bg-gray-800/80 text-white rounded-full hover:bg-gray-700 transition-colors"
+          className={`p-2 ${
+            showSkeleton ? "bg-blue-600" : "bg-gray-800/80"
+          } text-white rounded-full hover:bg-gray-700 transition-colors flex items-center justify-center`}
           title={showSkeleton ? "Hide Skeleton" : "Show Skeleton"}
         >
           {showSkeleton ? <EyeOff size={16} /> : <Eye size={16} />}
         </button>
 
-        {/* Toggle Analysis Panel Button */}
+        {/* Toggle Analysis Panel Button - Enhanced with active state styling */}
         <button
           onClick={() => setShowAnalysisPanel(!showAnalysisPanel)}
-          className="p-2 bg-gray-800/80 text-white rounded-full hover:bg-gray-700 transition-colors"
+          className={`p-2 ${
+            showAnalysisPanel ? "bg-blue-600" : "bg-gray-800/80"
+          } text-white rounded-full hover:bg-gray-700 transition-colors flex items-center justify-center`}
           title={showAnalysisPanel ? "Hide Analysis" : "Show Analysis"}
         >
           <BarChart2 size={16} />
@@ -256,7 +260,9 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
             poseLandmarks={poseResults.poseLandmarks}
             isRecording={isRecording}
             onMetricsUpdate={handleMetricsUpdate}
-            developerMode={developerMode}
+            // developerMode={developerMode}
+            // Pass the showAnalysisPanel state to GestureAnalysis
+            isPanelVisible={showAnalysisPanel}
           />
         </div>
       )}
@@ -268,7 +274,9 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
             poseLandmarks={poseResults.poseLandmarks}
             isRecording={isRecording}
             onMetricsUpdate={handleMetricsUpdate}
-            developerMode={developerMode}
+            // developerMode={developerMode}
+            // Pass the showAnalysisPanel state to GestureAnalysis
+            isPanelVisible={showAnalysisPanel}
           />
         </div>
       )}
