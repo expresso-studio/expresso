@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     score how much of the script the speaker covered. 
     Focus on comparing main ideas and don't consider the filler words. 
     Return a number from 1-100, with 100 being perfect coverage and 1 being low coverage. 
-    If there's no script provided, then return -1. 
+    If script is empty, then return -1. 
     Do not include any additional text or formatting.\n
     ${scriptData}\n
     Transcript: ${transcriptData}`;

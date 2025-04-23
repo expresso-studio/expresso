@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState, use, useRef } from "react";
 import { useAuthUtils } from "@/hooks/useAuthUtils";
 import { outfit } from "@/app/fonts";
 import { cn, transformMetricsToAnalysisData } from "@/lib/utils";
@@ -134,6 +134,7 @@ export default function PresentationPage({
   const [presentation, setPresentation] = useState<Presentation | null>(null);
   const [loading, setLoading] = useState(true);
   const [score, setScore] = useState(-1);
+  const calledCoverage = useRef(false);
 
   useEffect(() => {
     async function fetchPresentation() {
@@ -154,6 +155,29 @@ export default function PresentationPage({
         const data = await res.json();
         setPresentation(data);
 
+      } catch (err) {
+        console.error("Error fetching presentation:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (isAuthenticated && !isLoading) {
+      fetchPresentation();
+    }
+  }, [params.id, isAuthenticated, isLoading, user]);
+
+  useEffect(() => {
+    if(!presentation || !presentation.metrics) return;
+    if(presentation.metrics?.length > 8) {
+      setScore(presentation.metrics[8].score);
+      return;
+    }
+    if(calledCoverage.current) return;  
+    if(!user) return;   
+  
+    calledCoverage.current = true;
+    (async () => { 
         const res2 = await fetch(
           `/api/get-qna-info?userId=${encodeURIComponent(user.sub!)}&id=${
             params.id
@@ -175,23 +199,36 @@ export default function PresentationPage({
           },
           body: JSON.stringify({ transcriptData, scriptData }),
         });
+      
 
         const scoreData = await coverageRes.json();
         if (scoreData.score === undefined) {
           throw new Error("Failed to fetch coverage score");
         }
+        calledCoverage.current = true;
+      
         setScore(scoreData.score);
-      } catch (err) {
-        console.error("Error fetching presentation:", err);
-      } finally {
-        setLoading(false);
+    
+      const metricsRes = await fetch("/api/save-coverage", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          presentationId: params.id,
+          userId: user.sub,
+          videoKey: presentation?.video_url,
+          score: scoreData.score,
+        }),
+      });
+      if (!metricsRes.ok) {
+        const errorData = await metricsRes.json();
+        throw new Error(
+          `Failed to save coverage: ${errorData.error || "Unknown error"}`,
+        );
       }
-    }
-
-    if (isAuthenticated && !isLoading) {
-      fetchPresentation();
-    }
-  }, [params.id, isAuthenticated, isLoading, user]);
+    })();
+  }, [presentation]);
 
   if (loading || isLoading) {
     return <Loading />;
@@ -212,6 +249,12 @@ export default function PresentationPage({
       </div>
     );
   }
+
+  const filteredMetrics = presentation.metrics.filter(
+    (metric) => metric.metric_id !== 9
+  );
+
+  console.log("FILTERED: ", filteredMetrics);
 
   return (
     <PageFormat
@@ -243,7 +286,7 @@ export default function PresentationPage({
           </div>
           <KeyRecommendations
             analysisData={transformMetricsToAnalysisData(
-              presentation.metrics as MetricType[],
+              filteredMetrics as MetricType[],
             )}
           />
         </div>
@@ -318,7 +361,7 @@ export default function PresentationPage({
           </div>
           <DetailedMetrics
             analysisData={transformMetricsToAnalysisData(
-              presentation.metrics as MetricType[],
+              filteredMetrics as MetricType[],
             )}
             scroll={true}
           />
