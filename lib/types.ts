@@ -39,6 +39,11 @@ export type LessonStatus = {
   status: boolean;
 };
 
+export type LessonLeft = {
+  lesson_id: number;
+  lesson_name: string;
+};
+
 export type MetricType = {
   metric_id: MetricIds;
   name: MetricNames;

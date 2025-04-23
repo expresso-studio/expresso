@@ -10,7 +10,7 @@ import { LessonType } from "@/lib/types";
 import { Check, X } from "lucide-react";
 
 interface Props extends LessonType {
-  status: boolean;
+  status?: boolean;
   courseName: CourseNames;
   color: string;
   children: React.ReactNode;
@@ -38,7 +38,7 @@ export default function LessonFormat({
     <PageFormat
       breadCrumbs={[
         { url: "/dashboard/learning", name: "learning" },
-        { url: "/dashboard/learning/courses", name: "courses" },
+        { url: "/dashboard/learning", name: "courses" },
         {
           url: `/dashboard/learning/courses/${CourseNameToLink[courseName]}`,
           name: CourseNameToLink[courseName],
@@ -51,8 +51,8 @@ export default function LessonFormat({
         className="w-full h-[100px] flex items-center justify-center rounded-md overflow-hidden"
       >
         <div className="flex gap-4">
-          {rotates.map((rotate) => (
-            <div className="text-white text-5xl" key={rotate}>
+          {rotates.map((rotate, i) => (
+            <div className="text-white text-5xl" key={i}>
               <Icon />
             </div>
           ))}
@@ -77,7 +77,14 @@ export default function LessonFormat({
               ))}
             </div>
             <div className="flex gap-2">
-              Complete: {status ? <Check /> : <X />}
+              Complete:{" "}
+              {status === undefined ? (
+                <div className="mt-1 rounded-full w-6 h-4 bg-black/50 dark:bg-white/50 animate-pulse"></div>
+              ) : status ? (
+                <Check />
+              ) : (
+                <X />
+              )}
             </div>
           </div>
         </div>

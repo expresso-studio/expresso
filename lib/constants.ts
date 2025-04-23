@@ -127,7 +127,7 @@ export enum LessonLinks {
   HandMovement = "hand-movement",
   HandSymmetry = "hand-symmetry",
   BodyMovement = "body-movement",
-  Posture = "Posture",
+  Posture = "posture",
   HeadMovement = "head-movement",
   EyeContact = "eye-contact",
   GestureVariety = "gesture-variety",
@@ -146,13 +146,13 @@ export const LessonNameToLink: Record<LessonNames, LessonLinks> = {
 
 export const Courses: CourseType[] = [
   {
-    id: 10,
+    id: 1,
     icon: TbMessageChatbotFilled,
     color: "#D5A585",
     name: CourseNames.Intro,
     lessons: [
       {
-        id: 100,
+        id: 1,
         icon: IoHandLeft,
         name: LessonNames.Basics,
         topics: ["basics", "general"],
@@ -161,19 +161,19 @@ export const Courses: CourseType[] = [
     topics: ["basics", "general"],
   },
   {
-    id: 20,
+    id: 2,
     icon: IoHandLeft,
     color: "#936648",
     name: CourseNames.HandLanguage,
     lessons: [
       {
-        id: 200,
+        id: 2,
         icon: MetricNameToIcon.HandMovement,
         name: LessonNames.HandMovement,
         topics: [MetricDisplayNames.HandMovement],
       },
       {
-        id: 201,
+        id: 3,
         icon: MetricNameToIcon.HandSymmetry,
         name: LessonNames.HandSymmetry,
         topics: [MetricDisplayNames.HandSymmetry],
@@ -182,19 +182,19 @@ export const Courses: CourseType[] = [
     topics: [MetricDisplayNames.HandMovement, MetricDisplayNames.HandSymmetry],
   },
   {
-    id: 30,
+    id: 3,
     icon: BsPersonRaisedHand,
     color: "#C06C35",
     name: CourseNames.BodyLanguage,
     lessons: [
       {
-        id: 300,
+        id: 4,
         icon: MetricNameToIcon.Posture,
         name: LessonNames.Posture,
         topics: [MetricDisplayNames.Posture],
       },
       {
-        id: 301,
+        id: 5,
         icon: MetricNameToIcon.BodyMovement,
         name: LessonNames.BodyMovement,
         topics: [MetricDisplayNames.BodyMovement],
@@ -203,19 +203,19 @@ export const Courses: CourseType[] = [
     topics: [MetricDisplayNames.Posture, MetricDisplayNames.BodyMovement],
   },
   {
-    id: 400,
+    id: 4,
     icon: BiSolidSmile,
     color: "#6d4b2e",
     name: CourseNames.HeadLanguage,
     lessons: [
       {
-        id: 400,
+        id: 6,
         icon: MetricNameToIcon.HeadMovement,
         name: LessonNames.HeadMovement,
         topics: [MetricDisplayNames.HeadMovement],
       },
       {
-        id: 401,
+        id: 7,
         icon: MetricNameToIcon.EyeContact,
         name: LessonNames.EyeContact,
         topics: [MetricDisplayNames.EyeContact],
@@ -224,13 +224,13 @@ export const Courses: CourseType[] = [
     topics: [MetricDisplayNames.HeadMovement, MetricDisplayNames.EyeContact],
   },
   {
-    id: 50,
+    id: 5,
     icon: BiCheckDouble, // TODO(casey): change this
     color: "#110C09",
     name: CourseNames.Gestures,
     lessons: [
       {
-        id: 500,
+        id: 8,
         icon: MetricNameToIcon.GestureVariety,
         name: LessonNames.GestureVariety,
         topics: [MetricDisplayNames.GestureVariety],

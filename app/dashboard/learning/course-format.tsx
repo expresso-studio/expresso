@@ -1,17 +1,27 @@
 import * as React from "react";
+import { useEffect, useState } from "react";
 import Heading1 from "@/components/heading-1";
 import PageFormat from "@/components/page-format";
-import { CourseNameToLink, LessonStatuses } from "@/lib/constants";
-import { CourseType, LessonStatus, LessonType } from "@/lib/types";
+import { CourseNameToLink } from "@/lib/constants";
+import { CourseType, LessonLeft, LessonStatus, LessonType } from "@/lib/types";
 import Lesson from "@/components/lesson";
 import { outfit } from "@/app/fonts";
 import CourseProgress from "./course-progress";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { useAuthUtils } from "@/hooks/useAuthUtils";
 
 interface Props extends CourseType {
-  status: number;
+  status?: number;
 }
 
 export default function CourseFormat({
+  id,
   icon,
   color,
   name,
@@ -19,6 +29,16 @@ export default function CourseFormat({
   status,
   lessons,
 }: Props) {
+  const { user, error, refreshToken } = useAuthUtils();
+
+  // If there's an auth error, try to refresh the token
+  React.useEffect(() => {
+    if (error) {
+      console.error("Auth error in dashboard:", error);
+      refreshToken();
+    }
+  }, [error, refreshToken]);
+
   const Icon = icon;
   const rotates = [
     "-rotate-12",
@@ -27,25 +47,62 @@ export default function CourseFormat({
     "rotate-6",
     "rotate-12",
   ];
+
+  // State to store completed lessons data
+  const [lessonsLeft, setLessonsLeft] = useState<LessonLeft[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchLessonsLeft = async () => {
+      try {
+        // Assume the course ID is available or can be derived
+        const courseId = id;
+        const userId = user?.sub;
+        console.log(userId);
+
+        const response = await fetch(
+          `/api/course/lessons-left?userId=${userId}&courseId=${courseId}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch lessons left");
+        }
+
+        const data = await response.json();
+        console.log("data.lessonsLeft");
+        console.log(data.lessonsLeft);
+        setLessonsLeft(data.lessonsLeft);
+      } catch (error) {
+        console.error("Error fetching lessons left:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user?.sub) {
+      fetchLessonsLeft();
+    }
+  }, [user?.sub, id]);
+
   const lessonsWithStatus: (LessonType & LessonStatus)[] = lessons.map(
     (lesson) => {
-      const matchingLesson = LessonStatuses.find(
-        (lessonStatus) => lessonStatus.name === lesson.name,
+      // Check if this lesson is in the lessonsLeft array
+      const isLessonLeft = lessonsLeft.find(
+        (leftLesson) => leftLesson.lesson_name === lesson.name
       );
 
-      if (matchingLesson) {
-        return { ...lesson, ...matchingLesson };
-      }
-
-      return { ...lesson, status: false };
-    },
+      // If the lesson is in lessonsLeft, it means it's not completed
+      return {
+        ...lesson,
+        status: isLessonLeft !== undefined,
+      };
+    }
   );
 
   return (
     <PageFormat
       breadCrumbs={[
         { url: "/dashboard/learning", name: "learning" },
-        { url: "/dashboard/learning/courses", name: "courses" },
+        { url: "/dashboard/learning", name: "courses" },
         { name: CourseNameToLink[name] },
       ]}
     >
@@ -77,7 +134,26 @@ export default function CourseFormat({
               ))}
             </div>
           </div>
-          <CourseProgress status={status} color={color} />
+          {status !== undefined && status !== -1 && !loading ? (
+            <CourseProgress status={status} color={color} />
+          ) : (
+            <Card className="animate-pulse flex flex-col gap-4 items-center justify-center">
+              <CardHeader className="items-center pb-0">
+                <div className="h-8 w-[120px] rounded-full bg-black/50 dark:bg-white/50"></div>
+                <div className="h-4 w-[100px] rounded-full bg-stone-500/50"></div>
+              </CardHeader>
+              <CardContent className="flex-1 pb-0">
+                <div
+                  className="w-[200px] h-[200px] rounded-full"
+                  style={{ background: color }}
+                ></div>
+              </CardContent>
+              <CardFooter className="flex-col gap-2 text-sm">
+                <div className="h-4 w-[30px] rounded-full bg-stone-500/50"></div>
+                <div className="h-4 w-[100px] rounded-full bg-stone-500/50"></div>
+              </CardFooter>
+            </Card>
+          )}
         </div>
         <div className="w-full sm:mt-4">
           <div className="flex justify-between">
@@ -89,7 +165,14 @@ export default function CourseFormat({
             </span>
           </div>
           <div className="flex flex-col p-4 bg-lightCoffee/10 dark:bg-black/75 rounded-lg">
-            {lessonsWithStatus &&
+            {loading ? (
+              <>
+                <LoadingLesson color={color} />
+                <LoadingLesson color={color} />
+                <LoadingLesson color={color} />
+              </>
+            ) : (
+              lessonsWithStatus &&
               lessonsWithStatus.map((lesson) => (
                 <Lesson
                   {...lesson}
@@ -97,10 +180,47 @@ export default function CourseFormat({
                   courseName={name}
                   key={lesson.id}
                 />
-              ))}
+              ))
+            )}
           </div>
         </div>
       </div>
     </PageFormat>
   );
 }
+
+interface loadingLessonProps {
+  color: string;
+}
+
+const LoadingLesson = ({ color }: loadingLessonProps) => {
+  return (
+    <div className="animate-pulse flex gap-4 p-4 hover:bg-lightCream/50 dark:hover:bg-stone-900 rounded-md w-full">
+      <div
+        style={{ borderColor: color }}
+        className={cn(
+          `min-w-[55px] h-[55px] rounded-md overflow-hidden border bg-white dark:bg-darkGray`
+        )}
+      >
+        <div
+          style={{ color: color }}
+          className="text-5xl h-8 w-8 grow rounded-lg -rotate-12 translate-x-2 translate-y-2 group-hover:-rotate-0 duration-300"
+        ></div>
+      </div>
+      <div className="w-full">
+        <div className="flex flex-col">
+          <span
+            className={
+              "font-bold text-lg h-4 w-24 bg-black/50 dark:bg-white/50 rounded-full mb-2"
+            }
+          ></span>
+          <div className="w-full flex gap-2">
+            <div className="rounded-full bg-lightCaramel/50 text-white px-2 w-16 h-4"></div>
+            <div className="rounded-full bg-lightCaramel/50 text-white px-2 w-16 h-4"></div>
+          </div>
+        </div>
+      </div>
+      <div className="max-h flex items-center justify-center text-2xl text-lightCoffee/50 rounded-full w-4 h-4"></div>
+    </div>
+  );
+};
