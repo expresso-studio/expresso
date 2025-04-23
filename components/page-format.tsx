@@ -11,15 +11,18 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
 
 type BreadcrumbItem = { url?: string; name: string };
 
 interface Props {
+  className?: string;
   children: React.ReactNode;
   breadCrumbs: BreadcrumbItem[];
 }
 
 const PageFormat = React.memo<Props>(function Heading1({
+  className,
   children,
   breadCrumbs,
 }) {
@@ -43,13 +46,15 @@ const PageFormat = React.memo<Props>(function Heading1({
                   </div>
                 ) : (
                   <BreadcrumbPage key={i}>{breadCrumb.name}</BreadcrumbPage>
-                ),
+                )
               )}
             </BreadcrumbList>
           </Breadcrumb>
         </div>
       </header>
-      <main className="flex flex-col gap-4 px-10 overflow-hidden">
+      <main
+        className={cn("flex flex-col gap-4 px-10 overflow-hidden", className)}
+      >
         {children}
       </main>
     </>

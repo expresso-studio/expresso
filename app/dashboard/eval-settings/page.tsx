@@ -112,7 +112,7 @@ export default function Page() {
   };
 
   const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     if (e.target instanceof HTMLInputElement) {
       const { name, value, checked } = e.target;
@@ -148,14 +148,17 @@ export default function Page() {
     const query = new URLSearchParams(
       Object.entries(rest)
         .filter(([, v]) => v !== "")
-        .map(([key, value]) => [key, String(value)]),
+        .map(([key, value]) => [key, String(value)])
     ).toString();
     router.push(`/dashboard/evaluate?${query}`);
   };
 
   return (
-    <PageFormat breadCrumbs={[{ name: "Evaluation Settings" }]}>
-      <div className="flex flex-col min-h-screen px-4 items-center">
+    <PageFormat
+      breadCrumbs={[{ name: "Evaluation Settings" }]}
+      className="px-0"
+    >
+      <div className="flex flex-col min-h-screen px-16 items-center">
         <form className="w-full max-w-[800px] px-8 pb-8 pt-0 rounded-lg">
           <div className="mb-4">
             <label>
