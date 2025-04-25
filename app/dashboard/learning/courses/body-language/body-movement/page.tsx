@@ -23,7 +23,7 @@ export default function Page() {
   >(lessonObj);
   const { user, error, refreshToken } = useAuthUtils();
 
-  // If there's an auth error, try to refresh the token
+  // If there’s an auth error, try to refresh the token
   React.useEffect(() => {
     if (error) {
       console.error("Auth error in dashboard:", error);
@@ -54,7 +54,7 @@ export default function Page() {
         const data = await response.json();
         console.log(data);
 
-        // Find this specific lesson's status
+        // Find this specific lesson’s status
         const isLessonLeft = data.lessonsLeft.find(
           (leftLesson: LessonLeft) => leftLesson.lesson_name === lesson.name
         );
@@ -88,7 +88,7 @@ export default function Page() {
         <p className="mb-6">
           Your body speaks even when you don’t. Learning how to use body
           movement and nonverbal cues intentionally can significantly improve
-          how you're perceived—both in person and online.
+          how you’re perceived—both in person and online.
         </p>
 
         <div>
@@ -158,8 +158,8 @@ export default function Page() {
               looks more human.
             </li>
             <li>
-              <strong>Avoid "weathercaster hands":</strong> Diamond-shaped hands
-              seem robotic. Keep it fluid.
+              <strong>{"Avoid “weathercaster hands”:"}</strong> Diamond-shaped
+              hands seem robotic. Keep it fluid.
             </li>
           </ul>
         </div>
@@ -211,7 +211,7 @@ export default function Page() {
             Engaging in Q&A
           </h2>
           <p className="mb-6">
-            Great communicators don't just answer—they engage. During Q&A, focus
+            Great communicators don’t just answer—they engage. During Q&A, focus
             on answering open-ended questions with clarity and connection.
             Future iterations of this platform may even pull from current
             research to model effective response strategies.

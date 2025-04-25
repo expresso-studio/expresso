@@ -153,7 +153,7 @@ export default function Page() {
           {/* 💡 Mnemonic */}
           <div className="mnemonic my-6 p-5 border-l-4 border-lightCaramel bg-lightLatte">
             <p className="font-semibold text-lg mb-2 text-lightCaramel">
-              💡 "G.E.S.T.U.R.E." Model for Hand Gestures
+              {"“G.E.S.T.U.R.E.” Model for Hand Gestures"}
             </p>
             <ul className="list-disc pl-5 space-y-1">
               <li>
