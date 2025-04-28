@@ -5,7 +5,7 @@ import {
   SidebarProvider,
   Sidebar,
   SidebarContent,
-  useSidebar
+  useSidebar,
 } from "@/components/ui/sidebar";
 
 // Mock the mobile hook.
@@ -16,22 +16,22 @@ jest.mock("@/hooks/use-mobile", () => ({
 const { useIsMobile } = require("@/hooks/use-mobile");
 
 const TestToggleButton = () => {
-    const { toggleSidebar, openMobile } = useSidebar();
-    return (
-      <button 
-        onClick={toggleSidebar} 
-        data-testid="toggle-button"
-        data-open={openMobile}
-      >
-        Toggle Sidebar
-      </button>
-    );
+  const { toggleSidebar, openMobile } = useSidebar();
+  return (
+    <button
+      onClick={toggleSidebar}
+      data-testid="toggle-button"
+      data-open={openMobile}
+    >
+      Toggle Sidebar
+    </button>
+  );
 };
 
 describe("Mobile Sidebar variant", () => {
   beforeEach(() => {
     // Clear any previous renders that might affect document state
-    document.body.innerHTML = '';
+    document.body.innerHTML = "";
   });
 
   test("renders mobile variant using Sheet and SheetContent when isMobile is true", () => {
@@ -43,18 +43,21 @@ describe("Mobile Sidebar variant", () => {
       const originalModule = jest.requireActual("@/components/ui/sidebar");
       return {
         ...originalModule,
-        Sidebar: (props) => originalModule.Sidebar({ ...props, openMobile: true }),
+        Sidebar: (props) =>
+          originalModule.Sidebar({ ...props, openMobile: true }),
       };
     });
 
     render(
-      <SidebarProvider defaultOpen={true}> {/* Make sure the sidebar is opened by default */}
+      <SidebarProvider defaultOpen={true}>
+        {" "}
+        {/* Make sure the sidebar is opened by default */}
         <Sidebar side="left" data-testid="mobile-sidebar">
           <SidebarContent>
             <div>Mobile Sidebar Content</div>
           </SidebarContent>
         </Sidebar>
-      </SidebarProvider>
+      </SidebarProvider>,
     );
 
     // Allow the portal to render by using a small delay
@@ -81,29 +84,29 @@ describe("Mobile Sidebar variant", () => {
               <div>Mobile Sidebar Content</div>
             </SidebarContent>
           </Sidebar>
-        </SidebarProvider>
+        </SidebarProvider>,
       );
     });
 
     // Get the toggle button
     const toggleButton = screen.getByTestId("toggle-button");
-    
+
     // Initially the sidebar should be closed
     expect(toggleButton).toHaveAttribute("data-open", "false");
-    
+
     // Trigger the toggle function
     await act(async () => {
       fireEvent.click(toggleButton);
     });
-    
+
     // Now the sidebar should be open
     expect(toggleButton).toHaveAttribute("data-open", "true");
-    
+
     // Toggle it again
     await act(async () => {
       fireEvent.click(toggleButton);
     });
-    
+
     // Should be closed again
     expect(toggleButton).toHaveAttribute("data-open", "false");
   });

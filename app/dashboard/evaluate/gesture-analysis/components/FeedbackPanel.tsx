@@ -43,10 +43,10 @@ const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
                     item.type === "success"
                       ? "bg-green-800/30 text-green-300"
                       : item.type === "warning"
-                      ? "bg-yellow-800/30 text-yellow-300"
-                      : item.type === "error"
-                      ? "bg-red-800/30 text-red-300"
-                      : "bg-blue-800/30 text-blue-300"
+                        ? "bg-yellow-800/30 text-yellow-300"
+                        : item.type === "error"
+                          ? "bg-red-800/30 text-red-300"
+                          : "bg-blue-800/30 text-blue-300"
                   }`}
                 >
                   {item.message}

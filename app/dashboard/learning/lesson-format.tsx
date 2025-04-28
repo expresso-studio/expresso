@@ -10,7 +10,7 @@ import { LessonType } from "@/lib/types";
 import { Check, X } from "lucide-react";
 
 interface Props extends LessonType {
-  status: boolean;
+  status?: boolean;
   courseName: CourseNames;
   color: string;
   children: React.ReactNode;
@@ -77,7 +77,14 @@ export default function LessonFormat({
               ))}
             </div>
             <div className="flex gap-2">
-              Complete: {status ? <Check /> : <X />}
+              Complete:{" "}
+              {status === undefined ? (
+                <div className="mt-1 rounded-full w-6 h-4 bg-black/50 dark:bg-white/50 animate-pulse"></div>
+              ) : status ? (
+                <Check />
+              ) : (
+                <X />
+              )}
             </div>
           </div>
         </div>

@@ -24,8 +24,8 @@ export default function Recommendations({ loading, metrics, courses }: Props) {
   const incompleteMetrics: MetricType[] = metrics
     .filter((metric) =>
       courses.some((course) =>
-        course.topics.includes(MetricNameToDisplay[metric.name])
-      )
+        course.topics.includes(MetricNameToDisplay[metric.name]),
+      ),
     )
     .sort((a, b) => a.score - b.score)
     .slice(0, 3); // Get top 3 lowest values
@@ -34,14 +34,14 @@ export default function Recommendations({ loading, metrics, courses }: Props) {
   let recommendedCourses: (CourseType & CourseStatus)[] = courses.filter(
     (course) => {
       const relatedMetric = incompleteMetrics.find((metric) =>
-        course.topics.includes(MetricNameToDisplay[metric.name])
+        course.topics.includes(MetricNameToDisplay[metric.name]),
       );
       return relatedMetric != null && course.status < 100 ? course : null;
-    }
+    },
   );
 
   const beginnerCourse: (CourseType & CourseStatus) | undefined = courses.find(
-    (course) => course.name == CourseNames.Intro && course.status < 100
+    (course) => course.name == CourseNames.Intro && course.status < 100,
   );
 
   if (beginnerCourse) {

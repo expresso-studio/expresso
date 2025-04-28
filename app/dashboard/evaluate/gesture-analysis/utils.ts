@@ -14,7 +14,7 @@ export const formatTime = (seconds: number): string => {
 export const smoothUpdate = (
   currentValue: number,
   newValue: number,
-  sensitivity: number = 0.05
+  sensitivity: number = 0.05,
 ): number => {
   const delta = newValue - currentValue;
   const maxChange = sensitivity;
@@ -26,7 +26,7 @@ export const smoothUpdate = (
 export const calculateMovement = (
   current?: PoseLandmark,
   previous?: PoseLandmark,
-  sensitivity: number = 1
+  sensitivity: number = 1,
 ): number => {
   if (
     !current?.visibility ||
@@ -40,7 +40,7 @@ export const calculateMovement = (
   // Calculate distance moved (scaled by sensitivity)
   const movement = Math.sqrt(
     Math.pow((current.x - previous.x) * sensitivity, 2) +
-      Math.pow((current.y - previous.y) * sensitivity, 2)
+      Math.pow((current.y - previous.y) * sensitivity, 2),
   );
 
   // Apply a more balanced scaling to keep movements in the middle range more often

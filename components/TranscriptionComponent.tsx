@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
+import { FillerStats } from "@/lib/types";
 
 interface TranscriptionComponentProps {
   onRecordingStateChange: (recording: boolean) => void;
   onTranscriptUpdate?: (transcript: string) => void;
+  onFillerStats: (stats: FillerStats) => void;
 }
 
 const FILLER_WORDS = new Set([
@@ -22,6 +23,7 @@ const FILLER_WORDS = new Set([
 function TranscriptionComponent({
   onRecordingStateChange,
   onTranscriptUpdate,
+  onFillerStats,
 }: TranscriptionComponentProps) {
   const [microphone, setMicrophone] = useState<MediaRecorder | null>(null);
   const [transcript, setTranscript] = useState("");
@@ -37,7 +39,6 @@ function TranscriptionComponent({
   const [sessionWPM, setSessionWPM] = useState<number>(0);
   const [maxWPM, setMaxWPM] = useState<number | null>(null);
   const [minWPM, setMinWPM] = useState<number | null>(null);
-  const { user } = useAuth0();
 
   // Refs for stable references
   const socketRef = useRef<WebSocket | null>(null);
@@ -75,6 +76,18 @@ function TranscriptionComponent({
       onTranscriptUpdate(transcript);
     }
   }, [transcript, onTranscriptUpdate]);
+
+  useEffect(() => {
+    if (onFillerStats && !isRecording) {
+      onFillerStats({
+        fillerWordCount,
+        fillerWordsStats,
+        maxWPM,
+        minWPM,
+        sessionWPM,
+      });
+    }
+  }, [isRecording]);
 
   // Update recording ref when state changes
   useEffect(() => {
@@ -114,10 +127,10 @@ function TranscriptionComponent({
         setSessionWPM(currentWPM);
 
         setMaxWPM((prev) =>
-          prev === null || currentWPM > prev ? currentWPM : prev
+          prev === null || currentWPM > prev ? currentWPM : prev,
         );
         setMinWPM((prev) =>
-          prev === null || currentWPM < prev ? currentWPM : prev
+          prev === null || currentWPM < prev ? currentWPM : prev,
         );
       }
     }
@@ -145,7 +158,7 @@ function TranscriptionComponent({
       }
 
       const ws = new WebSocket(
-        "wss://transcriptionwebsocket-production.up.railway.app"
+        "wss://transcriptionwebsocket-production.up.railway.app",
       );
 
       // Set connection timeout
@@ -298,26 +311,6 @@ function TranscriptionComponent({
       setMicrophone(null);
       setIsRecording(false);
       onRecordingStateChange(false);
-
-      try {
-        // Save the filler word stats
-        const response = await fetch("/api/fillerwords", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            user: user?.sub,
-            fillerWordCount: fillerWordCount,
-            fillerWordsStats: fillerWordsStats,
-            maxWPM: maxWPM,
-            minWPM: minWPM,
-            sessionWPM: sessionWPM,
-          }),
-        });
-        const data = await response.json();
-        console.log("Filler stats posted successfully:", data);
-      } catch (error) {
-        console.error("Error posting filler stats:", error);
-      }
     } catch (error) {
       console.error("Error stopping recording:", error);
     }
@@ -353,16 +346,16 @@ function TranscriptionComponent({
               isConnecting
                 ? "bg-gray-500 cursor-wait"
                 : isRecording
-                ? "bg-red-500 hover:bg-red-600"
-                : "bg-[#936648] hover:bg-[#805946]"
+                  ? "bg-red-500 hover:bg-red-600"
+                  : "bg-[#936648] hover:bg-[#805946]"
             } 
             text-white transition-colors`}
         >
           {isConnecting
             ? "Connecting..."
             : isRecording
-            ? "Stop Recording"
-            : "Start Recording"}
+              ? "Stop Recording"
+              : "Start Recording"}
         </button>
       </div>
 

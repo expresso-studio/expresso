@@ -43,7 +43,7 @@ const PageFormat = React.memo<Props>(function Heading1({
                   </div>
                 ) : (
                   <BreadcrumbPage key={i}>{breadCrumb.name}</BreadcrumbPage>
-                )
+                ),
               )}
             </BreadcrumbList>
           </Breadcrumb>

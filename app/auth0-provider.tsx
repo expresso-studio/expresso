@@ -44,12 +44,16 @@ export default function AuthProvider({
       domain={domain}
       clientId={clientId}
       authorizationParams={{
-        redirect_uri: typeof window !== "undefined" ? window.location.origin : "",
+        redirect_uri:
+          typeof window !== "undefined" ? window.location.origin : "",
       }}
       onRedirectCallback={onRedirectCallback}
       cacheLocation="localstorage" // Use localStorage instead of memory for better persistence
       useRefreshTokens={true} // Enable refresh tokens
-      skipRedirectCallback={typeof window !== "undefined" && window.location.pathname === "/api/auth/callback"}
+      skipRedirectCallback={
+        typeof window !== "undefined" &&
+        window.location.pathname === "/api/auth/callback"
+      }
     >
       {children}
     </Auth0Provider>

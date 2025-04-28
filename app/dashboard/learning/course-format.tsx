@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Heading1 from "@/components/heading-1";
 import PageFormat from "@/components/page-format";
 import { CourseNameToLink } from "@/lib/constants";
-import { CourseType, LessonStatus, LessonType } from "@/lib/types";
+import { CourseType, LessonLeft, LessonStatus, LessonType } from "@/lib/types";
 import Lesson from "@/components/lesson";
 import { outfit } from "@/app/fonts";
 import CourseProgress from "./course-progress";
@@ -14,17 +14,14 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { useAuthUtils } from "@/hooks/useAuthUtils";
 
 interface Props extends CourseType {
   status?: number;
 }
 
-interface LessonLeft {
-  lesson_id: string;
-  lesson_name: string;
-}
-
 export default function CourseFormat({
+  id,
   icon,
   color,
   name,
@@ -32,6 +29,16 @@ export default function CourseFormat({
   status,
   lessons,
 }: Props) {
+  const { user, error, refreshToken } = useAuthUtils();
+
+  // If there's an auth error, try to refresh the token
+  React.useEffect(() => {
+    if (error) {
+      console.error("Auth error in dashboard:", error);
+      refreshToken();
+    }
+  }, [error, refreshToken]);
+
   const Icon = icon;
   const rotates = [
     "-rotate-12",
@@ -45,14 +52,13 @@ export default function CourseFormat({
   const [lessonsLeft, setLessonsLeft] = useState<LessonLeft[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Get the current user ID - replace this with your actual method of getting the user ID
-  const userId = "current-user-id"; // This should come from your auth context or similar
-
   useEffect(() => {
     const fetchLessonsLeft = async () => {
       try {
         // Assume the course ID is available or can be derived
-        const courseId = "current-course-id"; // Replace with actual course ID
+        const courseId = id;
+        const userId = user?.sub;
+        console.log(userId);
 
         const response = await fetch(
           `/api/course/lessons-left?userId=${userId}&courseId=${courseId}`
@@ -62,6 +68,8 @@ export default function CourseFormat({
         }
 
         const data = await response.json();
+        console.log("data.lessonsLeft");
+        console.log(data.lessonsLeft);
         setLessonsLeft(data.lessonsLeft);
       } catch (error) {
         console.error("Error fetching lessons left:", error);
@@ -70,20 +78,22 @@ export default function CourseFormat({
       }
     };
 
-    fetchLessonsLeft();
-  }, []);
+    if (user?.sub) {
+      fetchLessonsLeft();
+    }
+  }, [user?.sub, id]);
 
   const lessonsWithStatus: (LessonType & LessonStatus)[] = lessons.map(
     (lesson) => {
       // Check if this lesson is in the lessonsLeft array
-      const isLessonLeft = lessonsLeft.some(
+      const isLessonLeft = lessonsLeft.find(
         (leftLesson) => leftLesson.lesson_name === lesson.name
       );
 
-      // If the lesson is not in lessonsLeft, it means it's completed
+      // If the lesson is in lessonsLeft, it means it's not completed
       return {
         ...lesson,
-        status: isLessonLeft,
+        status: isLessonLeft !== undefined,
       };
     }
   );
@@ -185,7 +195,7 @@ interface loadingLessonProps {
 
 const LoadingLesson = ({ color }: loadingLessonProps) => {
   return (
-    <div className="animate-pulse flex gap-4 p-4 hover:bg-lightCream/50 dark:hover:bg-stone-900 rounded-md w-full group cursor-pointer">
+    <div className="animate-pulse flex gap-4 p-4 hover:bg-lightCream/50 dark:hover:bg-stone-900 rounded-md w-full">
       <div
         style={{ borderColor: color }}
         className={cn(

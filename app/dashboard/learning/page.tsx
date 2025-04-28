@@ -100,6 +100,8 @@ export default function Page() {
 
         // Wait for all progress fetches to complete
         const coursesWithProgressData = await Promise.all(progressPromises);
+        console.log("coursesWithProgressData");
+        console.log(coursesWithProgressData);
         setCoursesWithStatus(coursesWithProgressData);
       } catch (err) {
         console.error("Error fetching course progress:", err);

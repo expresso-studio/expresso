@@ -1,12 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { CourseNames, CourseStatuses } from "@/lib/constants";
+import { CourseNames } from "@/lib/constants";
 import CourseFormat from "../../course-format";
 import { CourseStatus, CourseType } from "@/lib/types";
 import { Courses } from "@/lib/constants";
 import { useAuthUtils } from "@/hooks/useAuthUtils";
-import Loading from "@/components/loading";
 
 const defaultCourse: CourseType =
   Courses.find((course) => course.name == CourseNames.HeadLanguage) ??
@@ -24,7 +23,6 @@ export default function Page() {
     }
   }, [error, refreshToken]);
 
-  const [loadingCourses, setLoadingCourses] = React.useState(true);
   const [course, setCourse] = React.useState<CourseType & CourseStatus>({
     ...defaultCourse,
     status: -1,
@@ -36,8 +34,6 @@ export default function Page() {
       if (!user?.sub) return;
 
       try {
-        setLoadingCourses(true);
-
         // Create a copy of courses to update
         const updatedCourses = [...Courses];
 
@@ -71,8 +67,6 @@ export default function Page() {
         setCourse(course);
       } catch (err) {
         console.error("Error fetching course progress:", err);
-      } finally {
-        setLoadingCourses(false);
       }
     }
 

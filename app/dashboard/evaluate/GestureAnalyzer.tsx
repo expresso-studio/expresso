@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import EvaluateVideo, { PoseResults } from "./EvaluateVideo";
 import GestureAnalysis from "./gesture-analysis/GestureAnalysis";
 import AnalysisReport from "./AnalysisReport";
-import { GestureMetrics, AnalysisData } from "@/lib/types";
+import { GestureMetrics, AnalysisData, FillerStats } from "@/lib/types";
 import { Eye, EyeOff, BarChart2 } from "lucide-react";
 import { OPTIMAL_RANGES } from "./gesture-analysis";
 
@@ -12,14 +12,16 @@ interface GestureAnalyzerProps {
   isRecording: boolean;
   // onStopRecording: () => void;
   transcript: string;
-  developerMode?: boolean;
+  // developerMode?: boolean;
+  fillerStats: FillerStats | null;
 }
 
 const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
   isRecording,
   // onStopRecording,
   transcript,
-  developerMode = true,
+  // developerMode = false, // Set default to false to hide developer mode
+  fillerStats,
 }) => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -93,7 +95,7 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
         value: currentMetrics.GestureVariety,
         status: getMetricStatus(
           "GestureVariety",
-          currentMetrics.GestureVariety
+          currentMetrics.GestureVariety,
         ),
       },
       EyeContact: {
@@ -101,7 +103,7 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
         status: getMetricStatus("EyeContact", currentMetrics.EyeContact),
       },
       OverallScore: currentMetrics.OverallScore,
-      sessionDuration,
+      sessionDuration: sessionDuration,
       transcript: transcriptRef.current || "No transcript available.",
     };
 
@@ -164,18 +166,18 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
         timerRef.current = null;
       }
     };
-  }, [isRecording, generateAnalysisReport]);
+  }, [isRecording]);
 
   // Callback function to receive metrics from GestureAnalysis
   const handleMetricsUpdate = useCallback(
     (metrics: GestureMetrics) => setCurrentMetrics(metrics),
-    [setCurrentMetrics]
+    [setCurrentMetrics],
   );
 
   // Function to handle the recorded video blob
   const handleVideoRecorded = useCallback(
     (videoBlob: Blob) => setRecordedVideo(videoBlob),
-    [setRecordedVideo]
+    [setRecordedVideo],
   );
 
   // Initialize MediaPipe script
@@ -226,21 +228,25 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
         </div>
       )}
 
-      {/* Control buttons in top left corner - smaller and grouped */}
+      {/* Control buttons in top left corner - enhanced with better visual feedback */}
       <div className="absolute top-5 left-5 z-40 flex space-x-2">
         {/* Toggle Skeleton Button */}
         <button
           onClick={() => setShowSkeleton(!showSkeleton)}
-          className="p-2 bg-gray-800/80 text-white rounded-full hover:bg-gray-700 transition-colors"
+          className={`p-2 ${
+            showSkeleton ? "bg-blue-600" : "bg-gray-800/80"
+          } text-white rounded-full hover:bg-gray-700 transition-colors flex items-center justify-center`}
           title={showSkeleton ? "Hide Skeleton" : "Show Skeleton"}
         >
           {showSkeleton ? <EyeOff size={16} /> : <Eye size={16} />}
         </button>
 
-        {/* Toggle Analysis Panel Button */}
+        {/* Toggle Analysis Panel Button - Enhanced with active state styling */}
         <button
           onClick={() => setShowAnalysisPanel(!showAnalysisPanel)}
-          className="p-2 bg-gray-800/80 text-white rounded-full hover:bg-gray-700 transition-colors"
+          className={`p-2 ${
+            showAnalysisPanel ? "bg-blue-600" : "bg-gray-800/80"
+          } text-white rounded-full hover:bg-gray-700 transition-colors flex items-center justify-center`}
           title={showAnalysisPanel ? "Hide Analysis" : "Show Analysis"}
         >
           <BarChart2 size={16} />
@@ -254,7 +260,9 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
             poseLandmarks={poseResults.poseLandmarks}
             isRecording={isRecording}
             onMetricsUpdate={handleMetricsUpdate}
-            developerMode={developerMode}
+            // developerMode={developerMode}
+            // Pass the showAnalysisPanel state to GestureAnalysis
+            isPanelVisible={showAnalysisPanel}
           />
         </div>
       )}
@@ -266,7 +274,9 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
             poseLandmarks={poseResults.poseLandmarks}
             isRecording={isRecording}
             onMetricsUpdate={handleMetricsUpdate}
-            developerMode={developerMode}
+            // developerMode={developerMode}
+            // Pass the showAnalysisPanel state to GestureAnalysis
+            isPanelVisible={showAnalysisPanel}
           />
         </div>
       )}
@@ -277,6 +287,7 @@ const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
         onClose={() => setShowReport(false)}
         analysisData={analysisData}
         recordedVideo={recordedVideo}
+        fillerStats={fillerStats}
       />
 
       {/* Transcript Captions */}

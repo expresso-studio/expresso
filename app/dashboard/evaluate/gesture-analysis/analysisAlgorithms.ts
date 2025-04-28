@@ -71,7 +71,7 @@ export const analyzePosture = (landmarks?: PoseLandmark[]): number => {
 // Calculate body movement based on shoulders and hips
 export const calculateBodyMovement = (
   landmarks?: PoseLandmark[],
-  prevLandmarks?: PoseLandmark[]
+  prevLandmarks?: PoseLandmark[],
 ): number => {
   if (!landmarks || !prevLandmarks) return 0.5;
 
@@ -130,7 +130,7 @@ export const calculateBodyMovement = (
   // Calculate movement between frames
   const movement = Math.sqrt(
     Math.pow((torsoCenter.x - prevTorsoCenter.x) * 15, 2) +
-      Math.pow((torsoCenter.y - prevTorsoCenter.y) * 15, 2)
+      Math.pow((torsoCenter.y - prevTorsoCenter.y) * 15, 2),
   );
 
   // Scale the movement to be more sensitive to small changes
@@ -140,7 +140,7 @@ export const calculateBodyMovement = (
 // Calculate hand symmetry (how similarly both hands are being used)
 export const calculateHandSymmetry = (
   landmarks?: PoseLandmark[],
-  handPositionsBuffer?: { left: PoseLandmark; right: PoseLandmark }[]
+  handPositionsBuffer?: { left: PoseLandmark; right: PoseLandmark }[],
 ): number => {
   if (!landmarks || !handPositionsBuffer || handPositionsBuffer.length < 5)
     return 0.5;
@@ -189,12 +189,12 @@ export const calculateHandSymmetry = (
   // Check current arm positions
   const leftArmExtension = Math.sqrt(
     Math.pow(leftWrist.x - leftShoulder.x, 2) +
-      Math.pow(leftWrist.y - leftShoulder.y, 2)
+      Math.pow(leftWrist.y - leftShoulder.y, 2),
   );
 
   const rightArmExtension = Math.sqrt(
     Math.pow(rightWrist.x - rightShoulder.x, 2) +
-      Math.pow(rightWrist.y - rightShoulder.y, 2)
+      Math.pow(rightWrist.y - rightShoulder.y, 2),
   );
 
   // If both arms are close to body, symmetry is less relevant
@@ -227,7 +227,7 @@ export const calculateHandSymmetry = (
 // Calculate gesture variety (are they using the same gestures repeatedly)
 export const calculateGestureVariety = (
   landmarks?: PoseLandmark[],
-  handPositionsBuffer?: { left: PoseLandmark; right: PoseLandmark }[]
+  handPositionsBuffer?: { left: PoseLandmark; right: PoseLandmark }[],
 ): number => {
   if (!landmarks || !handPositionsBuffer || handPositionsBuffer.length < 10)
     return 0.5;
@@ -240,10 +240,10 @@ export const calculateGestureVariety = (
   handPositionsBuffer.forEach((frame) => {
     // Quantize positions to grid cells
     const leftRegion = `${Math.floor(frame.left.x * gridSize)}_${Math.floor(
-      frame.left.y * gridSize
+      frame.left.y * gridSize,
     )}`;
     const rightRegion = `${Math.floor(frame.right.x * gridSize)}_${Math.floor(
-      frame.right.y * gridSize
+      frame.right.y * gridSize,
     )}`;
 
     regions.add(leftRegion);
@@ -297,7 +297,7 @@ export const calculateEyeContact = (landmarks?: PoseLandmark[]): number => {
 
   // Calculate distance between eyes (for perspective/facing detection)
   const eyeDistance = Math.sqrt(
-    Math.pow(rightEye.x - leftEye.x, 2) + Math.pow(rightEye.y - leftEye.y, 2)
+    Math.pow(rightEye.x - leftEye.x, 2) + Math.pow(rightEye.y - leftEye.y, 2),
   );
 
   // When looking directly at camera, eyes should be more separated
@@ -311,14 +311,14 @@ export const calculateEyeContact = (landmarks?: PoseLandmark[]): number => {
       1,
       horizontalAlignment * 0.4 +
         eyeHorizontalAlignment * 0.3 +
-        facingScore * 0.3
-    )
+        facingScore * 0.3,
+    ),
   );
 };
 
 // Generate feedback messages based on current metrics
 export const generateFeedback = (
-  metrics: GestureMetrics
+  metrics: GestureMetrics,
 ): GestureFeedback[] => {
   const feedback: GestureFeedback[] = [];
 

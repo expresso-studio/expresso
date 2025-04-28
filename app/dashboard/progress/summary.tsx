@@ -80,7 +80,7 @@ const Summary = React.memo<Props>(function Summary({ short }) {
       try {
         const res = await fetch(
           `/api/report?user=${encodeURIComponent(user?.sub || "")}`,
-          { cache: "no-store" }
+          { cache: "no-store" },
         );
         if (!res.ok) {
           throw new Error("Failed to fetch report data");
@@ -148,7 +148,7 @@ const Summary = React.memo<Props>(function Summary({ short }) {
                   <span
                     style={{
                       color: getWordColorHex(
-                        getMetricStatus(metric.name, metric.score)
+                        getMetricStatus(metric.name, metric.score),
                       ),
                     }}
                   >
@@ -169,7 +169,7 @@ const Summary = React.memo<Props>(function Summary({ short }) {
                     <div className="mt-2 w-full bg-gray-300 dark:bg-gray-700 rounded-full h-2.5">
                       <div
                         className={`h-2.5 rounded-full ${getWordColorClass(
-                          getMetricStatus(metric.name, metric.score)
+                          getMetricStatus(metric.name, metric.score),
                         )}`}
                         style={{ width: `${metric.score * 100}%` }}
                       ></div>

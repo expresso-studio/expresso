@@ -25,7 +25,7 @@ const TopFiller = React.memo<Props>(function TopFiller({ short }) {
 
       try {
         const response = await fetch(
-          `/api/fillerwords/top?userId=${encodeURIComponent(user.sub)}`
+          `/api/fillerwords/top?userId=${encodeURIComponent(user.sub)}`,
         );
         if (!response.ok) {
           throw new Error("Failed to fetch filler words");
@@ -34,7 +34,7 @@ const TopFiller = React.memo<Props>(function TopFiller({ short }) {
         const data = await response.json();
         const words = data.fillerWords.map(
           (item: { filler_word: string; total_count: string }) =>
-            item.filler_word
+            item.filler_word,
         );
         setFillerWords(words.slice(0, 3));
       } catch (error) {
@@ -49,7 +49,7 @@ const TopFiller = React.memo<Props>(function TopFiller({ short }) {
     <div
       className={cn(
         "w-full rounded-lg relative overflow-hidden py-4 px-6",
-        "bg-lightLatte dark:bg-darkCoffee"
+        "bg-lightLatte dark:bg-darkCoffee",
       )}
     >
       <div className="pb-4">Most frequent filler words</div>
@@ -60,7 +60,7 @@ const TopFiller = React.memo<Props>(function TopFiller({ short }) {
               <div
                 className={cn(
                   "flex rounded-md items-start gap-1 group",
-                  outfit.className
+                  outfit.className,
                 )}
                 key={i}
               >
@@ -71,7 +71,7 @@ const TopFiller = React.memo<Props>(function TopFiller({ short }) {
                   {fillerWord}
                 </span>
               </div>
-            )
+            ),
         )}
       </div>
     </div>

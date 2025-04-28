@@ -51,13 +51,25 @@ const Course = React.memo<Props>(function Course({
               {lessons.length} lesson{lessons.length > 1 ? "s" : ""}
             </span>
           </div>
-          <Slider
-            className={status !== undefined ? "" : "animate-pulse"}
-            disabled={true}
-            defaultValue={[status !== undefined ? status : 100]}
-            max={100}
-            step={1}
-          />
+          {status !== undefined ? (
+            <>
+              <Slider
+                disabled={true}
+                defaultValue={[status]}
+                max={100}
+                step={1}
+              />
+              <></>
+            </>
+          ) : (
+            <Slider
+              className="animate-pulse"
+              disabled={true}
+              defaultValue={[100]}
+              max={100}
+              step={1}
+            />
+          )}
         </div>
       </div>
     </Link>

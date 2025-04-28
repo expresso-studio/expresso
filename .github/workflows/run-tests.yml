@@ -1,9 +1,9 @@
 name: Run Jest Tests
 on:
   push:
-    branches: [ testing ]
+    branches: [testing]
   pull_request:
-    branches: [ testing ]
+    branches: [testing]
 
 jobs:
   test:
@@ -22,8 +22,8 @@ jobs:
         run: npm install
 
       - name: Run Tests
-        run : npm test
-      
+        run: npm test
+
       - name: Upload Test Results
         if: always()
         uses: actions/upload-artifact@v4

@@ -39,6 +39,11 @@ export type LessonStatus = {
   status: boolean;
 };
 
+export type LessonLeft = {
+  lesson_id: number;
+  lesson_name: string;
+};
+
 export type MetricType = {
   metric_id: MetricIds;
   name: MetricNames;
@@ -127,4 +132,12 @@ export interface AnalysisData {
   OverallScore: number;
   sessionDuration: number;
   transcript: string;
+}
+
+export interface FillerStats {
+  fillerWordCount: number;
+  fillerWordsStats: { [word: string]: number };
+  maxWPM: number | null;
+  minWPM: number | null;
+  sessionWPM: number;
 }

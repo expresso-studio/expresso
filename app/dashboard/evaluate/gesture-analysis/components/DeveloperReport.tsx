@@ -53,7 +53,7 @@ const DeveloperReport: React.FC<DeveloperReportProps> = ({
   // Calculate the number of valid landmarks
   const validLandmarks = poseLandmarks.filter(
     (landmark) =>
-      landmark?.visibility !== undefined && landmark.visibility > 0.5
+      landmark?.visibility !== undefined && landmark.visibility > 0.5,
   ).length;
 
   // Calculate the average visibility of all landmarks
@@ -61,7 +61,7 @@ const DeveloperReport: React.FC<DeveloperReportProps> = ({
     poseLandmarks.length > 0
       ? poseLandmarks.reduce(
           (sum, landmark) => sum + (landmark?.visibility ?? 0),
-          0
+          0,
         ) / poseLandmarks.length
       : 0;
 
@@ -202,7 +202,7 @@ const DeveloperReport: React.FC<DeveloperReportProps> = ({
                     <td className="text-right">
                       {calculateCorrelation(
                         metrics.HandMovement,
-                        metrics.HeadMovement
+                        metrics.HeadMovement,
                       ).toFixed(2)}
                     </td>
                   </tr>
@@ -211,7 +211,7 @@ const DeveloperReport: React.FC<DeveloperReportProps> = ({
                     <td className="text-right">
                       {calculateCorrelation(
                         metrics.BodyMovement,
-                        metrics.Posture
+                        metrics.Posture,
                       ).toFixed(2)}
                     </td>
                   </tr>
@@ -220,7 +220,7 @@ const DeveloperReport: React.FC<DeveloperReportProps> = ({
                     <td className="text-right">
                       {calculateCorrelation(
                         metrics.EyeContact,
-                        metrics.Posture
+                        metrics.Posture,
                       ).toFixed(2)}
                     </td>
                   </tr>
@@ -369,8 +369,8 @@ const LandmarkVisibility: React.FC<{
               visibility > 0.7
                 ? "bg-green-500"
                 : visibility > 0.5
-                ? "bg-yellow-500"
-                : "bg-red-500"
+                  ? "bg-yellow-500"
+                  : "bg-red-500"
             }`}
             style={{ width: `${visibility * 100}%` }}
           />

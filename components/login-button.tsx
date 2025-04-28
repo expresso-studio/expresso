@@ -8,14 +8,19 @@ export default function LoginButton() {
   const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
 
   return isAuthenticated ? (
-    <LoginButtonUI onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
+    <LoginButtonUI
+      onClick={() =>
+        logout({ logoutParams: { returnTo: window.location.origin } })
+      }
+    >
       Log Out
     </LoginButtonUI>
   ) : (
-    <LoginButtonUI className = "flex items-center gap-2" onClick={() => loginWithRedirect()}>
-      <span className = "text-2xl">
-        Start Here
-      </span>
+    <LoginButtonUI
+      className="flex items-center gap-2"
+      onClick={() => loginWithRedirect()}
+    >
+      <span className="text-2xl">Start Here</span>
       <ChevronRight />
     </LoginButtonUI>
   );

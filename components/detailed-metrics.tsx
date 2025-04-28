@@ -22,7 +22,7 @@ const DetailedMetrics = ({ analysisData, scroll }: Props) => {
       <div
         className={cn(
           "grid grid-cols-1 gap-4",
-          scroll && "max-h-[600px] overflow-y-scroll"
+          scroll && "max-h-[600px] overflow-y-scroll",
         )}
       >
         {Object.entries(analysisData).map(([key, value]) => {

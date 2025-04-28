@@ -4,12 +4,18 @@ import React, { Suspense, useState } from "react";
 import GestureAnalyzer from "./GestureAnalyzer";
 import TranscriptionComponent from "@/components/TranscriptionComponent";
 import ProtectedRoute from "@/components/protected-route";
+import { FillerStats } from "./gesture-analysis";
 
 export default function Page() {
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState("");
-  // const [isDeveloperMode, setIsDeveloperMode] = useState(false);
+  const [fillerStats, setFillerStats] = useState<FillerStats | null>(null);
   const [showTranscript, setShowTranscript] = useState(true);
+
+  // Handle filler stats from TranscriptionComponent
+  const handleFillerStats = (stats: FillerStats) => {
+    setFillerStats(stats);
+  };
 
   // Handle recording state changes from the TranscriptionComponent
   const handleRecordingStateChange = (recording: boolean) => {
@@ -73,6 +79,7 @@ export default function Page() {
           <GestureAnalyzer
             isRecording={isRecording}
             transcript={transcript}
+            fillerStats={fillerStats}
             // developerMode={isDeveloperMode}
           />
         </Suspense>
@@ -81,6 +88,7 @@ export default function Page() {
           <TranscriptionComponent
             onRecordingStateChange={handleRecordingStateChange}
             onTranscriptUpdate={handleTranscriptUpdate}
+            onFillerStats={handleFillerStats} // Pass filler stats handler
           />
         </div>
       </div>
