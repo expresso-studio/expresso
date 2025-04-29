@@ -7,6 +7,11 @@ interface Props {
   analysisData: AnalysisData;
 }
 
+/**
+ * Renders a section with key recommendations based on the analysis data.
+ * @param props - The props for the KeyRecommendations component.
+ * @returns The rendered key recommendations section.
+ */
 const KeyRecommendations = ({ analysisData }: Props) => {
   const recommendations = generateRecommendations(analysisData);
 

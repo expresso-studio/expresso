@@ -10,6 +10,11 @@ interface Props extends CourseType {
   status?: number;
 }
 
+/**
+ * Renders a course card with an icon, name, status, and number of lessons.
+ * @param props - The props for the Course component.
+ * @returns The rendered course card.
+ */
 const Course = React.memo<Props>(function Course({
   icon,
   color,

@@ -20,6 +20,11 @@ const FILLER_WORDS = new Set([
   "like",
 ]);
 
+/**
+ * Renders a transcription component that handles audio input and transcription.
+ * @param props - The props for the TranscriptionComponent.
+ * @returns The rendered transcription component.
+ */
 function TranscriptionComponent({
   onRecordingStateChange,
   onTranscriptUpdate,

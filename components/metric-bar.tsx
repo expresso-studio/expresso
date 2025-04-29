@@ -9,6 +9,11 @@ interface Props {
   live?: boolean;
 }
 
+/**
+ * Renders a bar chart to visualize a metric's value within its optimal range.
+ * @param props - The props for the MetricBar component.
+ * @returns The rendered metric bar chart.
+ */
 const MetricBar = React.memo(function MetricBarFunction({
   name,
   metric,

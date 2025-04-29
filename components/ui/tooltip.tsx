@@ -7,6 +7,11 @@ import { cn } from "@/lib/utils";
 
 const TooltipProvider = TooltipPrimitive.Provider;
 
+/**
+ * Renders a tooltip.
+ * @param props - The props for the Tooltip component.
+ * @returns The rendered tooltip component.
+ */
 const Tooltip = TooltipPrimitive.Root;
 
 const TooltipTrigger = TooltipPrimitive.Trigger;

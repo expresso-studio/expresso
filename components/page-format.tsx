@@ -19,6 +19,11 @@ interface Props {
   breadCrumbs: BreadcrumbItem[];
 }
 
+/**
+ * Renders a page layout with a header containing breadcrumbs and a main content area.
+ * @param props - The props for the PageFormat component.
+ * @returns The rendered page layout.
+ */
 const PageFormat = React.memo<Props>(function Heading1({
   children,
   breadCrumbs,

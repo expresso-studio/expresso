@@ -66,6 +66,10 @@ const navMain: NavItemType[] = [
   },
 ];
 
+/**
+ * Renders the main navigation menu.
+ * @returns The rendered main navigation menu.
+ */
 export function NavMain() {
   const pathname = usePathname() ?? "";
 

@@ -10,6 +10,11 @@ interface Props {
   scroll?: boolean;
 }
 
+/**
+ * Renders a section with detailed metrics for the analysis data.
+ * @param props - The props for the DetailedMetrics component.
+ * @returns The rendered detailed metrics section.
+ */
 const DetailedMetrics = ({ analysisData, scroll }: Props) => {
   return (
     <div className="bg-white dark:bg-stone-800 mt-6 rounded-lg p-4">

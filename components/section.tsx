@@ -12,6 +12,11 @@ interface Props {
   children?: React.ReactNode;
 }
 
+/**
+ * Renders a section with a title and content.
+ * @param props - The props for the Section component.
+ * @returns The rendered section.
+ */
 const Section = React.memo<Props>(function Section({
   id,
   title,

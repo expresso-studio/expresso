@@ -7,6 +7,11 @@ import { X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * Renders a sheet with various sub-components.
+ * @param props - The props for the Sheet component.
+ * @returns The rendered sheet component.
+ */
 const Sheet = SheetPrimitive.Root;
 
 const SheetTrigger = SheetPrimitive.Trigger;

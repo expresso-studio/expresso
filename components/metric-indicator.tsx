@@ -14,6 +14,11 @@ interface Props {
   metric: MetricData;
 }
 
+/**
+ * Renders a metric indicator with a name, value, status, and explanation.
+ * @param props - The props for the MetricIndicator component.
+ * @returns The rendered metric indicator.
+ */
 const MetricIndicator = ({ name, metric }: Props) => {
   // Get optimal range from constants if available
   const optimalRange = OPTIMAL_RANGES[name];

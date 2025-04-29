@@ -8,6 +8,11 @@ interface Props {
   children: React.ReactNode;
 }
 
+/**
+ * Renders a heading with a specific style.
+ * @param props - The props for the Heading1 component.
+ * @returns The rendered heading.
+ */
 const Heading1 = React.memo<Props>(function Heading1({
   id,
   className,

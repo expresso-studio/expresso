@@ -6,6 +6,11 @@ import { Check, ChevronDown, ChevronUp } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * Renders a select input with various sub-components.
+ * @param props - The props for the Select component.
+ * @returns The rendered select component.
+ */
 const Select = SelectPrimitive.Root;
 
 const SelectGroup = SelectPrimitive.Group;
