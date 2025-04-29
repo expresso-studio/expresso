@@ -2,6 +2,9 @@
 
 Expresso is a web application for practicing and improving public speaking skills. It provides a platform for users to record and evaluate their presentations, track their progress, and receive personalized recommendations for improvement.
 
+Link to Deployed Website: https://expresso-ruddy.vercel.app/
+[![GitHub deployments](https://img.shields.io/github/deployments/peicasey/expresso/production?style=flat-square&label=vercel%20deployment)](https://expresso-ruddy.vercel.app/)
+
 ## Getting Started
 
 To get started with Expresso, follow these steps:
