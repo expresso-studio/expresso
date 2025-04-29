@@ -6,6 +6,11 @@ import { Check, ChevronRight, Circle } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * Renders a dropdown menu with various sub-components.
+ * @param props - The props for the DropdownMenu component.
+ * @returns The rendered dropdown menu component.
+ */
 const DropdownMenu = DropdownMenuPrimitive.Root;
 
 const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;

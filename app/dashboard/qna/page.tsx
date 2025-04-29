@@ -33,6 +33,10 @@ const retryFetch = async <T,>(
   }
 };
 
+/**
+ * Page component that renders the QnA page.
+ * @returns {JSX.Element} The JSX element representing the QnA page.
+ */
 export default function Page() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);

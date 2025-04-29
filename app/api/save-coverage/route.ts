@@ -3,6 +3,11 @@ import { randomUUID } from "crypto";
 
 const COVERAGE_METRIC_ID = 9;
 
+/**
+ * POST function that saves coverage data for a given presentation ID and user ID.
+ * @param {Request} request - The request object.
+ * @returns {Promise<Response>} The response object.
+ */
 export async function POST(request: Request) {
   try {
     const { presentationId, userId, score } = await request.json();

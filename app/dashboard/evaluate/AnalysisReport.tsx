@@ -24,6 +24,11 @@ interface AnalysisReportProps {
   fillerStats: FillerStats | null;
 }
 
+/**
+ * AnalysisReport component that renders the analysis report modal.
+ * @param {AnalysisReportProps} props - The props for the AnalysisReport component.
+ * @returns {JSX.Element} The JSX element representing the analysis report modal.
+ */
 const AnalysisReport: React.FC<AnalysisReportProps> = ({
   isOpen,
   onClose,

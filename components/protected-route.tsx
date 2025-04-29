@@ -9,6 +9,11 @@ interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
+/**
+ * Renders a protected route that requires the user to be authenticated.
+ * @param props - The props for the ProtectedRoute component.
+ * @returns The rendered protected route.
+ */
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { isAuthenticated, isLoading, loginWithRedirect, error, refreshToken } =
     useAuthUtils();

@@ -23,6 +23,10 @@ import { PiSpinner } from "react-icons/pi";
 import LogoutButton from "@/components/logout-button";
 import Link from "next/link";
 
+/**
+ * Renders the user navigation menu.
+ * @returns The rendered user navigation menu.
+ */
 export function NavUser() {
   const { isMobile } = useSidebar();
   const { isLoading, isAuthenticated, error, user } = useAuth0();

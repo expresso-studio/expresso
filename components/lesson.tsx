@@ -16,6 +16,11 @@ interface Props extends LessonType {
   courseName: CourseNames;
 }
 
+/**
+ * Renders a lesson card with an icon, name, status, color, topics, and course name.
+ * @param props - The props for the Lesson component.
+ * @returns The rendered lesson card.
+ */
 const Lesson = React.memo<Props>(function Lesson({
   icon,
   name,

@@ -3,6 +3,10 @@ import Image from "next/image";
 import { outfit } from "@/app/fonts";
 import Link from "next/link";
 
+/**
+ * PracticeButton component that renders a button to practice presenting.
+ * @returns {JSX.Element} The JSX element representing the practice button.
+ */
 const PracticeButton = React.memo(function PracticeButton() {
   return (
     <Link href="/dashboard/eval-settings">

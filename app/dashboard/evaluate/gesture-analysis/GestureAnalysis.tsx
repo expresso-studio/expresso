@@ -35,6 +35,11 @@ interface Props {
   isPanelVisible?: boolean;
 }
 
+/**
+ * GestureAnalysis component that analyzes gesture metrics and provides feedback.
+ * @param {Props} props - The props for the GestureAnalysis component.
+ * @returns {JSX.Element} The JSX element representing the gesture analysis panel.
+ */
 const GestureAnalysis: React.FC<Props> = ({
   poseLandmarks,
   isRecording,

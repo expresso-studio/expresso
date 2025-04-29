@@ -30,6 +30,12 @@ const THEME_COLOR_SCRIPT = `\
   updateThemeColor();
 })();`;
 
+/**
+ * RootLayout component that wraps the entire application.
+ * @param {Object} props - The component props.
+ * @param {React.ReactNode} props.children - The child components to be rendered within the RootLayout.
+ * @returns {JSX.Element} The RootLayout component.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{

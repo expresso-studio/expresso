@@ -23,6 +23,11 @@ interface Props {
   short?: boolean;
 }
 
+/**
+ * Summary component that renders the summary section.
+ * @param {Props} props - The props for the Summary component.
+ * @returns {JSX.Element} The JSX element representing the summary section.
+ */
 const Summary = React.memo<Props>(function Summary({ short }) {
   const { user, isAuthenticated, isLoading, error, refreshToken } =
     useAuthUtils();

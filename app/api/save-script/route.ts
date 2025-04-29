@@ -2,6 +2,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { query } from "@/lib/db";
 
+/**
+ * POST function that saves a script for a given user ID and presentation ID.
+ * @param {NextRequest} request - The Next.js request object.
+ * @returns {Promise<NextResponse>} The Next.js response object.
+ */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();

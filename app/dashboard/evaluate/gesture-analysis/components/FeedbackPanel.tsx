@@ -8,6 +8,11 @@ interface FeedbackPanelProps {
   isRecording: boolean;
 }
 
+/**
+ * FeedbackPanel component that displays real-time feedback.
+ * @param {FeedbackPanelProps} props - The props for the FeedbackPanel component.
+ * @returns {JSX.Element} The JSX element representing the feedback panel.
+ */
 const FeedbackPanel: React.FC<FeedbackPanelProps> = ({
   feedback,
   isRecording,

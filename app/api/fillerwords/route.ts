@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { query } from "../../../lib/db";
 
+/**
+ * POST function that inserts filler word statistics for a user.
+ * @param {Request} request - The request object.
+ * @returns {Promise<NextResponse>} The Next.js response object.
+ */
 export async function POST(request: Request) {
   try {
     const {

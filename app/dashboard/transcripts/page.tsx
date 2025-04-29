@@ -13,6 +13,10 @@ interface Transcript {
   video_url: string;
 }
 
+/**
+ * TranscriptsPage component that renders the transcripts page.
+ * @returns {JSX.Element} The JSX element representing the transcripts page.
+ */
 const TranscriptsPage: React.FC = () => {
   const { user, isAuthenticated } = useAuthUtils();
   const [transcripts, setTranscripts] = useState<Transcript[]>([]);

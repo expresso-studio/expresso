@@ -1,5 +1,10 @@
 import { cn } from "@/lib/utils";
 
+/**
+ * Renders a skeleton loading state.
+ * @param props - The props for the Skeleton component.
+ * @returns The rendered skeleton component.
+ */
 function Skeleton({
   className,
   ...props

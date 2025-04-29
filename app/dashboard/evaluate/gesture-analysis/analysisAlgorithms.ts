@@ -5,7 +5,11 @@ import { PoseLandmark, GestureMetrics, GestureFeedback } from "@/lib/types";
 import { calculateMovement } from "./utils";
 import { OPTIMAL_RANGES } from "@/lib/constants";
 
-// Analyze Posture from landmarks - simplified to more boolean-like states
+/**
+ * Analyze Posture from landmarks - simplified to more boolean-like states.
+ * @param {PoseLandmark[]} landmarks - The pose landmarks.
+ * @returns {number} The Posture score.
+ */
 export const analyzePosture = (landmarks?: PoseLandmark[]): number => {
   if (!landmarks) return 0.5;
 
@@ -68,7 +72,12 @@ export const analyzePosture = (landmarks?: PoseLandmark[]): number => {
   return 1.0; // Perfect Posture (all 3 aspects good)
 };
 
-// Calculate body movement based on shoulders and hips
+/**
+ * Calculate body movement based on shoulders and hips.
+ * @param {PoseLandmark[]} landmarks - The current pose landmarks.
+ * @param {PoseLandmark[]} prevLandmarks - The previous pose landmarks.
+ * @returns {number} The body movement score.
+ */
 export const calculateBodyMovement = (
   landmarks?: PoseLandmark[],
   prevLandmarks?: PoseLandmark[],
@@ -137,7 +146,12 @@ export const calculateBodyMovement = (
   return Math.min(1, Math.pow(movement * 4, 1.2));
 };
 
-// Calculate hand symmetry (how similarly both hands are being used)
+/**
+ * Calculate hand symmetry (how similarly both hands are being used).
+ * @param {PoseLandmark[]} landmarks - The pose landmarks.
+ * @param {{ left: PoseLandmark; right: PoseLandmark }[]} handPositionsBuffer - The buffer of hand positions.
+ * @returns {number} The hand symmetry score.
+ */
 export const calculateHandSymmetry = (
   landmarks?: PoseLandmark[],
   handPositionsBuffer?: { left: PoseLandmark; right: PoseLandmark }[],
@@ -224,7 +238,12 @@ export const calculateHandSymmetry = (
   return 0.5;
 };
 
-// Calculate gesture variety (are they using the same gestures repeatedly)
+/**
+ * Calculate gesture variety (are they using the same gestures repeatedly).
+ * @param {PoseLandmark[]} landmarks - The pose landmarks.
+ * @param {{ left: PoseLandmark; right: PoseLandmark }[]} handPositionsBuffer - The buffer of hand positions.
+ * @returns {number} The gesture variety score.
+ */
 export const calculateGestureVariety = (
   landmarks?: PoseLandmark[],
   handPositionsBuffer?: { left: PoseLandmark; right: PoseLandmark }[],
@@ -256,7 +275,11 @@ export const calculateGestureVariety = (
   return Math.min(1, regions.size / maxPossibleRegions);
 };
 
-// Calculate eye contact (based on head position and orientation)
+/**
+ * Calculate eye contact (based on head position and orientation).
+ * @param {PoseLandmark[]} landmarks - The pose landmarks.
+ * @returns {number} The eye contact score.
+ */
 export const calculateEyeContact = (landmarks?: PoseLandmark[]): number => {
   if (!landmarks) return 0.5;
 
@@ -316,7 +339,11 @@ export const calculateEyeContact = (landmarks?: PoseLandmark[]): number => {
   );
 };
 
-// Generate feedback messages based on current metrics
+/**
+ * Generate feedback messages based on current metrics.
+ * @param {GestureMetrics} metrics - The gesture metrics.
+ * @returns {GestureFeedback[]} The generated feedback messages.
+ */
 export const generateFeedback = (
   metrics: GestureMetrics,
 ): GestureFeedback[] => {

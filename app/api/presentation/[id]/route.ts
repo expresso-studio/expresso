@@ -2,6 +2,12 @@ import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
 import { MetricIds, MetricIdToName } from "@/lib/constants";
 
+/**
+ * GET function that fetches presentation data and metrics for a given presentation ID and user ID.
+ * @param {Request} request - The request object.
+ * @param {{ params: Promise<{ id: string }> }} - The parameters object containing the presentation ID.
+ * @returns {Promise<NextResponse>} The Next.js response object.
+ */
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> },

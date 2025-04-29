@@ -12,6 +12,11 @@ interface MetricsDisplayProps {
   toggleMetric?: (metric: keyof GestureMetrics) => void;
 }
 
+/**
+ * MetricsDisplay component that displays the gesture metrics.
+ * @param {MetricsDisplayProps} props - The props for the MetricsDisplay component.
+ * @returns {JSX.Element} The JSX element representing the metrics display.
+ */
 const MetricsDisplay: React.FC<MetricsDisplayProps> = ({
   metrics,
   enabledMetrics = Object.fromEntries(

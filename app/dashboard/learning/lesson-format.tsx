@@ -16,6 +16,11 @@ interface Props extends LessonType {
   children: React.ReactNode;
 }
 
+/**
+ * LessonFormat component that renders the lesson format page.
+ * @param {Props} props - The props for the LessonFormat component.
+ * @returns {JSX.Element} The JSX element representing the lesson format page.
+ */
 export default function LessonFormat({
   icon,
   color,

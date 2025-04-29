@@ -7,6 +7,11 @@ interface LoginButtonUIProps {
   disabled?: boolean;
 }
 
+/**
+ * Renders a login button.
+ * @param props - The props for the LoginButtonUI component.
+ * @returns The rendered login button component.
+ */
 export default function LoginButtonUI({
   children,
   onClick,

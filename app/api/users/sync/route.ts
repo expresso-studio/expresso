@@ -2,6 +2,11 @@
 import { NextResponse } from "next/server";
 import { query } from "../../../../lib/db";
 
+/**
+ * POST function that syncs user data with the database.
+ * @param {Request} request - The request object.
+ * @returns {Promise<NextResponse>} The Next.js response object.
+ */
 export async function POST(request: Request) {
   try {
     const { sub, email, name } = await request.json();

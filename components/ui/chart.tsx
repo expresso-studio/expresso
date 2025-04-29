@@ -34,6 +34,11 @@ function useChart() {
   return context;
 }
 
+/**
+ * Renders a chart with a header, title, description, content, and footer.
+ * @param props - The props for the ChartContainer component.
+ * @returns The rendered chart component.
+ */
 const ChartContainer = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & {

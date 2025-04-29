@@ -45,6 +45,11 @@ interface EvaluateVideoProps {
   showSkeleton?: boolean; // New prop to control skeleton visibility
 }
 
+/**
+ * EvaluateVideo component that handles video capture, pose detection, and video recording.
+ * @param {EvaluateVideoProps} props - The props for the EvaluateVideo component.
+ * @returns {JSX.Element} The JSX element representing the video capture and pose detection.
+ */
 export const EvaluateVideo: React.FC<EvaluateVideoProps> = ({
   loading,
   onPoseResults,

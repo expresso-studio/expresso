@@ -13,6 +13,11 @@ interface Props extends PresentationType {
   loading?: boolean;
 }
 
+/**
+ * Renders a recording card with a video preview, title, and creation date.
+ * @param props - The props for the Recording component.
+ * @returns The rendered recording card.
+ */
 const Recording = React.memo<Props>(function Recording({
   id,
   title,

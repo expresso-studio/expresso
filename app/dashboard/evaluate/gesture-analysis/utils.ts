@@ -3,14 +3,24 @@
 import { PoseLandmark } from "@/lib/types";
 import { OPTIMAL_RANGES } from "@/lib/constants";
 
-// Format time for display
+/**
+ * Format time for display.
+ * @param {number} seconds - The time in seconds.
+ * @returns {string} The formatted time string.
+ */
 export const formatTime = (seconds: number): string => {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
   return `${mins}:${secs.toString().padStart(2, "0")}`;
 };
 
-// Smoothly update a metric value to prevent jarring UI changes
+/**
+ * Smoothly update a metric value to prevent jarring UI changes.
+ * @param {number} currentValue - The current value of the metric.
+ * @param {number} newValue - The new value of the metric.
+ * @param {number} [sensitivity=0.05] - The sensitivity of the update.
+ * @returns {number} The updated value of the metric.
+ */
 export const smoothUpdate = (
   currentValue: number,
   newValue: number,
@@ -22,7 +32,13 @@ export const smoothUpdate = (
   return currentValue + change;
 };
 
-// Calculate movement between two landmarks
+/**
+ * Calculate movement between two landmarks.
+ * @param {PoseLandmark} [current] - The current landmark.
+ * @param {PoseLandmark} [previous] - The previous landmark.
+ * @param {number} [sensitivity=1] - The sensitivity of the movement calculation.
+ * @returns {number} The calculated movement.
+ */
 export const calculateMovement = (
   current?: PoseLandmark,
   previous?: PoseLandmark,
@@ -48,7 +64,12 @@ export const calculateMovement = (
   return Math.min(1, Math.pow(movement * 3, 1.2));
 };
 
-// Get color class based on value and optimal range
+/**
+ * Get color class based on value and optimal range.
+ * @param {string} key - The metric key.
+ * @param {number} value - The metric value.
+ * @returns {string} The color class.
+ */
 export const getColorClass = (key: string, value: number): string => {
   const metricKey = key as keyof typeof OPTIMAL_RANGES;
   if (!OPTIMAL_RANGES[metricKey]) return "bg-blue-500";
@@ -66,7 +87,12 @@ export const getColorClass = (key: string, value: number): string => {
   return "bg-blue-500"; // Normal/optimal in Trek style is often blue
 };
 
-// Get text for metric status
+/**
+ * Get text for metric status.
+ * @param {string} key - The metric key.
+ * @param {number} value - The metric value.
+ * @returns {string} The metric status text.
+ */
 export const getMetricStatus = (key: string, value: number): string => {
   const metricKey = key as keyof typeof OPTIMAL_RANGES;
   if (!OPTIMAL_RANGES[metricKey]) return "N/A";
@@ -84,7 +110,11 @@ export const getMetricStatus = (key: string, value: number): string => {
   return "Normal";
 };
 
-// Function to format metric name for display
+/**
+ * Function to format metric name for display.
+ * @param {string} key - The metric key.
+ * @returns {string} The formatted metric name.
+ */
 export const formatMetricName = (key: string): string => {
   return key === "OverallScore"
     ? "Overall Score"

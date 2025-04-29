@@ -3,6 +3,11 @@ import { MetricNameToId } from "@/lib/constants";
 import { MetricInput } from "@/lib/types";
 import { randomUUID } from "crypto";
 
+/**
+ * POST function that saves metrics for a given presentation ID and user ID.
+ * @param {Request} request - The request object.
+ * @returns {Promise<Response>} The response object.
+ */
 export async function POST(request: Request) {
   try {
     const { presentationId, userId, metrics } = await request.json();

@@ -11,6 +11,12 @@ interface AppState {
   returnTo?: string;
 }
 
+/**
+ * AuthProvider component that wraps the application with Auth0 authentication.
+ * @param {Object} props - The component props.
+ * @param {React.ReactNode} props.children - The child components to be rendered within the AuthProvider.
+ * @returns {JSX.Element} The AuthProvider component.
+ */
 export default function AuthProvider({
   children,
 }: {

@@ -1,5 +1,9 @@
 import { query } from "../../../lib/db";
 
+/**
+ * GET function that fetches all users from the database.
+ * @returns {Promise<Response>} The response object.
+ */
 export async function GET() {
   try {
     const result = await query("SELECT * FROM users");

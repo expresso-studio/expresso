@@ -15,6 +15,10 @@ import ProtectedRoute from "@/components/protected-route";
 import { useAuthUtils } from "@/hooks/useAuthUtils";
 import { Courses, CourseStatuses } from "@/lib/constants";
 
+/**
+ * Page component that renders the dashboard page.
+ * @returns {JSX.Element} The JSX element representing the dashboard page.
+ */
 export default function Page() {
   const { user, isAuthenticated, error, refreshToken } = useAuthUtils();
   // TODO(casey): replace with actual status

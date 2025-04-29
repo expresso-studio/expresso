@@ -11,6 +11,11 @@ interface Props {
   lessonId: number;
 }
 
+/**
+ * Renders a button to evaluate a lesson.
+ * @param props - The props for the EvaluateButton component.
+ * @returns The rendered evaluate button.
+ */
 const EvaluateButton = ({ enabledParams, lessonId }: Props) => {
   const { user, isLoading, error, refreshToken } = useAuthUtils();
 

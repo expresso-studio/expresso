@@ -1,4 +1,8 @@
 import Image from "next/image";
+/**
+ * Renders a footer with a wave design.
+ * @returns The rendered footer component.
+ */
 const FooterWave = () => {
   return (
     <footer className="relative w-full aspect-[1280/140]">

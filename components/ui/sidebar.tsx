@@ -163,6 +163,11 @@ const SidebarProvider = React.forwardRef<
 );
 SidebarProvider.displayName = "SidebarProvider";
 
+/**
+ * Renders a sidebar with various sub-components.
+ * @param props - The props for the Sidebar component.
+ * @returns The rendered sidebar component.
+ */
 const Sidebar = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & {

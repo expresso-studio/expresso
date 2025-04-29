@@ -4,6 +4,10 @@ import { useAuth0 } from "@auth0/auth0-react";
 import LoginButtonUI from "./ui/loginbutton-ui";
 import { ChevronRight } from "lucide-react";
 
+/**
+ * Renders a login or logout button based on the user's authentication status.
+ * @returns The rendered login or logout button.
+ */
 export default function LoginButton() {
   const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
 
