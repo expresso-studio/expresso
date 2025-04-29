@@ -218,10 +218,11 @@ const VideoPlayback: React.FC<VideoPlaybackProps> = ({
             `Failed to save metrics: ${errorData.error || "Unknown error"}`,
           );
         }
+        console.log("SENDING METRICS", metricsToSend);
         const metricsData = await metricsRes.json();
         console.log("Metrics saved successfully:", metricsData);
       }
-
+      
       console.log("Upload and registration complete.");
       setUploadSuccess(true);
     } catch (error) {
