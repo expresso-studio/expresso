@@ -13,6 +13,11 @@ interface VideoPlaybackProps {
   fillerStats: FillerStats | null;
 }
 
+/**
+ * VideoPlayback component that renders the video playback and handles video upload.
+ * @param {VideoPlaybackProps} props - The props for the VideoPlayback component.
+ * @returns {JSX.Element} The JSX element representing the video playback and upload.
+ */
 const VideoPlayback: React.FC<VideoPlaybackProps> = ({
   videoBlob,
   onDownload,

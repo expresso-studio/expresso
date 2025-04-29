@@ -2,6 +2,11 @@ import { NextResponse } from "next/server";
 import { query } from "../../../lib/db";
 import { PresentationType } from "@/lib/types";
 
+/**
+ * GET function that fetches report data for a given user ID.
+ * @param {Request} request - The request object.
+ * @returns {Promise<NextResponse>} The Next.js response object.
+ */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get("user");

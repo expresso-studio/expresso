@@ -19,6 +19,11 @@ interface Props {
   courses: (CourseType & CourseStatus)[];
 }
 
+/**
+ * Recommendations component that renders the recommendations section.
+ * @param {Props} props - The props for the Recommendations component.
+ * @returns {JSX.Element} The JSX element representing the recommendations section.
+ */
 export default function Recommendations({ loading, metrics, courses }: Props) {
   // get incomplete courses with lowest metrics sorted by value
   const incompleteMetrics: MetricType[] = metrics

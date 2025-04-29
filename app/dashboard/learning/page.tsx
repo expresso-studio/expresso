@@ -12,6 +12,10 @@ import CourseList from "./course-list";
 import { outfit } from "@/app/fonts";
 import PracticeButton from "./practice-button";
 
+/**
+ * Page component that renders the learning page.
+ * @returns {JSX.Element} The JSX element representing the learning page.
+ */
 export default function Page() {
   const { user, isAuthenticated, isLoading, error, refreshToken } =
     useAuthUtils();

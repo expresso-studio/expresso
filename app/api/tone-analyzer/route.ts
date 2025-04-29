@@ -22,6 +22,11 @@ const naturalLanguageUnderstanding = new NaturalLanguageUnderstandingV1({
   serviceUrl: serviceUrl || "", // Provide a default empty string
 });
 
+/**
+ * POST function that analyzes the tone of the provided text using IBM Watson Natural Language Understanding.
+ * @param {NextRequest} request - The Next.js request object.
+ * @returns {Promise<NextResponse>} The Next.js response object.
+ */
 export async function POST(request: NextRequest) {
   if (!apiKey || !serviceUrl) {
     return NextResponse.json(

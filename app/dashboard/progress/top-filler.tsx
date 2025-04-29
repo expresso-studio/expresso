@@ -8,6 +8,11 @@ interface Props {
   short?: boolean;
 }
 
+/**
+ * TopFiller component that renders the top filler words section.
+ * @param {Props} props - The props for the TopFiller component.
+ * @returns {JSX.Element} The JSX element representing the top filler words section.
+ */
 const TopFiller = React.memo<Props>(function TopFiller({ short }) {
   const [fillerWords, setFillerWords] = useState<string[]>([
     "um",

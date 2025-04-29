@@ -35,6 +35,11 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
+/**
+ * CourseProgress component that renders the course progress chart.
+ * @param {CourseProgressProps} props - The props for the CourseProgress component.
+ * @returns {JSX.Element} The JSX element representing the course progress chart.
+ */
 export default function CourseProgress({ status, color }: CourseProgressProps) {
   const updatedChartData = React.useMemo(() => {
     return [

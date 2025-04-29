@@ -2,6 +2,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getPresignedUrl } from "@/lib/aws/s3";
 
+/**
+ * GET function that generates a pre-signed URL for a given video key and user ID.
+ * @param {NextRequest} request - The Next.js request object.
+ * @returns {Promise<NextResponse>} The Next.js response object.
+ */
 export async function GET(request: NextRequest) {
   try {
     // Extract videoKey and userId from the query parameters

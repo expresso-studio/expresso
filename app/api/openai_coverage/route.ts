@@ -2,6 +2,11 @@ import { NextResponse } from "next/server";
 import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
 
+/**
+ * POST function that generates a coverage score based on the provided transcript and script data.
+ * @param {Request} request - The request object.
+ * @returns {Promise<NextResponse>} The Next.js response object.
+ */
 export async function POST(request: Request) {
   try {
     const { transcriptData, scriptData } = await request.json();

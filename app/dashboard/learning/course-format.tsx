@@ -20,6 +20,11 @@ interface Props extends CourseType {
   status?: number;
 }
 
+/**
+ * CourseFormat component that renders the course format page.
+ * @param {Props} props - The props for the CourseFormat component.
+ * @returns {JSX.Element} The JSX element representing the course format page.
+ */
 export default function CourseFormat({
   id,
   icon,
@@ -61,7 +66,7 @@ export default function CourseFormat({
         console.log(userId);
 
         const response = await fetch(
-          `/api/course/lessons-left?userId=${userId}&courseId=${courseId}`
+          `/api/course/lessons-left?userId=${userId}&courseId=${courseId}`,
         );
         if (!response.ok) {
           throw new Error("Failed to fetch lessons left");
@@ -87,7 +92,7 @@ export default function CourseFormat({
     (lesson) => {
       // Check if this lesson is in the lessonsLeft array
       const isLessonLeft = lessonsLeft.find(
-        (leftLesson) => leftLesson.lesson_name === lesson.name
+        (leftLesson) => leftLesson.lesson_name === lesson.name,
       );
 
       // If the lesson is in lessonsLeft, it means it's not completed
@@ -95,7 +100,7 @@ export default function CourseFormat({
         ...lesson,
         status: isLessonLeft !== undefined,
       };
-    }
+    },
   );
 
   return (
@@ -199,7 +204,7 @@ const LoadingLesson = ({ color }: loadingLessonProps) => {
       <div
         style={{ borderColor: color }}
         className={cn(
-          `min-w-[55px] h-[55px] rounded-md overflow-hidden border bg-white dark:bg-darkGray`
+          `min-w-[55px] h-[55px] rounded-md overflow-hidden border bg-white dark:bg-darkGray`,
         )}
       >
         <div

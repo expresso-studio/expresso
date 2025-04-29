@@ -9,6 +9,10 @@ import Summary from "./summary";
 import Section from "@/components/section";
 import TopFiller from "./top-filler";
 
+/**
+ * Page component that renders the progress page.
+ * @returns {JSX.Element} The JSX element representing the progress page.
+ */
 export default function Page() {
   return (
     <PageFormat breadCrumbs={[{ name: "progress" }]}>

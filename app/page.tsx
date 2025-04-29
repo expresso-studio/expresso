@@ -7,6 +7,10 @@ import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { useAuthUtils } from "@/hooks/useAuthUtils";
 
+/**
+ * Page component that renders the landing page of the application.
+ * @returns {JSX.Element} The Page component.
+ */
 export default function Page() {
   const router = useRouter();
   const { isAuthenticated } = useAuthUtils();

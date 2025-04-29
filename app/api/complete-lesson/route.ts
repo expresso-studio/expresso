@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { query } from "@/lib/db";
 
+/**
+ * POST function that marks a lesson as completed for a user.
+ * @param {NextRequest} request - The Next.js request object.
+ * @returns {Promise<NextResponse>} The Next.js response object.
+ */
 export async function POST(request: NextRequest) {
   try {
     const { userId, lessonId } = await request.json();

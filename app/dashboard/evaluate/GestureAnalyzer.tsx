@@ -16,6 +16,11 @@ interface GestureAnalyzerProps {
   fillerStats: FillerStats | null;
 }
 
+/**
+ * GestureAnalyzer component that handles gesture analysis and video recording.
+ * @param {GestureAnalyzerProps} props - The props for the GestureAnalyzer component.
+ * @returns {JSX.Element} The JSX element representing the gesture analysis and video recording.
+ */
 const GestureAnalyzer: React.FC<GestureAnalyzerProps> = ({
   isRecording,
   // onStopRecording,

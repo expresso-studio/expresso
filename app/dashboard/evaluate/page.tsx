@@ -6,6 +6,10 @@ import TranscriptionComponent from "@/components/TranscriptionComponent";
 import ProtectedRoute from "@/components/protected-route";
 import { FillerStats } from "./gesture-analysis";
 
+/**
+ * Page component that renders the evaluation page.
+ * @returns {JSX.Element} The JSX element representing the evaluation page.
+ */
 export default function Page() {
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState("");

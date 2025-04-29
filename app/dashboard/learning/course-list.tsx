@@ -8,6 +8,11 @@ interface Props {
   loading?: boolean;
 }
 
+/**
+ * CourseList component that renders a list of courses.
+ * @param {Props} props - The props for the CourseList component.
+ * @returns {JSX.Element} The JSX element representing the list of courses.
+ */
 const CourseList = React.memo<Props>(function CourseList({
   courses,
   short,

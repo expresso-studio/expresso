@@ -13,6 +13,11 @@ const s3 = new S3Client({
 });
 const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME!;
 
+/**
+ * POST function that generates a signed URL for uploading a video to S3 and registers the presentation in the database.
+ * @param {NextRequest} request - The Next.js request object.
+ * @returns {Promise<NextResponse>} The Next.js response object.
+ */
 export async function POST(request: NextRequest) {
   try {
     const { userId, title } = await request.json();

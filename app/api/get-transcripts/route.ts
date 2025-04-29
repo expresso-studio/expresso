@@ -2,6 +2,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { query } from "@/lib/db";
 
+/**
+ * GET function that fetches transcripts for a given user ID.
+ * @param {NextRequest} request - The Next.js request object.
+ * @returns {Promise<NextResponse>} The Next.js response object.
+ */
 export async function GET(request: NextRequest) {
   try {
     // Get userId from the URL

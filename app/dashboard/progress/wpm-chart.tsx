@@ -36,6 +36,10 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
+/**
+ * WPMChart component that renders the WPM chart.
+ * @returns {JSX.Element} The JSX element representing the WPM chart.
+ */
 export function WPMChart() {
   const [chartData, setChartData] = useState<ChartDataType[]>([]);
   const { user, isAuthenticated } = useAuth0();

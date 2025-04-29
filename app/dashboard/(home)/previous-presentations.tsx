@@ -7,6 +7,10 @@ import { useAuthUtils } from "@/hooks/useAuthUtils";
 import { cn } from "@/lib/utils";
 import { ReportItemType } from "@/lib/types";
 
+/**
+ * PreviousPresentationsSection component that renders the previous presentations section on the dashboard page.
+ * @returns {JSX.Element} The JSX element representing the previous presentations section.
+ */
 export default function PreviousPresentationsSection() {
   const { user, isAuthenticated, isLoading } = useAuthUtils();
   const [reports, setReports] = React.useState<ReportItemType[]>([]);
